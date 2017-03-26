@@ -1,3 +1,3 @@
 # GAMEBOY-DEMOS
 ZGB DEMOS
-Two games being mad ewith ZGB Engine (by Zalo)
+Two games being made with ZGB Engine (by Zalo)
