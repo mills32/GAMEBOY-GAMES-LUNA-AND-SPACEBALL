@@ -1,3 +1,3 @@
-# GAMEBOY-DEMOS
-ZGB DEMOS
-Two games being made with ZGB Engine (by Zalo)
+# GB DEMOS
+LUNA and FUZZY being made with ZGB Engine (by Zalo)
+
