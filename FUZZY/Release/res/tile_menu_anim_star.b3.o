@@ -1,0 +1,24 @@
+XL
+H A areas 1 global symbols
+M lcc51040
+A _CODE size 0 flags 0
+A _DATA size 0 flags 0
+A _OVERLAY size 0 flags 0
+A _ISEG size 0 flags 0
+A _BSEG size 0 flags 0
+A _XSEG size 0 flags 0
+A _GSINIT size 0 flags 0
+A _GSFINAL size 0 flags 0
+A _HOME size 0 flags 0
+A _CODE_3 size 40 flags 0
+S _tile_menu_anim_star Def0000
+T 00 00 00 00 00 00 00 00 00 10 10 28 00 10 00 00
+R 00 00 09 00
+T 0E 00 00 00 00 00 00 00 00 10 10 00 38 44 10 00
+R 00 00 09 00
+T 1C 00 00 10 00 00 00 00 00 10 10 00 38 00 7C 82
+R 00 00 09 00
+T 2A 00 38 00 10 00 00 10 00 00 00 00 00 10 10 00
+R 00 00 09 00
+T 38 00 38 44 10 00 00 10 00 00
+R 00 00 09 00
