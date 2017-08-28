@@ -8,7 +8,8 @@ UINT8 bank_SPRITE_PLAYER = 2;
 #include "Print.h"
 #include "Keys.h"
 #include "SpriteManager.h"
-extern Menu_Mode;
+#include "BkgAnimation.h"
+extern UINT8 Menu_Mode;
 
 const UINT8 anim_roll[] = {3, 0, 1, 2};
 const UINT8 anim_idle[] = {1, 0};
@@ -110,6 +111,23 @@ const unsigned UINT8 Dir[] =
 		8, 16,/* | DOWN*/
 	};
 
+void Set_Power_Bar(int p){
+	if(p == 0){
+		//POWER BAR = 0
+		WIN_EDIT_TILE(3, 0, 47);WIN_EDIT_TILE(4, 0, 51);
+		WIN_EDIT_TILE(3, 1, 48);WIN_EDIT_TILE(4, 1, 52);
+	}
+	if(p == 1){
+		//POWER BAR = 1
+		WIN_EDIT_TILE(3, 0, 49);WIN_EDIT_TILE(4, 0, 51);
+		WIN_EDIT_TILE(3, 1, 50);WIN_EDIT_TILE(4, 1, 52);
+	}
+	if(p == 2){
+		//POWER BAR = 2
+		WIN_EDIT_TILE(3, 0, 49);WIN_EDIT_TILE(4, 0, 53);
+		WIN_EDIT_TILE(3, 1, 50);WIN_EDIT_TILE(4, 1, 54);
+	}
+}
 	
 void Start_SPRITE_PLAYER() {
 	struct BallInfo* data = THIS->custom_data;
@@ -132,13 +150,14 @@ void Start_SPRITE_PLAYER() {
 	THIS->flags = 0x00;
 	TIMER = 0;
 
+
 }	
 
 void Update_SPRITE_PLAYER(){
 	struct BallInfo* data = THIS->custom_data;
 	BallPos_x = THIS->x;
 	BallPos_y = THIS->y;
-	
+
 	//ROLLING BALL
 	if (data->state == 1){
 		//Tile detector
@@ -169,10 +188,10 @@ void Update_SPRITE_PLAYER(){
 			Ball_State = 0;
 			data->strokes--;
 			SpriteManagerAdd(SPRITE_POINTER, 0, 0); 
-			PRINT_POS(2, 0);
-			Printf("FOR:%d", (int) data->force/32);
-			PRINT_POS(12, 0);
-			Printf("STR:%d ", (int) data->strokes);
+			//POWER BAR = 0
+			Set_Power_Bar(data->force/32);
+			PRINT_POS(16, 1);
+			Printf("%d ", (int) data->strokes);
 		}
 		//Bounce X
 		data->col = TranslateSprite(THIS,data->vx, 0);
@@ -180,7 +199,7 @@ void Update_SPRITE_PLAYER(){
 			if (data->bx == 0) data->sx = data->sx - 2*(data->sx -8);
 			if (data->bx == 1) data->sx = data->sx + 2*(8-data->sx);
 			//Bounce sound
-			PlayFx(CHANNEL_1, 14, 0x17, 0x00, 0xf1, 0x3a, 0x83);	
+			PlayFx(CHANNEL_1, 14, 0x27, 0x01, 0xfe, 0x73, 0xc6);	
 		}
 		//Bounce Y
 		data->col = TranslateSprite(THIS,0, data->vy);
@@ -188,14 +207,18 @@ void Update_SPRITE_PLAYER(){
 			if (data->by == 0) data->sy = data->sy - 2*(data->sy -8);
 			if (data->by == 1) data->sy = data->sy + 2*(8-data->sy);
 			//Bounce sound
-			PlayFx(CHANNEL_1, 14, 0x17, 0x00, 0xf1, 0x3a, 0x83);	
+			PlayFx(CHANNEL_1, 14, 0x27, 0x01, 0xfe, 0x73, 0xc6);		
 		}
 		//Slope Up
 		if ((data->tile > 22)&&(data->tile < 25)&&(data->sl == 6)&&(data->sy > 0)) data->sy--;
 		//Slope Down
 		if ((data->tile > 19)&&(data->tile < 22)&&(data->sl == 6)&&(data->sy < 14)) data->sy++;
+		//Conv Down
+		if ((data->tile > 41)&&(data->tile < 44)&&(data->sl == 6)&&(data->sy < 14)) data->sy+=2;
 		//Slope Right
 		if ((data->tile > 25)&&(data->tile < 28)&&(data->sl == 6)&&(data->sx < 14)) data->sx++;
+		//Conv Right
+		if ((data->tile > 39)&&(data->tile < 42)&&(data->sl == 6)&&(data->sx < 14)) data->sx+=2;
 		//Slope Left
 		if ((data->tile > 28)&&(data->tile < 31)&&(data->sl == 6)&&(data->sx > 0)) data->sx--;
 		
@@ -206,9 +229,18 @@ void Update_SPRITE_PLAYER(){
 			if (data->by == 0) data->sy++;
 			if (data->by == 1) data->sy--;
 		}
+		
 		data->vx = Speed[data->sx][data->fl];
 		data->vy = Speed[data->sy][data->fl];
 		
+		if (data->vx !=0){
+			if (data->vx > 2) data->vx = 2;
+			if (data->vx < -2) data->vx = -2;
+		}
+		if (data->vy !=0){
+			if (data->vy > 2) data->vy = 2;
+			if (data->vy < -2) data->vy = -2;			
+		}		
 		//HOLE
 		if ((data->tile > 31)&&(data->tile < 36)){ 
 			data->state = 3;
@@ -228,13 +260,11 @@ void Update_SPRITE_PLAYER(){
 		//CHANGE FORCE
 		if((KEY_TICKED(J_UP))&&(data->force < 64)){
 			data->force+=32;
-			PRINT_POS(2, 0);
-			Printf("FOR:%d", (int) data->force/32);
+			Set_Power_Bar(data->force/32);
 		}
 		if((KEY_TICKED(J_DOWN))&&(data->force > 0)){
 			data->force-=32;
-			PRINT_POS(2, 0);
-			Printf("FOR:%d", (int) data->force/32);
+			Set_Power_Bar(data->force/32);
 		}
 		
 		//HIT BALL
@@ -251,16 +281,15 @@ void Update_SPRITE_PLAYER(){
 	}
 	//GO TO MENU
 	if (data->strokes == 0){
-		Menu_Mode = 0;
+		Menu_Mode = 2;
 		SetState(STATE_MENU);
 		HIDE_WIN;
 	}
 	
 	if (data->state == 2){ //INIT
 		data->strokes = 9; // 
-		PRINT_POS(2, 0);
-		Printf("FOR:%d", (int) 1);
-		PRINT_POS(12, 0);
+		Set_Power_Bar(data->force/32);
+		PRINT_POS(12, 1);
 		Printf("STR:%d ", (int) data->strokes);
 		data->state = 0;
 		SpriteManagerAdd(SPRITE_POINTER, 0, 0); 
@@ -269,9 +298,9 @@ void Update_SPRITE_PLAYER(){
 	if (data->state == 3){ //HOLE IN
 		if (TIMER == 80){
 			TIMER == 0;
-			Menu_Mode = 0;
-			SetState(STATE_MENU);
+			Menu_Mode = 2;
 			HIDE_WIN;
+			SetState(STATE_MENU);	
 		}
 		TIMER++;
 	}
