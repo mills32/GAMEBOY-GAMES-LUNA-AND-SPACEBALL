@@ -81,10 +81,10 @@
 #define tiles_level1CGBPal4c3 0
 
 /* Gameboy Color palette 5 */
-#define tiles_level1CGBPal5c0 6076
-#define tiles_level1CGBPal5c1 8935
-#define tiles_level1CGBPal5c2 6596
-#define tiles_level1CGBPal5c3 5344
+#define tiles_level1CGBPal5c0 31670
+#define tiles_level1CGBPal5c1 32642
+#define tiles_level1CGBPal5c2 24096
+#define tiles_level1CGBPal5c3 0
 
 /* Gameboy Color palette 6 */
 #define tiles_level1CGBPal6c0 6076
