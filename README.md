@@ -1,3 +1,2 @@
 # GB DEMOS
-LUNA and FUZZY being made with ZGB Engine (by Zalo)
-
+LUNA, FUZZY and Rick dangerous2 being made with ZGB Engine.
