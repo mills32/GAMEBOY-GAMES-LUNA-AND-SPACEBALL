@@ -1,5 +1,5 @@
 # GB DEMOS
-Here I stored some games that are using ZGB Engine and a MEGADEMO containing a lot of scenes in GBDK.
+Here I stored some games that are using ZGB Engine in GBDK.
 
 They are working in both DMG and GBC, But they work much better in GBC.
 
