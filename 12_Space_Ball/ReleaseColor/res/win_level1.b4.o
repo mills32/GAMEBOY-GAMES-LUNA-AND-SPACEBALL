@@ -1,0 +1,39 @@
+XL2
+H 8 areas 3 global symbols
+M win_level1_b4
+O -mgbz80
+S .__.ABS. Def0000
+A _CODE size 0 flags 0 addr 0
+A _DATA size 0 flags 0 addr 0
+A _DABS size 0 flags 8 addr 0
+A _HOME size 0 flags 0 addr 0
+A _GSINIT size 0 flags 0 addr 0
+A _GSFINAL size 0 flags 0 addr 0
+A _CODE_4 size 78 flags 0 addr 0
+S _win_level1PLN0 Def0000
+S _win_level1PLN1 Def003C
+A _CABS size 0 flags 8 addr 0
+T 00 00
+R 00 00 06 00
+T 00 00 01 07 2D 2F 33 07 07 07 07 07 07 07 38 38
+R 00 00 06 00
+T 0E 00 38 38 38 38 07 02 04 08 2E 30 34 08 08 08
+R 00 00 06 00
+T 1C 00 08 08 08 37 08 08 08 08 08 08 39 03 00 00
+R 00 00 06 00
+T 2A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+R 00 00 06 00
+T 38 00 00 00 00 00
+R 00 00 06 00
+T 3C 00
+R 00 00 06 00
+T 3C 00 04 04 04 04 04 04 04 04 04 04 04 04 04 04
+R 00 00 06 00
+T 4A 00 04 04 04 04 04 04 04 04 04 04 04 04 04 04
+R 00 00 06 00
+T 58 00 04 04 04 04 04 04 04 04 04 04 04 04 00 00
+R 00 00 06 00
+T 66 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+R 00 00 06 00
+T 74 00 00 00 00 00
+R 00 00 06 00

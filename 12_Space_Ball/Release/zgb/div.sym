@@ -1,0 +1,24 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 1.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+    .__.$$$.=  2710 L   |     .__.ABS.=  0000 G   |     .__.CPU.=  0000 L
+    .__.H$L.=  0000 L   |   0 .chkde     00D3 R   |   0 .div16     00C5 GR
+  0 .div8      00BD GR  |   0 .divide    0109 R   |   0 .divu16    00FE GR
+  0 .divu8     00FB GR  |   0 .dodiv     00DD R   |   0 .dorem     00ED R
+  0 .drop      012C R   |   0 .dvloop    0111 R   |   0 .exit      00F8 R
+  0 .mod16     00C5 GR  |   0 .mod8      00BD GR  |   0 .modu16    00FE GR
+  0 .modu8     00FB GR  |   0 .nodrop    0135 R   |   0 __divsch   003D GR
+  0 __divsin   0057 GR  |   0 __divsuc   0000 GR  |   0 __divuch   007D GR
+  0 __divuin   0097 GR  |   0 __divusc   001B GR  |   0 __modsch   004B GR
+  0 __modsin   006B GR  |   0 __modsuc   000F GR  |   0 __moduch   008B GR
+  0 __moduin   00AB GR  |   0 __modusc   002D GR  |   0 signexte   00C1 R
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 2.
+Hexadecimal [16-Bits]
+
+Area Table
+
+   0 _CODE      size  13F   flags    0
+

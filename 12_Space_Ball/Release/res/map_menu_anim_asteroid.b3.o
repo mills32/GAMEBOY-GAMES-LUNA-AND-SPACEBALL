@@ -1,0 +1,22 @@
+XL2
+H 8 areas 2 global symbols
+M map_menu_anim_asteroid_b3
+O -mgbz80
+S .__.ABS. Def0000
+A _CODE size 0 flags 0 addr 0
+A _DATA size 0 flags 0 addr 0
+A _DABS size 0 flags 8 addr 0
+A _HOME size 0 flags 0 addr 0
+A _GSINIT size 0 flags 0 addr 0
+A _GSFINAL size 0 flags 0 addr 0
+A _CODE_3 size 24 flags 0 addr 0
+S _map_menu_anim_asteroid Def0000
+A _CABS size 0 flags 8 addr 0
+T 00 00
+R 00 00 06 00
+T 00 00 B3 B4 B5 B6 B7 B8 B9 BA BB BC BD BE BF C0
+R 00 00 06 00
+T 0E 00 C1 C2 C3 C4 C5 C6 C7 C8 C9 CA CB CC CD BC
+R 00 00 06 00
+T 1C 00 BD BE BF C0 C1 C2 C3 C4
+R 00 00 06 00

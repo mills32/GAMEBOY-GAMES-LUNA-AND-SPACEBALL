@@ -1,0 +1,1041 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module Fade_b
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _FadeOut_b
+                             12 	.globl _FadeOutColor
+                             13 	.globl _FadeOutDMG
+                             14 	.globl _FadeIn_b
+                             15 	.globl _FadeInCOLOR
+                             16 	.globl _FadeStepColor
+                             17 	.globl _UpdateColor
+                             18 	.globl _FadeInDMG
+                             19 	.globl _FadeDMG
+                             20 	.globl _FadeInOp
+                             21 	.globl _DespRight
+                             22 	.globl _delay
+                             23 	.globl _set_sprite_palette
+                             24 	.globl _set_bkg_palette
+                             25 	.globl _ZGB_Fading_SPal
+                             26 	.globl _ZGB_Fading_BPal
+                             27 	.globl _fade_bank
+                             28 ;--------------------------------------------------------
+                             29 ; ram data
+                             30 ;--------------------------------------------------------
+                             31 	.area _DATA
+   0000                      32 _fade_bank::
+   0000                      33 	.ds 1
+   0001                      34 _ZGB_Fading_BPal::
+   0001                      35 	.ds 64
+   0041                      36 _ZGB_Fading_SPal::
+   0041                      37 	.ds 64
+                             38 ;--------------------------------------------------------
+                             39 ; absolute external ram data
+                             40 ;--------------------------------------------------------
+                             41 	.area _DABS (ABS)
+                             42 ;--------------------------------------------------------
+                             43 ; global & static initialisations
+                             44 ;--------------------------------------------------------
+                             45 	.area _HOME
+                             46 	.area _GSINIT
+                             47 	.area _GSFINAL
+                             48 	.area _GSINIT
+                             49 ;C:/gbdk/ZGB/common/src/Fade_b.c:3: UINT8 fade_bank = 1;
+   0000 21r00r00             50 	ld	hl,#_fade_bank
+   0003 36 01                51 	ld	(hl),#0x01
+                             52 ;--------------------------------------------------------
+                             53 ; Home
+                             54 ;--------------------------------------------------------
+                             55 	.area _HOME
+                             56 	.area _HOME
+                             57 ;--------------------------------------------------------
+                             58 ; code
+                             59 ;--------------------------------------------------------
+                             60 	.area _CODE_1
+                             61 ;C:/gbdk/ZGB/common/src/Fade_b.c:12: UINT8 FadeInOp(UINT16 c, UINT16 i) {
+                             62 ;	---------------------------------
+                             63 ; Function FadeInOp
+                             64 ; ---------------------------------
+   0000                      65 _FadeInOp::
+                             66 ;C:/gbdk/ZGB/common/src/Fade_b.c:13: return U_LESS_THAN(c, i) ? 0: (c - i);
+   0000 F8 02                67 	ldhl	sp,#(3 - 1)
+   0002 5E                   68 	ld	e,(hl)
+   0003 23                   69 	inc	hl
+   0004 56                   70 	ld	d,(hl)
+   0005 23                   71 	inc	hl
+   0006 2A                   72 	ld	a,(hl+)
+   0007 66                   73 	ld	h,(hl)
+   0008 6F                   74 	ld	l,a
+   0009 7B                   75 	ld	a,e
+   000A 95                   76 	sub	a,l
+   000B 5F                   77 	ld	e,a
+   000C 7A                   78 	ld	a,d
+   000D 9C                   79 	sbc	a,h
+   000E 47                   80 	ld	b,a
+   000F 4B                   81 	ld	c,e
+   0010 CB 78                82 	bit	7, b
+   0012 28 04                83 	jr	Z,00103$
+   0014 3E 00                84 	ld	a,#0x00
+   0016 18 08                85 	jr	00104$
+   0018                      86 00103$:
+   0018 F8 02                87 	ldhl	sp,#2
+   001A 4E                   88 	ld	c,(hl)
+   001B 23                   89 	inc	hl
+   001C 23                   90 	inc	hl
+   001D 46                   91 	ld	b,(hl)
+   001E 79                   92 	ld	a,c
+   001F 90                   93 	sub	a, b
+   0020                      94 00104$:
+   0020 5F                   95 	ld	e,a
+   0021 C9                   96 	ret
+                             97 ;C:/gbdk/ZGB/common/src/Fade_b.c:16: void FadeDMG(UINT8 fadeout) {
+                             98 ;	---------------------------------
+                             99 ; Function FadeDMG
+                            100 ; ---------------------------------
+   0022                     101 _FadeDMG::
+   0022 E8 D9               102 	add	sp, #-39
+                            103 ;C:/gbdk/ZGB/common/src/Fade_b.c:18: UINT8* pals[] = {(UINT8*)0xFF47, (UINT8*)0xFF48, (UINT8*)0xFF49};
+   0024 F8 00               104 	ldhl	sp,#0
+   0026 7D                  105 	ld	a,l
+   0027 54                  106 	ld	d,h
+   0028 F8 1F               107 	ldhl	sp,#31
+   002A 22                  108 	ld	(hl+),a
+   002B 72                  109 	ld	(hl),d
+   002C 2B                  110 	dec	hl
+   002D 2A                  111 	ld	a,(hl+)
+   002E 66                  112 	ld	h,(hl)
+   002F 6F                  113 	ld	l,a
+   0030 36 47               114 	ld	(hl),#0x47
+   0032 23                  115 	inc	hl
+   0033 36 FF               116 	ld	(hl),#0xff
+   0035 F8 1F               117 	ldhl	sp,#(32 - 1)
+   0037 5E                  118 	ld	e,(hl)
+   0038 23                  119 	inc	hl
+   0039 56                  120 	ld	d,(hl)
+   003A 21 02 00            121 	ld	hl,#0x0002
+   003D 19                  122 	add	hl,de
+   003E 7D                  123 	ld	a,l
+   003F 54                  124 	ld	d,h
+   0040 F8 25               125 	ldhl	sp,#37
+   0042 22                  126 	ld	(hl+),a
+   0043 72                  127 	ld	(hl),d
+   0044 2B                  128 	dec	hl
+   0045 2A                  129 	ld	a,(hl+)
+   0046 66                  130 	ld	h,(hl)
+   0047 6F                  131 	ld	l,a
+   0048 36 48               132 	ld	(hl),#0x48
+   004A 23                  133 	inc	hl
+   004B 36 FF               134 	ld	(hl),#0xff
+   004D F8 1F               135 	ldhl	sp,#(32 - 1)
+   004F 5E                  136 	ld	e,(hl)
+   0050 23                  137 	inc	hl
+   0051 56                  138 	ld	d,(hl)
+   0052 21 04 00            139 	ld	hl,#0x0004
+   0055 19                  140 	add	hl,de
+   0056 7D                  141 	ld	a,l
+   0057 54                  142 	ld	d,h
+   0058 F8 23               143 	ldhl	sp,#35
+   005A 22                  144 	ld	(hl+),a
+   005B 72                  145 	ld	(hl),d
+   005C 2B                  146 	dec	hl
+   005D 2A                  147 	ld	a,(hl+)
+   005E 66                  148 	ld	h,(hl)
+   005F 6F                  149 	ld	l,a
+   0060 36 49               150 	ld	(hl),#0x49
+   0062 23                  151 	inc	hl
+   0063 36 FF               152 	ld	(hl),#0xff
+                            153 ;C:/gbdk/ZGB/common/src/Fade_b.c:20: UINT8* c = colors;
+   0065 F8 08               154 	ldhl	sp,#8
+   0067 7D                  155 	ld	a,l
+   0068 54                  156 	ld	d,h
+   0069 F8 1B               157 	ldhl	sp,#27
+   006B 22                  158 	ld	(hl+),a
+   006C 72                  159 	ld	(hl),d
+   006D 2B                  160 	dec	hl
+   006E 2A                  161 	ld	a,(hl+)
+   006F 5E                  162 	ld	e, (hl)
+   0070 23                  163 	inc	hl
+   0071 22                  164 	ld	(hl+),a
+   0072 73                  165 	ld	(hl),e
+                            166 ;C:/gbdk/ZGB/common/src/Fade_b.c:24: for(i = 0; i != 3; ++i) {
+   0073 F8 07               167 	ldhl	sp,#7
+   0075 36 00               168 	ld	(hl),#0x00
+   0077                     169 00106$:
+                            170 ;C:/gbdk/ZGB/common/src/Fade_b.c:25: p = (UINT8)*(pals[i]);
+   0077 F8 07               171 	ldhl	sp,#7
+   0079 4E                  172 	ld	c,(hl)
+   007A 06 00               173 	ld	b,#0x00
+   007C CB 21               174 	sla	c
+   007E CB 10               175 	rl	b
+   0080 F8 1F               176 	ldhl	sp,#31
+   0082 2A                  177 	ld	a,(hl+)
+   0083 66                  178 	ld	h,(hl)
+   0084 6F                  179 	ld	l,a
+   0085 09                  180 	add	hl,bc
+   0086 4D                  181 	ld	c,l
+   0087 44                  182 	ld	b,h
+   0088 59                  183 	ld	e, c
+   0089 50                  184 	ld	d, b
+   008A 1A                  185 	ld	a,(de)
+   008B 4F                  186 	ld	c,a
+   008C 13                  187 	inc	de
+   008D 1A                  188 	ld	a,(de)
+   008E 47                  189 	ld	b,a
+   008F 0A                  190 	ld	a,(bc)
+   0090 F8 16               191 	ldhl	sp,#22
+   0092 77                  192 	ld	(hl),a
+                            193 ;C:/gbdk/ZGB/common/src/Fade_b.c:26: for(j = 0; j != 8; j += 2, ++c) {
+   0093 F8 06               194 	ldhl	sp,#6
+   0095 36 00               195 	ld	(hl),#0x00
+   0097 F8 1D               196 	ldhl	sp,#(30 - 1)
+   0099 4E                  197 	ld	c,(hl)
+   009A 23                  198 	inc	hl
+   009B 46                  199 	ld	b,(hl)
+   009C                     200 00104$:
+                            201 ;C:/gbdk/ZGB/common/src/Fade_b.c:27: *c = (DespRight(p, j)) & 0x3;
+   009C F8 06               202 	ldhl	sp,#6
+   009E 7E                  203 	ld	a,(hl)
+   009F F8 21               204 	ldhl	sp,#33
+   00A1 22                  205 	ld	(hl+),a
+   00A2 36 00               206 	ld	(hl),#0x00
+   00A4 F8 16               207 	ldhl	sp,#22
+   00A6 5E                  208 	ld	e,(hl)
+   00A7 16 00               209 	ld	d,#0x00
+   00A9 C5                  210 	push	bc
+   00AA F8 23               211 	ldhl	sp,#35
+   00AC 2A                  212 	ld	a,(hl+)
+   00AD 66                  213 	ld	h,(hl)
+   00AE 6F                  214 	ld	l,a
+   00AF E5                  215 	push	hl
+   00B0 D5                  216 	push	de
+   00B1 CDr00r00            217 	call	_DespRight
+   00B4 E8 04               218 	add	sp, #4
+   00B6 C1                  219 	pop	bc
+   00B7 7B                  220 	ld	a,e
+   00B8 E6 03               221 	and	a, #0x03
+   00BA 5F                  222 	ld	e,a
+   00BB 16 00               223 	ld	d,#0x00
+   00BD 7B                  224 	ld	a,e
+   00BE 02                  225 	ld	(bc),a
+                            226 ;C:/gbdk/ZGB/common/src/Fade_b.c:26: for(j = 0; j != 8; j += 2, ++c) {
+   00BF F8 06               227 	ldhl	sp,#6
+   00C1 34                  228 	inc	(hl)
+   00C2 34                  229 	inc	(hl)
+   00C3 03                  230 	inc	bc
+   00C4 7E                  231 	ld	a,(hl)
+   00C5 D6 08               232 	sub	a, #0x08
+   00C7 C2r9Cr00            233 	jp	NZ,00104$
+                            234 ;C:/gbdk/ZGB/common/src/Fade_b.c:24: for(i = 0; i != 3; ++i) {
+   00CA F8 1D               235 	ldhl	sp,#29
+   00CC 71                  236 	ld	(hl),c
+   00CD 23                  237 	inc	hl
+   00CE 70                  238 	ld	(hl),b
+   00CF F8 07               239 	ldhl	sp,#7
+   00D1 34                  240 	inc	(hl)
+   00D2 7E                  241 	ld	a,(hl)
+   00D3 D6 03               242 	sub	a, #0x03
+   00D5 C2r77r00            243 	jp	NZ,00106$
+                            244 ;C:/gbdk/ZGB/common/src/Fade_b.c:31: for(i = 0; i != 4; ++i) {
+   00D8 F8 1B               245 	ldhl	sp,#(28 - 1)
+   00DA 5E                  246 	ld	e,(hl)
+   00DB 23                  247 	inc	hl
+   00DC 56                  248 	ld	d,(hl)
+   00DD 21 04 00            249 	ld	hl,#0x0004
+   00E0 19                  250 	add	hl,de
+   00E1 7D                  251 	ld	a,l
+   00E2 54                  252 	ld	d,h
+   00E3 F8 21               253 	ldhl	sp,#33
+   00E5 22                  254 	ld	(hl+),a
+   00E6 72                  255 	ld	(hl),d
+   00E7 F8 07               256 	ldhl	sp,#7
+   00E9 36 00               257 	ld	(hl),#0x00
+   00EB                     258 00108$:
+                            259 ;C:/gbdk/ZGB/common/src/Fade_b.c:32: p = fadeout ? 3 - i : i;
+   00EB F8 29               260 	ldhl	sp,#41
+   00ED 7E                  261 	ld	a,(hl)
+   00EE B7                  262 	or	a, a
+   00EF 28 08               263 	jr	Z,00112$
+   00F1 3E 03               264 	ld	a,#0x03
+   00F3 F8 07               265 	ldhl	sp,#7
+   00F5 96                  266 	sub	a, (hl)
+   00F6 4F                  267 	ld	c,a
+   00F7 18 03               268 	jr	00113$
+   00F9                     269 00112$:
+   00F9 F8 07               270 	ldhl	sp,#7
+   00FB 4E                  271 	ld	c,(hl)
+   00FC                     272 00113$:
+                            273 ;C:/gbdk/ZGB/common/src/Fade_b.c:33: c = &colors[1 << 2];
+   00FC F8 21               274 	ldhl	sp,#33
+   00FE 2A                  275 	ld	a,(hl+)
+   00FF 5E                  276 	ld	e, (hl)
+   0100 F8 14               277 	ldhl	sp,#20
+   0102 22                  278 	ld	(hl+),a
+   0103 73                  279 	ld	(hl),e
+                            280 ;C:/gbdk/ZGB/common/src/Fade_b.c:34: *pals[0] = PAL_DEF(FadeInOp(c[0], p), FadeInOp(c[1], p), FadeInOp(c[2], p), FadeInOp(c[3], p));
+   0104 F8 1F               281 	ldhl	sp,#(32 - 1)
+   0106 5E                  282 	ld	e,(hl)
+   0107 23                  283 	inc	hl
+   0108 56                  284 	ld	d,(hl)
+   0109 1A                  285 	ld	a,(de)
+   010A F8 1D               286 	ldhl	sp,#29
+   010C 22                  287 	ld	(hl+),a
+   010D 13                  288 	inc	de
+   010E 1A                  289 	ld	a,(de)
+   010F 77                  290 	ld	(hl),a
+   0110 06 00               291 	ld	b,#0x00
+   0112 F8 14               292 	ldhl	sp,#(21 - 1)
+   0114 5E                  293 	ld	e,(hl)
+   0115 23                  294 	inc	hl
+   0116 56                  295 	ld	d,(hl)
+   0117 21 03 00            296 	ld	hl,#0x0003
+   011A 19                  297 	add	hl,de
+   011B 7D                  298 	ld	a,l
+   011C 54                  299 	ld	d,h
+   011D F8 1B               300 	ldhl	sp,#27
+   011F 22                  301 	ld	(hl+),a
+   0120 72                  302 	ld	(hl),d
+   0121 2B                  303 	dec	hl
+   0122 5E                  304 	ld	e,(hl)
+   0123 23                  305 	inc	hl
+   0124 56                  306 	ld	d,(hl)
+   0125 1A                  307 	ld	a,(de)
+   0126 5F                  308 	ld	e,a
+   0127 16 00               309 	ld	d,#0x00
+   0129 C5                  310 	push	bc
+   012A C5                  311 	push	bc
+   012B D5                  312 	push	de
+   012C CDr00r00            313 	call	_FadeInOp
+   012F E8 04               314 	add	sp, #4
+   0131 C1                  315 	pop	bc
+   0132 7B                  316 	ld	a,e
+   0133 CB 37               317 	swap	a
+   0135 E6 F0               318 	and	a,#0xf0
+   0137 87                  319 	add	a, a
+   0138 87                  320 	add	a, a
+   0139 F8 16               321 	ldhl	sp,#22
+   013B 32                  322 	ld	(hl-),a
+   013C 2B                  323 	dec	hl
+   013D 5E                  324 	ld	e,(hl)
+   013E 23                  325 	inc	hl
+   013F 56                  326 	ld	d,(hl)
+   0140 21 02 00            327 	ld	hl,#0x0002
+   0143 19                  328 	add	hl,de
+   0144 7D                  329 	ld	a,l
+   0145 54                  330 	ld	d,h
+   0146 F8 19               331 	ldhl	sp,#25
+   0148 22                  332 	ld	(hl+),a
+   0149 72                  333 	ld	(hl),d
+   014A 2B                  334 	dec	hl
+   014B 5E                  335 	ld	e,(hl)
+   014C 23                  336 	inc	hl
+   014D 56                  337 	ld	d,(hl)
+   014E 1A                  338 	ld	a,(de)
+   014F 5F                  339 	ld	e,a
+   0150 16 00               340 	ld	d,#0x00
+   0152 C5                  341 	push	bc
+   0153 C5                  342 	push	bc
+   0154 D5                  343 	push	de
+   0155 CDr00r00            344 	call	_FadeInOp
+   0158 E8 04               345 	add	sp, #4
+   015A C1                  346 	pop	bc
+   015B 7B                  347 	ld	a,e
+   015C CB 37               348 	swap	a
+   015E E6 F0               349 	and	a,#0xf0
+   0160 F8 16               350 	ldhl	sp,#22
+   0162 B6                  351 	or	a, (hl)
+   0163 32                  352 	ld	(hl-),a
+   0164 2B                  353 	dec	hl
+   0165 5E                  354 	ld	e,(hl)
+   0166 23                  355 	inc	hl
+   0167 56                  356 	ld	d,(hl)
+   0168 21 01 00            357 	ld	hl,#0x0001
+   016B 19                  358 	add	hl,de
+   016C 7D                  359 	ld	a,l
+   016D 54                  360 	ld	d,h
+   016E F8 17               361 	ldhl	sp,#23
+   0170 22                  362 	ld	(hl+),a
+   0171 72                  363 	ld	(hl),d
+   0172 2B                  364 	dec	hl
+   0173 5E                  365 	ld	e,(hl)
+   0174 23                  366 	inc	hl
+   0175 56                  367 	ld	d,(hl)
+   0176 1A                  368 	ld	a,(de)
+   0177 5F                  369 	ld	e,a
+   0178 16 00               370 	ld	d,#0x00
+   017A C5                  371 	push	bc
+   017B C5                  372 	push	bc
+   017C D5                  373 	push	de
+   017D CDr00r00            374 	call	_FadeInOp
+   0180 E8 04               375 	add	sp, #4
+   0182 C1                  376 	pop	bc
+   0183 7B                  377 	ld	a,e
+   0184 87                  378 	add	a, a
+   0185 87                  379 	add	a, a
+   0186 F8 16               380 	ldhl	sp,#22
+   0188 B6                  381 	or	a, (hl)
+   0189 32                  382 	ld	(hl-),a
+   018A 2B                  383 	dec	hl
+   018B 5E                  384 	ld	e,(hl)
+   018C 23                  385 	inc	hl
+   018D 56                  386 	ld	d,(hl)
+   018E 1A                  387 	ld	a,(de)
+   018F 5F                  388 	ld	e,a
+   0190 16 00               389 	ld	d,#0x00
+   0192 C5                  390 	push	bc
+   0193 C5                  391 	push	bc
+   0194 D5                  392 	push	de
+   0195 CDr00r00            393 	call	_FadeInOp
+   0198 E8 04               394 	add	sp, #4
+   019A C1                  395 	pop	bc
+   019B F8 16               396 	ldhl	sp,#22
+   019D 7E                  397 	ld	a,(hl)
+   019E B3                  398 	or	a, e
+   019F F8 1D               399 	ldhl	sp,#(30 - 1)
+   01A1 5E                  400 	ld	e,(hl)
+   01A2 23                  401 	inc	hl
+   01A3 56                  402 	ld	d,(hl)
+   01A4 12                  403 	ld	(de),a
+                            404 ;C:/gbdk/ZGB/common/src/Fade_b.c:36: *pals[1] = PAL_DEF(FadeInOp(c[2], p), FadeInOp(c[0], p), FadeInOp(c[1], p), FadeInOp(c[3], p));
+   01A5 F8 25               405 	ldhl	sp,#(38 - 1)
+   01A7 5E                  406 	ld	e,(hl)
+   01A8 23                  407 	inc	hl
+   01A9 56                  408 	ld	d,(hl)
+   01AA 1A                  409 	ld	a,(de)
+   01AB F8 1D               410 	ldhl	sp,#29
+   01AD 22                  411 	ld	(hl+),a
+   01AE 13                  412 	inc	de
+   01AF 1A                  413 	ld	a,(de)
+   01B0 32                  414 	ld	(hl-),a
+   01B1 2B                  415 	dec	hl
+   01B2 2B                  416 	dec	hl
+   01B3 5E                  417 	ld	e,(hl)
+   01B4 23                  418 	inc	hl
+   01B5 56                  419 	ld	d,(hl)
+   01B6 1A                  420 	ld	a,(de)
+   01B7 5F                  421 	ld	e,a
+   01B8 16 00               422 	ld	d,#0x00
+   01BA C5                  423 	push	bc
+   01BB C5                  424 	push	bc
+   01BC D5                  425 	push	de
+   01BD CDr00r00            426 	call	_FadeInOp
+   01C0 E8 04               427 	add	sp, #4
+   01C2 C1                  428 	pop	bc
+   01C3 7B                  429 	ld	a,e
+   01C4 CB 37               430 	swap	a
+   01C6 E6 F0               431 	and	a,#0xf0
+   01C8 87                  432 	add	a, a
+   01C9 87                  433 	add	a, a
+   01CA F8 16               434 	ldhl	sp,#22
+   01CC 22                  435 	ld	(hl+),a
+   01CD 5E                  436 	ld	e,(hl)
+   01CE 23                  437 	inc	hl
+   01CF 56                  438 	ld	d,(hl)
+   01D0 1A                  439 	ld	a,(de)
+   01D1 5F                  440 	ld	e,a
+   01D2 16 00               441 	ld	d,#0x00
+   01D4 C5                  442 	push	bc
+   01D5 C5                  443 	push	bc
+   01D6 D5                  444 	push	de
+   01D7 CDr00r00            445 	call	_FadeInOp
+   01DA E8 04               446 	add	sp, #4
+   01DC C1                  447 	pop	bc
+   01DD 7B                  448 	ld	a,e
+   01DE CB 37               449 	swap	a
+   01E0 E6 F0               450 	and	a,#0xf0
+   01E2 F8 16               451 	ldhl	sp,#22
+   01E4 B6                  452 	or	a, (hl)
+   01E5 32                  453 	ld	(hl-),a
+   01E6 2B                  454 	dec	hl
+   01E7 5E                  455 	ld	e,(hl)
+   01E8 23                  456 	inc	hl
+   01E9 56                  457 	ld	d,(hl)
+   01EA 1A                  458 	ld	a,(de)
+   01EB 5F                  459 	ld	e,a
+   01EC 16 00               460 	ld	d,#0x00
+   01EE C5                  461 	push	bc
+   01EF C5                  462 	push	bc
+   01F0 D5                  463 	push	de
+   01F1 CDr00r00            464 	call	_FadeInOp
+   01F4 E8 04               465 	add	sp, #4
+   01F6 C1                  466 	pop	bc
+   01F7 7B                  467 	ld	a,e
+   01F8 87                  468 	add	a, a
+   01F9 87                  469 	add	a, a
+   01FA F8 16               470 	ldhl	sp,#22
+   01FC B6                  471 	or	a, (hl)
+   01FD 77                  472 	ld	(hl),a
+   01FE F8 19               473 	ldhl	sp,#(26 - 1)
+   0200 5E                  474 	ld	e,(hl)
+   0201 23                  475 	inc	hl
+   0202 56                  476 	ld	d,(hl)
+   0203 1A                  477 	ld	a,(de)
+   0204 5F                  478 	ld	e,a
+   0205 16 00               479 	ld	d,#0x00
+   0207 C5                  480 	push	bc
+   0208 C5                  481 	push	bc
+   0209 D5                  482 	push	de
+   020A CDr00r00            483 	call	_FadeInOp
+   020D E8 04               484 	add	sp, #4
+   020F C1                  485 	pop	bc
+   0210 F8 16               486 	ldhl	sp,#22
+   0212 7E                  487 	ld	a,(hl)
+   0213 B3                  488 	or	a, e
+   0214 F8 1D               489 	ldhl	sp,#(30 - 1)
+   0216 5E                  490 	ld	e,(hl)
+   0217 23                  491 	inc	hl
+   0218 56                  492 	ld	d,(hl)
+   0219 12                  493 	ld	(de),a
+                            494 ;C:/gbdk/ZGB/common/src/Fade_b.c:37: *pals[2] = PAL_DEF(FadeInOp(c[2], p), FadeInOp(c[0], p), FadeInOp(c[1], p), FadeInOp(c[3], p));
+   021A F8 23               495 	ldhl	sp,#(36 - 1)
+   021C 5E                  496 	ld	e,(hl)
+   021D 23                  497 	inc	hl
+   021E 56                  498 	ld	d,(hl)
+   021F 1A                  499 	ld	a,(de)
+   0220 F8 1D               500 	ldhl	sp,#29
+   0222 22                  501 	ld	(hl+),a
+   0223 13                  502 	inc	de
+   0224 1A                  503 	ld	a,(de)
+   0225 32                  504 	ld	(hl-),a
+   0226 2B                  505 	dec	hl
+   0227 2B                  506 	dec	hl
+   0228 5E                  507 	ld	e,(hl)
+   0229 23                  508 	inc	hl
+   022A 56                  509 	ld	d,(hl)
+   022B 1A                  510 	ld	a,(de)
+   022C 5F                  511 	ld	e,a
+   022D 16 00               512 	ld	d,#0x00
+   022F C5                  513 	push	bc
+   0230 C5                  514 	push	bc
+   0231 D5                  515 	push	de
+   0232 CDr00r00            516 	call	_FadeInOp
+   0235 E8 04               517 	add	sp, #4
+   0237 C1                  518 	pop	bc
+   0238 7B                  519 	ld	a,e
+   0239 CB 37               520 	swap	a
+   023B E6 F0               521 	and	a,#0xf0
+   023D 87                  522 	add	a, a
+   023E 87                  523 	add	a, a
+   023F F8 16               524 	ldhl	sp,#22
+   0241 22                  525 	ld	(hl+),a
+   0242 5E                  526 	ld	e,(hl)
+   0243 23                  527 	inc	hl
+   0244 56                  528 	ld	d,(hl)
+   0245 1A                  529 	ld	a,(de)
+   0246 5F                  530 	ld	e,a
+   0247 16 00               531 	ld	d,#0x00
+   0249 C5                  532 	push	bc
+   024A C5                  533 	push	bc
+   024B D5                  534 	push	de
+   024C CDr00r00            535 	call	_FadeInOp
+   024F E8 04               536 	add	sp, #4
+   0251 C1                  537 	pop	bc
+   0252 7B                  538 	ld	a,e
+   0253 CB 37               539 	swap	a
+   0255 E6 F0               540 	and	a,#0xf0
+   0257 F8 16               541 	ldhl	sp,#22
+   0259 B6                  542 	or	a, (hl)
+   025A 23                  543 	inc	hl
+   025B 32                  544 	ld	(hl-),a
+   025C 2B                  545 	dec	hl
+   025D 2B                  546 	dec	hl
+   025E 5E                  547 	ld	e,(hl)
+   025F 23                  548 	inc	hl
+   0260 56                  549 	ld	d,(hl)
+   0261 1A                  550 	ld	a,(de)
+   0262 5F                  551 	ld	e,a
+   0263 16 00               552 	ld	d,#0x00
+   0265 C5                  553 	push	bc
+   0266 C5                  554 	push	bc
+   0267 D5                  555 	push	de
+   0268 CDr00r00            556 	call	_FadeInOp
+   026B E8 04               557 	add	sp, #4
+   026D C1                  558 	pop	bc
+   026E 7B                  559 	ld	a,e
+   026F 87                  560 	add	a, a
+   0270 87                  561 	add	a, a
+   0271 F8 17               562 	ldhl	sp,#23
+   0273 B6                  563 	or	a, (hl)
+   0274 77                  564 	ld	(hl),a
+   0275 F8 19               565 	ldhl	sp,#(26 - 1)
+   0277 5E                  566 	ld	e,(hl)
+   0278 23                  567 	inc	hl
+   0279 56                  568 	ld	d,(hl)
+   027A 1A                  569 	ld	a,(de)
+   027B 5F                  570 	ld	e,a
+   027C 16 00               571 	ld	d,#0x00
+   027E C5                  572 	push	bc
+   027F D5                  573 	push	de
+   0280 CDr00r00            574 	call	_FadeInOp
+   0283 E8 04               575 	add	sp, #4
+   0285 F8 17               576 	ldhl	sp,#23
+   0287 7E                  577 	ld	a,(hl)
+   0288 B3                  578 	or	a, e
+   0289 4F                  579 	ld	c,a
+   028A F8 1D               580 	ldhl	sp,#29
+   028C 2A                  581 	ld	a,(hl+)
+   028D 66                  582 	ld	h,(hl)
+   028E 6F                  583 	ld	l,a
+   028F 71                  584 	ld	(hl),c
+                            585 ;C:/gbdk/ZGB/common/src/Fade_b.c:38: delay(50);
+   0290 21 32 00            586 	ld	hl,#0x0032
+   0293 E5                  587 	push	hl
+   0294 CDr00r00            588 	call	_delay
+   0297 E8 02               589 	add	sp, #2
+                            590 ;C:/gbdk/ZGB/common/src/Fade_b.c:31: for(i = 0; i != 4; ++i) {
+   0299 F8 07               591 	ldhl	sp,#7
+   029B 34                  592 	inc	(hl)
+   029C 7E                  593 	ld	a,(hl)
+   029D D6 04               594 	sub	a, #0x04
+   029F C2rEBr00            595 	jp	NZ,00108$
+   02A2 E8 27               596 	add	sp, #39
+   02A4 C9                  597 	ret
+                            598 ;C:/gbdk/ZGB/common/src/Fade_b.c:42: void FadeInDMG() {
+                            599 ;	---------------------------------
+                            600 ; Function FadeInDMG
+                            601 ; ---------------------------------
+   02A5                     602 _FadeInDMG::
+                            603 ;C:/gbdk/ZGB/common/src/Fade_b.c:43: FadeDMG(0);
+   02A5 AF                  604 	xor	a, a
+   02A6 F5                  605 	push	af
+   02A7 33                  606 	inc	sp
+   02A8 CDr22r00            607 	call	_FadeDMG
+   02AB 33                  608 	inc	sp
+   02AC C9                  609 	ret
+                            610 ;C:/gbdk/ZGB/common/src/Fade_b.c:46: UWORD UpdateColor(UINT8 i, UWORD col) {
+                            611 ;	---------------------------------
+                            612 ; Function UpdateColor
+                            613 ; ---------------------------------
+   02AD                     614 _UpdateColor::
+   02AD E8 FC               615 	add	sp, #-4
+                            616 ;C:/gbdk/ZGB/common/src/Fade_b.c:48: return RGB2(PAL_RED(col) | DespRight(0x1F, 5 - i), PAL_GREEN(col) | DespRight(0x1F, 5 - i), PAL_BLUE(col) | DespRight(0x1F, 5 - i));
+   02AF F8 07               617 	ldhl	sp,#7
+   02B1 7E                  618 	ld	a,(hl)
+   02B2 E6 1F               619 	and	a, #0x1f
+   02B4 F8 00               620 	ldhl	sp,#0
+   02B6 22                  621 	ld	(hl+),a
+   02B7 36 00               622 	ld	(hl),#0x00
+   02B9 F8 06               623 	ldhl	sp,#6
+   02BB 4E                  624 	ld	c,(hl)
+   02BC 06 00               625 	ld	b,#0x00
+   02BE 3E 05               626 	ld	a,#0x05
+   02C0 91                  627 	sub	a, c
+   02C1 4F                  628 	ld	c,a
+   02C2 3E 00               629 	ld	a,#0x00
+   02C4 98                  630 	sbc	a, b
+   02C5 47                  631 	ld	b,a
+   02C6 C5                  632 	push	bc
+   02C7 C5                  633 	push	bc
+   02C8 21 1F 00            634 	ld	hl,#0x001f
+   02CB E5                  635 	push	hl
+   02CC CDr00r00            636 	call	_DespRight
+   02CF E8 04               637 	add	sp, #4
+   02D1 C1                  638 	pop	bc
+   02D2 F8 00               639 	ldhl	sp,#0
+   02D4 7E                  640 	ld	a,(hl)
+   02D5 B3                  641 	or	a, e
+   02D6 22                  642 	ld	(hl+),a
+   02D7 7E                  643 	ld	a,(hl)
+   02D8 B2                  644 	or	a, d
+   02D9 77                  645 	ld	(hl),a
+   02DA F8 07               646 	ldhl	sp,#(8 - 1)
+   02DC 5E                  647 	ld	e,(hl)
+   02DD 23                  648 	inc	hl
+   02DE 56                  649 	ld	d,(hl)
+   02DF CB 3A               650 	srl	d
+   02E1 CB 1B               651 	rr	e
+   02E3 CB 3A               652 	srl	d
+   02E5 CB 1B               653 	rr	e
+   02E7 CB 3A               654 	srl	d
+   02E9 CB 1B               655 	rr	e
+   02EB CB 3A               656 	srl	d
+   02ED CB 1B               657 	rr	e
+   02EF CB 3A               658 	srl	d
+   02F1 CB 1B               659 	rr	e
+   02F3 7B                  660 	ld	a,e
+   02F4 E6 1F               661 	and	a, #0x1f
+   02F6 F8 02               662 	ldhl	sp,#2
+   02F8 22                  663 	ld	(hl+),a
+   02F9 36 00               664 	ld	(hl),#0x00
+   02FB C5                  665 	push	bc
+   02FC C5                  666 	push	bc
+   02FD 21 1F 00            667 	ld	hl,#0x001f
+   0300 E5                  668 	push	hl
+   0301 CDr00r00            669 	call	_DespRight
+   0304 E8 04               670 	add	sp, #4
+   0306 C1                  671 	pop	bc
+   0307 7B                  672 	ld	a,e
+   0308 F8 02               673 	ldhl	sp,#2
+   030A B6                  674 	or	a, (hl)
+   030B 5F                  675 	ld	e,a
+   030C 7A                  676 	ld	a,d
+   030D 23                  677 	inc	hl
+   030E B6                  678 	or	a, (hl)
+   030F 57                  679 	ld	d,a
+   0310 CB 23               680 	sla	e
+   0312 CB 12               681 	rl	d
+   0314 CB 23               682 	sla	e
+   0316 CB 12               683 	rl	d
+   0318 CB 23               684 	sla	e
+   031A CB 12               685 	rl	d
+   031C CB 23               686 	sla	e
+   031E CB 12               687 	rl	d
+   0320 CB 23               688 	sla	e
+   0322 CB 12               689 	rl	d
+   0324 F8 00               690 	ldhl	sp,#0
+   0326 7E                  691 	ld	a,(hl)
+   0327 B3                  692 	or	a, e
+   0328 23                  693 	inc	hl
+   0329 23                  694 	inc	hl
+   032A 32                  695 	ld	(hl-),a
+   032B 7E                  696 	ld	a,(hl)
+   032C B2                  697 	or	a, d
+   032D 23                  698 	inc	hl
+   032E 23                  699 	inc	hl
+   032F 77                  700 	ld	(hl),a
+   0330 F8 08               701 	ldhl	sp,#8
+   0332 7E                  702 	ld	a,(hl)
+   0333 0F                  703 	rrca
+   0334 0F                  704 	rrca
+   0335 E6 3F               705 	and	a,#0x3f
+   0337 57                  706 	ld	d,a
+   0338 1E 00               707 	ld	e,#0x00
+   033A 7A                  708 	ld	a,d
+   033B E6 1F               709 	and	a, #0x1f
+   033D 57                  710 	ld	d,a
+   033E 1E 00               711 	ld	e,#0x00
+   0340 D5                  712 	push	de
+   0341 C5                  713 	push	bc
+   0342 21 1F 00            714 	ld	hl,#0x001f
+   0345 E5                  715 	push	hl
+   0346 CDr00r00            716 	call	_DespRight
+   0349 E8 04               717 	add	sp, #4
+   034B 4B                  718 	ld	c,e
+   034C 42                  719 	ld	b,d
+   034D D1                  720 	pop	de
+   034E 7A                  721 	ld	a,d
+   034F B1                  722 	or	a, c
+   0350 57                  723 	ld	d,a
+   0351 7B                  724 	ld	a,e
+   0352 B0                  725 	or	a, b
+   0353 4F                  726 	ld	c,a
+   0354 0E 00               727 	ld	c,#0x00
+   0356 CB 21               728 	sla	c
+   0358 CB 12               729 	rl	d
+   035A CB 21               730 	sla	c
+   035C CB 12               731 	rl	d
+   035E F8 02               732 	ldhl	sp,#2
+   0360 7E                  733 	ld	a,(hl)
+   0361 B1                  734 	or	a, c
+   0362 5F                  735 	ld	e,a
+   0363 23                  736 	inc	hl
+   0364 7E                  737 	ld	a,(hl)
+   0365 B2                  738 	or	a, d
+   0366 57                  739 	ld	d,a
+   0367 E8 04               740 	add	sp, #4
+   0369 C9                  741 	ret
+                            742 ;C:/gbdk/ZGB/common/src/Fade_b.c:51: void FadeStepColor(UINT8 i) {
+                            743 ;	---------------------------------
+                            744 ; Function FadeStepColor
+                            745 ; ---------------------------------
+   036A                     746 _FadeStepColor::
+   036A E8 DC               747 	add	sp, #-36
+                            748 ;C:/gbdk/ZGB/common/src/Fade_b.c:55: UWORD* col = ZGB_Fading_BPal;
+   036C 01r01r00            749 	ld	bc,#_ZGB_Fading_BPal
+                            750 ;C:/gbdk/ZGB/common/src/Fade_b.c:56: UWORD* col_s = ZGB_Fading_SPal;
+   036F F8 10               751 	ldhl	sp,#16
+   0371 36r41               752 	ld	(hl),#<(_ZGB_Fading_SPal)
+   0373 23                  753 	inc	hl
+   0374 36s00               754 	ld	(hl),#>(_ZGB_Fading_SPal)
+                            755 ;C:/gbdk/ZGB/common/src/Fade_b.c:58: for(pal = 0; pal < 8; pal ++) {
+   0376 F8 00               756 	ldhl	sp,#0
+   0378 7D                  757 	ld	a,l
+   0379 54                  758 	ld	d,h
+   037A F8 18               759 	ldhl	sp,#24
+   037C 22                  760 	ld	(hl+),a
+   037D 72                  761 	ld	(hl),d
+   037E F8 08               762 	ldhl	sp,#8
+   0380 7D                  763 	ld	a,l
+   0381 54                  764 	ld	d,h
+   0382 F8 14               765 	ldhl	sp,#20
+   0384 22                  766 	ld	(hl+),a
+   0385 72                  767 	ld	(hl),d
+   0386 F8 18               768 	ldhl	sp,#24
+   0388 2A                  769 	ld	a,(hl+)
+   0389 5E                  770 	ld	e, (hl)
+   038A 23                  771 	inc	hl
+   038B 22                  772 	ld	(hl+),a
+   038C 73                  773 	ld	(hl),e
+   038D F8 14               774 	ldhl	sp,#20
+   038F 2A                  775 	ld	a,(hl+)
+   0390 5E                  776 	ld	e, (hl)
+   0391 F8 22               777 	ldhl	sp,#34
+   0393 22                  778 	ld	(hl+),a
+   0394 73                  779 	ld	(hl),e
+   0395 F8 13               780 	ldhl	sp,#19
+   0397 36 00               781 	ld	(hl),#0x00
+                            782 ;C:/gbdk/ZGB/common/src/Fade_b.c:59: for(c = 0; c < 4; ++c, ++col, ++col_s) {
+   0399                     783 00109$:
+   0399 F8 12               784 	ldhl	sp,#18
+   039B 36 00               785 	ld	(hl),#0x00
+   039D F8 20               786 	ldhl	sp,#32
+   039F 71                  787 	ld	(hl),c
+   03A0 23                  788 	inc	hl
+   03A1 70                  789 	ld	(hl),b
+   03A2 F8 10               790 	ldhl	sp,#16
+   03A4 2A                  791 	ld	a,(hl+)
+   03A5 5E                  792 	ld	e, (hl)
+   03A6 F8 16               793 	ldhl	sp,#22
+   03A8 22                  794 	ld	(hl+),a
+   03A9 73                  795 	ld	(hl),e
+   03AA                     796 00103$:
+                            797 ;C:/gbdk/ZGB/common/src/Fade_b.c:60: palette[c] = UpdateColor(i, *col);
+   03AA F8 12               798 	ldhl	sp,#18
+   03AC 4E                  799 	ld	c,(hl)
+   03AD 06 00               800 	ld	b,#0x00
+   03AF CB 21               801 	sla	c
+   03B1 CB 10               802 	rl	b
+   03B3 F8 1E               803 	ldhl	sp,#30
+   03B5 71                  804 	ld	(hl),c
+   03B6 23                  805 	inc	hl
+   03B7 70                  806 	ld	(hl),b
+   03B8 2B                  807 	dec	hl
+   03B9 5E                  808 	ld	e,(hl)
+   03BA 23                  809 	inc	hl
+   03BB 56                  810 	ld	d,(hl)
+   03BC F8 18               811 	ldhl	sp,#24
+   03BE 2A                  812 	ld	a,(hl+)
+   03BF 66                  813 	ld	h,(hl)
+   03C0 6F                  814 	ld	l,a
+   03C1 19                  815 	add	hl,de
+   03C2 7D                  816 	ld	a,l
+   03C3 54                  817 	ld	d,h
+   03C4 F8 1C               818 	ldhl	sp,#28
+   03C6 22                  819 	ld	(hl+),a
+   03C7 72                  820 	ld	(hl),d
+   03C8 F8 20               821 	ldhl	sp,#(33 - 1)
+   03CA 5E                  822 	ld	e,(hl)
+   03CB 23                  823 	inc	hl
+   03CC 56                  824 	ld	d,(hl)
+   03CD 1A                  825 	ld	a,(de)
+   03CE 4F                  826 	ld	c,a
+   03CF 13                  827 	inc	de
+   03D0 1A                  828 	ld	a,(de)
+   03D1 47                  829 	ld	b,a
+   03D2 C5                  830 	push	bc
+   03D3 F8 28               831 	ldhl	sp,#40
+   03D5 7E                  832 	ld	a,(hl)
+   03D6 F5                  833 	push	af
+   03D7 33                  834 	inc	sp
+   03D8 CDrADr02            835 	call	_UpdateColor
+   03DB E8 03               836 	add	sp, #3
+   03DD 4B                  837 	ld	c,e
+   03DE 42                  838 	ld	b,d
+   03DF F8 1C               839 	ldhl	sp,#28
+   03E1 2A                  840 	ld	a,(hl+)
+   03E2 66                  841 	ld	h,(hl)
+   03E3 6F                  842 	ld	l,a
+   03E4 71                  843 	ld	(hl),c
+   03E5 23                  844 	inc	hl
+   03E6 70                  845 	ld	(hl),b
+                            846 ;C:/gbdk/ZGB/common/src/Fade_b.c:61: palette_s[c] = UpdateColor(i, *col_s);
+   03E7 F8 1E               847 	ldhl	sp,#(31 - 1)
+   03E9 5E                  848 	ld	e,(hl)
+   03EA 23                  849 	inc	hl
+   03EB 56                  850 	ld	d,(hl)
+   03EC F8 14               851 	ldhl	sp,#20
+   03EE 2A                  852 	ld	a,(hl+)
+   03EF 66                  853 	ld	h,(hl)
+   03F0 6F                  854 	ld	l,a
+   03F1 19                  855 	add	hl,de
+   03F2 7D                  856 	ld	a,l
+   03F3 54                  857 	ld	d,h
+   03F4 F8 1C               858 	ldhl	sp,#28
+   03F6 22                  859 	ld	(hl+),a
+   03F7 72                  860 	ld	(hl),d
+   03F8 F8 16               861 	ldhl	sp,#(23 - 1)
+   03FA 5E                  862 	ld	e,(hl)
+   03FB 23                  863 	inc	hl
+   03FC 56                  864 	ld	d,(hl)
+   03FD 1A                  865 	ld	a,(de)
+   03FE 4F                  866 	ld	c,a
+   03FF 13                  867 	inc	de
+   0400 1A                  868 	ld	a,(de)
+   0401 47                  869 	ld	b,a
+   0402 C5                  870 	push	bc
+   0403 F8 28               871 	ldhl	sp,#40
+   0405 7E                  872 	ld	a,(hl)
+   0406 F5                  873 	push	af
+   0407 33                  874 	inc	sp
+   0408 CDrADr02            875 	call	_UpdateColor
+   040B E8 03               876 	add	sp, #3
+   040D 4B                  877 	ld	c,e
+   040E 42                  878 	ld	b,d
+   040F F8 1C               879 	ldhl	sp,#28
+   0411 2A                  880 	ld	a,(hl+)
+   0412 66                  881 	ld	h,(hl)
+   0413 6F                  882 	ld	l,a
+   0414 71                  883 	ld	(hl),c
+   0415 23                  884 	inc	hl
+   0416 70                  885 	ld	(hl),b
+                            886 ;C:/gbdk/ZGB/common/src/Fade_b.c:59: for(c = 0; c < 4; ++c, ++col, ++col_s) {
+   0417 F8 12               887 	ldhl	sp,#18
+   0419 34                  888 	inc	(hl)
+   041A F8 20               889 	ldhl	sp,#(33 - 1)
+   041C 5E                  890 	ld	e,(hl)
+   041D 23                  891 	inc	hl
+   041E 56                  892 	ld	d,(hl)
+   041F 21 02 00            893 	ld	hl,#0x0002
+   0422 19                  894 	add	hl,de
+   0423 7D                  895 	ld	a,l
+   0424 54                  896 	ld	d,h
+   0425 F8 20               897 	ldhl	sp,#32
+   0427 22                  898 	ld	(hl+),a
+   0428 72                  899 	ld	(hl),d
+   0429 F8 16               900 	ldhl	sp,#(23 - 1)
+   042B 5E                  901 	ld	e,(hl)
+   042C 23                  902 	inc	hl
+   042D 56                  903 	ld	d,(hl)
+   042E 21 02 00            904 	ld	hl,#0x0002
+   0431 19                  905 	add	hl,de
+   0432 7D                  906 	ld	a,l
+   0433 54                  907 	ld	d,h
+   0434 F8 16               908 	ldhl	sp,#22
+   0436 22                  909 	ld	(hl+),a
+   0437 72                  910 	ld	(hl),d
+   0438 F8 12               911 	ldhl	sp,#18
+   043A 7E                  912 	ld	a,(hl)
+   043B D6 04               913 	sub	a, #0x04
+   043D DArAAr03            914 	jp	C,00103$
+                            915 ;C:/gbdk/ZGB/common/src/Fade_b.c:63: set_bkg_palette(pal, 1, palette);
+   0440 F8 20               916 	ldhl	sp,#(33 - 1)
+   0442 4E                  917 	ld	c,(hl)
+   0443 23                  918 	inc	hl
+   0444 46                  919 	ld	b,(hl)
+   0445 F8 16               920 	ldhl	sp,#22
+   0447 2A                  921 	ld	a,(hl+)
+   0448 5E                  922 	ld	e, (hl)
+   0449 F8 10               923 	ldhl	sp,#16
+   044B 22                  924 	ld	(hl+),a
+   044C 73                  925 	ld	(hl),e
+   044D F8 1A               926 	ldhl	sp,#(27 - 1)
+   044F 5E                  927 	ld	e,(hl)
+   0450 23                  928 	inc	hl
+   0451 56                  929 	ld	d,(hl)
+   0452 C5                  930 	push	bc
+   0453 D5                  931 	push	de
+   0454 3E 01               932 	ld	a,#0x01
+   0456 F5                  933 	push	af
+   0457 33                  934 	inc	sp
+   0458 F8 18               935 	ldhl	sp,#24
+   045A 7E                  936 	ld	a,(hl)
+   045B F5                  937 	push	af
+   045C 33                  938 	inc	sp
+   045D CDr00r00            939 	call	_set_bkg_palette
+   0460 E8 04               940 	add	sp, #4
+   0462 C1                  941 	pop	bc
+                            942 ;C:/gbdk/ZGB/common/src/Fade_b.c:64: set_sprite_palette(pal, 1, palette_s);
+   0463 F8 22               943 	ldhl	sp,#(35 - 1)
+   0465 5E                  944 	ld	e,(hl)
+   0466 23                  945 	inc	hl
+   0467 56                  946 	ld	d,(hl)
+   0468 C5                  947 	push	bc
+   0469 D5                  948 	push	de
+   046A 3E 01               949 	ld	a,#0x01
+   046C F5                  950 	push	af
+   046D 33                  951 	inc	sp
+   046E F8 18               952 	ldhl	sp,#24
+   0470 7E                  953 	ld	a,(hl)
+   0471 F5                  954 	push	af
+   0472 33                  955 	inc	sp
+   0473 CDr00r00            956 	call	_set_sprite_palette
+   0476 E8 04               957 	add	sp, #4
+   0478 C1                  958 	pop	bc
+                            959 ;C:/gbdk/ZGB/common/src/Fade_b.c:58: for(pal = 0; pal < 8; pal ++) {
+   0479 F8 13               960 	ldhl	sp,#19
+   047B 34                  961 	inc	(hl)
+   047C 7E                  962 	ld	a,(hl)
+   047D D6 08               963 	sub	a, #0x08
+   047F DAr99r03            964 	jp	C,00109$
+                            965 ;C:/gbdk/ZGB/common/src/Fade_b.c:66: delay(20);
+   0482 21 14 00            966 	ld	hl,#0x0014
+   0485 E5                  967 	push	hl
+   0486 CDr00r00            968 	call	_delay
+   0489 E8 02               969 	add	sp, #2
+   048B E8 24               970 	add	sp, #36
+   048D C9                  971 	ret
+                            972 ;C:/gbdk/ZGB/common/src/Fade_b.c:69: void FadeInCOLOR() {
+                            973 ;	---------------------------------
+                            974 ; Function FadeInCOLOR
+                            975 ; ---------------------------------
+   048E                     976 _FadeInCOLOR::
+                            977 ;C:/gbdk/ZGB/common/src/Fade_b.c:71: for(i = 0; i != 6; i ++) {
+   048E 06 00               978 	ld	b,#0x00
+   0490                     979 00102$:
+                            980 ;C:/gbdk/ZGB/common/src/Fade_b.c:72: FadeStepColor(i);	
+   0490 C5                  981 	push	bc
+   0491 C5                  982 	push	bc
+   0492 33                  983 	inc	sp
+   0493 CDr6Ar03            984 	call	_FadeStepColor
+   0496 33                  985 	inc	sp
+   0497 C1                  986 	pop	bc
+                            987 ;C:/gbdk/ZGB/common/src/Fade_b.c:71: for(i = 0; i != 6; i ++) {
+   0498 04                  988 	inc	b
+   0499 78                  989 	ld	a,b
+   049A D6 06               990 	sub	a, #0x06
+   049C 20 F2               991 	jr	NZ,00102$
+   049E C9                  992 	ret
+                            993 ;C:/gbdk/ZGB/common/src/Fade_b.c:76: void FadeIn_b() {
+                            994 ;	---------------------------------
+                            995 ; Function FadeIn_b
+                            996 ; ---------------------------------
+   049F                     997 _FadeIn_b::
+                            998 ;C:/gbdk/ZGB/common/src/Fade_b.c:82: FadeInDMG();
+   049F C3rA5r02            999 	jp	_FadeInDMG
+                           1000 ;C:/gbdk/ZGB/common/src/Fade_b.c:85: void FadeOutDMG() {
+                           1001 ;	---------------------------------
+                           1002 ; Function FadeOutDMG
+                           1003 ; ---------------------------------
+   04A2                    1004 _FadeOutDMG::
+                           1005 ;C:/gbdk/ZGB/common/src/Fade_b.c:86: FadeDMG(1);
+   04A2 3E 01              1006 	ld	a,#0x01
+   04A4 F5                 1007 	push	af
+   04A5 33                 1008 	inc	sp
+   04A6 CDr22r00           1009 	call	_FadeDMG
+   04A9 33                 1010 	inc	sp
+   04AA C9                 1011 	ret
+                           1012 ;C:/gbdk/ZGB/common/src/Fade_b.c:89: void FadeOutColor() {
+                           1013 ;	---------------------------------
+                           1014 ; Function FadeOutColor
+                           1015 ; ---------------------------------
+   04AB                    1016 _FadeOutColor::
+                           1017 ;C:/gbdk/ZGB/common/src/Fade_b.c:91: for(i = 5; i != 0xFF; -- i) {
+   04AB 06 05              1018 	ld	b,#0x05
+   04AD                    1019 00102$:
+                           1020 ;C:/gbdk/ZGB/common/src/Fade_b.c:92: FadeStepColor(i);	
+   04AD C5                 1021 	push	bc
+   04AE C5                 1022 	push	bc
+   04AF 33                 1023 	inc	sp
+   04B0 CDr6Ar03           1024 	call	_FadeStepColor
+   04B3 33                 1025 	inc	sp
+   04B4 C1                 1026 	pop	bc
+                           1027 ;C:/gbdk/ZGB/common/src/Fade_b.c:91: for(i = 5; i != 0xFF; -- i) {
+   04B5 05                 1028 	dec	b
+   04B6 78                 1029 	ld	a,b
+   04B7 3C                 1030 	inc	a
+   04B8 20 F3              1031 	jr	NZ,00102$
+   04BA C9                 1032 	ret
+                           1033 ;C:/gbdk/ZGB/common/src/Fade_b.c:96: void FadeOut_b() {
+                           1034 ;	---------------------------------
+                           1035 ; Function FadeOut_b
+                           1036 ; ---------------------------------
+   04BB                    1037 _FadeOut_b::
+                           1038 ;C:/gbdk/ZGB/common/src/Fade_b.c:102: FadeOutDMG();
+   04BB C3rA2r04           1039 	jp	_FadeOutDMG
+                           1040 	.area _CODE_1
+                           1041 	.area _CABS (ABS)

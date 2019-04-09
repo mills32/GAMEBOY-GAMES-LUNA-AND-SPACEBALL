@@ -1,0 +1,107 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 1.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+    .__.$$$.                                                    =  2710 L
+    .__.ABS.                                                    =  0000 G
+    .__.CPU.                                                    =  0000 L
+    .__.H$L.                                                    =  0000 L
+  0 _CPU_TRANSFER                                                  0C7E GR
+  0 _ClampScrollLimits                                             030A GR
+  0 _DMA_TRANSFER                                                  0C62 GR
+  0 _EditCollision                                                 0C42 GR
+  0 _EditCollisionDown                                             0C52 GR
+  0 _GetScrollTile                                                 0B06 GR
+  0 _GetScrollTilePtr                                              0ADD GR
+    _GetTileReplacement                                            **** GX
+  0 _InitScroll                                                    0487 GR
+  0 _InitWindow                                                    02B5 GR
+  0 _MoveScroll                                                    0966 GR
+  0 _Move_Parallax                                                 0D3F GR
+  1 _ParaOffset                                                    0233 GR
+  1 _ParaOffsetX                                                   022F GR
+  1 _ParaOffsetY                                                   0231 GR
+  1 _Para_Tiles                                                    023A GR
+  1 _Parallax                                                      0236 GR
+  1 _Parallax_Columns                                              0239 GR
+    _Parallax_TableX                                               **** GX
+    _Parallax_TableY                                               **** GX
+    _PopBank                                                       **** GX
+    _PushBank                                                      **** GX
+  0 _RefreshScroll                                                 08BD GR
+    _Rtiles                                                     =  D000 G
+  1 _STAT                                                          023C GR
+  1 _SX                                                            0237 GR
+  1 _SY                                                            0238 GR
+  0 _ScrollFindTile                                                0B4F GR
+  0 _ScrollSetMap                                                  03B0 GR
+  0 _ScrollUpdateColumn                                            0820 GR
+  0 _ScrollUpdateColumnR                                           0741 GR
+  0 _ScrollUpdateColumnWithDelay                                   07B4 GR
+  0 _ScrollUpdateRow                                               068B GR
+  0 _ScrollUpdateRowR                                              05B4 GR
+  0 _ScrollUpdateRowWithDelay                                      061F GR
+  0 _Set_Parallax                                                  0CE8 GR
+    _SpriteManagerAdd                                              **** GX
+  0 _UPDATE_TILE                                                   0028 GR
+  0 _Update_Parallax                                               0CD4 GR
+  1 _ZGB_Parallax                                                  022E GR
+  0 _ZGB_SET_TILE                                                  0000 GR
+  0 _ZInitScrollTilesColor                                         0221 GR
+    __mulint                                                       **** GX
+  1 _clamp_enabled                                                 022D GR
+  1 _current_vbl_count                                             022B GR
+  1 _pbank                                                         0235 GR
+  1 _pending_h_cmap                                                0222 GR
+  1 _pending_h_i                                                   021D GR
+  1 _pending_h_map                                                 021E GR
+  1 _pending_h_x                                                   0219 GR
+  1 _pending_h_y                                                   021B GR
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 2.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+  1 _pending_w_cmap                                                0224 GR
+  1 _pending_w_i                                                   022A GR
+  1 _pending_w_map                                                 0220 GR
+  1 _pending_w_x                                                   0226 GR
+  1 _pending_w_y                                                   0228 GR
+  1 _scroll_bank                                                   0216 GR
+  1 _scroll_cmap                                                   0002 GR
+  1 _scroll_collisions                                             0016 GR
+  1 _scroll_collisions_down                                        0096 GR
+  1 _scroll_h                                                      000A GR
+  1 _scroll_h_border                                               022C GR
+  1 _scroll_map                                                    0000 GR
+  1 _scroll_offset_x                                               0217 GR
+  1 _scroll_offset_y                                               0218 GR
+  1 _scroll_target                                                 0010 GR
+  1 _scroll_target_offset_x                                        0012 GR
+  1 _scroll_target_offset_y                                        0014 GR
+  1 _scroll_tile_info                                              0116 GR
+  1 _scroll_tiles_h                                                000E GR
+  1 _scroll_tiles_w                                                000C GR
+  1 _scroll_w                                                      0008 GR
+  1 _scroll_x                                                      0004 GR
+  1 _scroll_y                                                      0006 GR
+    _set_bkg_data                                                  **** GX
+    _set_win_tiles                                                 **** GX
+    _sprite_manager_sprites                                        **** GX
+    _sprite_manager_updatables                                     **** GX
+
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 3.
+Hexadecimal [16-Bits]
+
+Area Table
+
+   0 _CODE                                      size  DEE   flags    0
+   1 _DATA                                      size  23D   flags    0
+   2 _DABS                                      size    0   flags    8
+   3 _HOME                                      size    0   flags    0
+   4 _GSINIT                                    size   76   flags    0
+   5 _GSFINAL                                   size    0   flags    0
+   6 _CABS                                      size    0   flags    8
+

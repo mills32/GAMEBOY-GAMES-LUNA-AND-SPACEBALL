@@ -1,0 +1,3125 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module Scroll
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _Update_Parallax
+                             12 	.globl _CPU_TRANSFER
+                             13 	.globl _DMA_TRANSFER
+                             14 	.globl _ScrollUpdateColumnWithDelay
+                             15 	.globl _ScrollUpdateColumnR
+                             16 	.globl _ScrollUpdateRowWithDelay
+                             17 	.globl _ScrollUpdateRowR
+                             18 	.globl _ClampScrollLimits
+                             19 	.globl _UPDATE_TILE
+                             20 	.globl _ZGB_SET_TILE
+                             21 	.globl _GetTileReplacement
+                             22 	.globl _PopBank
+                             23 	.globl _PushBank
+                             24 	.globl _SpriteManagerAdd
+                             25 	.globl _set_win_tiles
+                             26 	.globl _set_bkg_data
+                             27 	.globl _STAT
+                             28 	.globl _Para_Tiles
+                             29 	.globl _Rtiles
+                             30 	.globl _Parallax_Columns
+                             31 	.globl _SY
+                             32 	.globl _SX
+                             33 	.globl _Parallax
+                             34 	.globl _pbank
+                             35 	.globl _ParaOffset
+                             36 	.globl _ParaOffsetY
+                             37 	.globl _ParaOffsetX
+                             38 	.globl _ZGB_Parallax
+                             39 	.globl _clamp_enabled
+                             40 	.globl _scroll_h_border
+                             41 	.globl _current_vbl_count
+                             42 	.globl _pending_w_i
+                             43 	.globl _pending_w_y
+                             44 	.globl _pending_w_x
+                             45 	.globl _pending_w_cmap
+                             46 	.globl _pending_h_cmap
+                             47 	.globl _pending_w_map
+                             48 	.globl _pending_h_map
+                             49 	.globl _pending_h_i
+                             50 	.globl _pending_h_y
+                             51 	.globl _pending_h_x
+                             52 	.globl _scroll_offset_y
+                             53 	.globl _scroll_offset_x
+                             54 	.globl _scroll_bank
+                             55 	.globl _scroll_tile_info
+                             56 	.globl _scroll_collisions_down
+                             57 	.globl _scroll_collisions
+                             58 	.globl _scroll_target_offset_y
+                             59 	.globl _scroll_target_offset_x
+                             60 	.globl _scroll_target
+                             61 	.globl _scroll_tiles_h
+                             62 	.globl _scroll_tiles_w
+                             63 	.globl _scroll_h
+                             64 	.globl _scroll_w
+                             65 	.globl _scroll_y
+                             66 	.globl _scroll_x
+                             67 	.globl _scroll_cmap
+                             68 	.globl _scroll_map
+                             69 	.globl _ZInitScrollTilesColor
+                             70 	.globl _InitWindow
+                             71 	.globl _ScrollSetMap
+                             72 	.globl _InitScroll
+                             73 	.globl _ScrollUpdateRow
+                             74 	.globl _ScrollUpdateColumn
+                             75 	.globl _RefreshScroll
+                             76 	.globl _MoveScroll
+                             77 	.globl _GetScrollTilePtr
+                             78 	.globl _GetScrollTile
+                             79 	.globl _ScrollFindTile
+                             80 	.globl _EditCollision
+                             81 	.globl _EditCollisionDown
+                             82 	.globl _Set_Parallax
+                             83 	.globl _Move_Parallax
+                             84 ;--------------------------------------------------------
+                             85 ; ram data
+                             86 ;--------------------------------------------------------
+                             87 	.area _DATA
+   0000                      88 _scroll_map::
+   0000                      89 	.ds 2
+   0002                      90 _scroll_cmap::
+   0002                      91 	.ds 2
+   0004                      92 _scroll_x::
+   0004                      93 	.ds 2
+   0006                      94 _scroll_y::
+   0006                      95 	.ds 2
+   0008                      96 _scroll_w::
+   0008                      97 	.ds 2
+   000A                      98 _scroll_h::
+   000A                      99 	.ds 2
+   000C                     100 _scroll_tiles_w::
+   000C                     101 	.ds 2
+   000E                     102 _scroll_tiles_h::
+   000E                     103 	.ds 2
+   0010                     104 _scroll_target::
+   0010                     105 	.ds 2
+   0012                     106 _scroll_target_offset_x::
+   0012                     107 	.ds 2
+   0014                     108 _scroll_target_offset_y::
+   0014                     109 	.ds 2
+   0016                     110 _scroll_collisions::
+   0016                     111 	.ds 128
+   0096                     112 _scroll_collisions_down::
+   0096                     113 	.ds 128
+   0116                     114 _scroll_tile_info::
+   0116                     115 	.ds 256
+   0216                     116 _scroll_bank::
+   0216                     117 	.ds 1
+   0217                     118 _scroll_offset_x::
+   0217                     119 	.ds 1
+   0218                     120 _scroll_offset_y::
+   0218                     121 	.ds 1
+   0219                     122 _pending_h_x::
+   0219                     123 	.ds 2
+   021B                     124 _pending_h_y::
+   021B                     125 	.ds 2
+   021D                     126 _pending_h_i::
+   021D                     127 	.ds 1
+   021E                     128 _pending_h_map::
+   021E                     129 	.ds 2
+   0220                     130 _pending_w_map::
+   0220                     131 	.ds 2
+   0222                     132 _pending_h_cmap::
+   0222                     133 	.ds 2
+   0224                     134 _pending_w_cmap::
+   0224                     135 	.ds 2
+   0226                     136 _pending_w_x::
+   0226                     137 	.ds 2
+   0228                     138 _pending_w_y::
+   0228                     139 	.ds 2
+   022A                     140 _pending_w_i::
+   022A                     141 	.ds 1
+   022B                     142 _current_vbl_count::
+   022B                     143 	.ds 1
+   022C                     144 _scroll_h_border::
+   022C                     145 	.ds 1
+   022D                     146 _clamp_enabled::
+   022D                     147 	.ds 1
+   022E                     148 _ZGB_Parallax::
+   022E                     149 	.ds 1
+   022F                     150 _ParaOffsetX::
+   022F                     151 	.ds 2
+   0231                     152 _ParaOffsetY::
+   0231                     153 	.ds 2
+   0233                     154 _ParaOffset::
+   0233                     155 	.ds 2
+   0235                     156 _pbank::
+   0235                     157 	.ds 1
+   0236                     158 _Parallax::
+   0236                     159 	.ds 1
+   0237                     160 _SX::
+   0237                     161 	.ds 1
+   0238                     162 _SY::
+   0238                     163 	.ds 1
+   0239                     164 _Parallax_Columns::
+   0239                     165 	.ds 1
+                     D000   166 _Rtiles	=	0xd000
+   023A                     167 _Para_Tiles::
+   023A                     168 	.ds 2
+   023C                     169 _STAT::
+   023C                     170 	.ds 1
+                            171 ;--------------------------------------------------------
+                            172 ; absolute external ram data
+                            173 ;--------------------------------------------------------
+                            174 	.area _DABS (ABS)
+                            175 ;--------------------------------------------------------
+                            176 ; global & static initialisations
+                            177 ;--------------------------------------------------------
+                            178 	.area _HOME
+                            179 	.area _GSINIT
+                            180 	.area _GSFINAL
+                            181 	.area _GSINIT
+                            182 ;C:/gbdk/ZGB/common/src/Scroll.c:24: unsigned char* scroll_map = 0;
+   0000 21r00r00            183 	ld	hl,#_scroll_map
+   0003 36 00               184 	ld	(hl),#0x00
+   0005 23                  185 	inc	hl
+   0006 36 00               186 	ld	(hl),#0x00
+                            187 ;C:/gbdk/ZGB/common/src/Scroll.c:25: unsigned char* scroll_cmap = 0;
+   0008 21r02r00            188 	ld	hl,#_scroll_cmap
+   000B 36 00               189 	ld	(hl),#0x00
+   000D 23                  190 	inc	hl
+   000E 36 00               191 	ld	(hl),#0x00
+                            192 ;C:/gbdk/ZGB/common/src/Scroll.c:32: struct Sprite* scroll_target = 0;
+   0010 21r10r00            193 	ld	hl,#_scroll_target
+   0013 36 00               194 	ld	(hl),#0x00
+   0015 23                  195 	inc	hl
+   0016 36 00               196 	ld	(hl),#0x00
+                            197 ;C:/gbdk/ZGB/common/src/Scroll.c:33: INT16 scroll_target_offset_x = 0;
+   0018 21r12r00            198 	ld	hl,#_scroll_target_offset_x
+   001B 36 00               199 	ld	(hl),#0x00
+   001D 23                  200 	inc	hl
+   001E 36 00               201 	ld	(hl),#0x00
+                            202 ;C:/gbdk/ZGB/common/src/Scroll.c:34: INT16 scroll_target_offset_y = 0;
+   0020 21r14r00            203 	ld	hl,#_scroll_target_offset_y
+   0023 36 00               204 	ld	(hl),#0x00
+   0025 23                  205 	inc	hl
+   0026 36 00               206 	ld	(hl),#0x00
+                            207 ;C:/gbdk/ZGB/common/src/Scroll.c:39: UINT8 scroll_offset_x = 0;
+   0028 21r17r02            208 	ld	hl,#_scroll_offset_x
+   002B 36 00               209 	ld	(hl),#0x00
+                            210 ;C:/gbdk/ZGB/common/src/Scroll.c:40: UINT8 scroll_offset_y = 0;
+   002D 21r18r02            211 	ld	hl,#_scroll_offset_y
+   0030 36 00               212 	ld	(hl),#0x00
+                            213 ;C:/gbdk/ZGB/common/src/Scroll.c:44: unsigned char* pending_h_map = 0;
+   0032 21r1Er02            214 	ld	hl,#_pending_h_map
+   0035 36 00               215 	ld	(hl),#0x00
+   0037 23                  216 	inc	hl
+   0038 36 00               217 	ld	(hl),#0x00
+                            218 ;C:/gbdk/ZGB/common/src/Scroll.c:45: unsigned char* pending_w_map = 0;
+   003A 21r20r02            219 	ld	hl,#_pending_w_map
+   003D 36 00               220 	ld	(hl),#0x00
+   003F 23                  221 	inc	hl
+   0040 36 00               222 	ld	(hl),#0x00
+                            223 ;C:/gbdk/ZGB/common/src/Scroll.c:47: unsigned char* pending_h_cmap = 0;
+   0042 21r22r02            224 	ld	hl,#_pending_h_cmap
+   0045 36 00               225 	ld	(hl),#0x00
+   0047 23                  226 	inc	hl
+   0048 36 00               227 	ld	(hl),#0x00
+                            228 ;C:/gbdk/ZGB/common/src/Scroll.c:48: unsigned char* pending_w_cmap = 0;
+   004A 21r24r02            229 	ld	hl,#_pending_w_cmap
+   004D 36 00               230 	ld	(hl),#0x00
+   004F 23                  231 	inc	hl
+   0050 36 00               232 	ld	(hl),#0x00
+                            233 ;C:/gbdk/ZGB/common/src/Scroll.c:173: INT8 scroll_h_border = 0;
+   0052 21r2Cr02            234 	ld	hl,#_scroll_h_border
+   0055 36 00               235 	ld	(hl),#0x00
+                            236 ;C:/gbdk/ZGB/common/src/Scroll.c:174: UINT8 clamp_enabled = 1;
+   0057 21r2Dr02            237 	ld	hl,#_clamp_enabled
+   005A 36 01               238 	ld	(hl),#0x01
+                            239 ;C:/gbdk/ZGB/common/src/Scroll.c:451: UINT16 ParaOffset = 0;
+   005C 21r33r02            240 	ld	hl,#_ParaOffset
+   005F 36 00               241 	ld	(hl),#0x00
+   0061 23                  242 	inc	hl
+   0062 36 00               243 	ld	(hl),#0x00
+                            244 ;C:/gbdk/ZGB/common/src/Scroll.c:457: UINT8 Parallax_Columns = 4;
+   0064 21r39r02            245 	ld	hl,#_Parallax_Columns
+   0067 36 04               246 	ld	(hl),#0x04
+                            247 ;C:/gbdk/ZGB/common/src/Scroll.c:461: unsigned char *Para_Tiles = 0;
+   0069 21r3Ar02            248 	ld	hl,#_Para_Tiles
+   006C 36 00               249 	ld	(hl),#0x00
+   006E 23                  250 	inc	hl
+   006F 36 00               251 	ld	(hl),#0x00
+                            252 ;C:/gbdk/ZGB/common/src/Scroll.c:462: UINT8 STAT	= 0x41;
+   0071 21r3Cr02            253 	ld	hl,#_STAT
+   0074 36 41               254 	ld	(hl),#0x41
+                            255 ;--------------------------------------------------------
+                            256 ; Home
+                            257 ;--------------------------------------------------------
+                            258 	.area _HOME
+                            259 	.area _HOME
+                            260 ;--------------------------------------------------------
+                            261 ; code
+                            262 ;--------------------------------------------------------
+                            263 	.area _CODE
+                            264 ;C:/gbdk/ZGB/common/src/Scroll.c:57: void ZGB_SET_TILE(UINT8 x, UINT8 y, UINT8 t){
+                            265 ;	---------------------------------
+                            266 ; Function ZGB_SET_TILE
+                            267 ; ---------------------------------
+   0000                     268 _ZGB_SET_TILE::
+                            269 ;C:/gbdk/ZGB/common/src/Scroll.c:96: __endasm;
+   0000 F8 03               270 	LDA	HL,3(SP)
+   0002 2B                  271 	DEC	HL
+   0003 16 00               272 	LD	D,#0
+   0005 06 00               273 	LD	B,#0
+   0007 5E                  274 	LD	E,(HL)
+   0008 23                  275 	INC	HL
+   0009 2A                  276 	LD	A,(HL+)
+                            277 ;	Multiply Y*32
+   000A 17                  278 	RLA
+   000B 17                  279 	RLA
+   000C 17                  280 	RLA
+   000D 4F                  281 	LD	C,A
+   000E 7E                  282 	LD	A,(HL)
+   000F 21 00 98            283 	LD	HL,#0x9800
+   0012 09                  284 	ADD	HL,BC
+   0013 09                  285 	ADD	HL,BC
+   0014 09                  286 	ADD	HL,BC
+   0015 09                  287 	ADD	HL,BC
+   0016 19                  288 	ADD	HL,DE
+   0017 47                  289 	LD	B,A
+   0018 11 41 FF            290 	ld	de,#0xff41
+   001B                     291 	1$:
+   001B 1A                  292 	ld	a,(de)
+   001C E6 02               293 	and	a, #0x02
+   001E 20 FB               294 	jr	NZ,1$
+   0020 70                  295 	LD	(HL),B
+   0021 1A                  296 	ld	a,(de)
+   0022 E6 02               297 	and	a, #0x02
+   0024 20 F5               298 	jr	NZ,1$
+   0026 C9                  299 	ret
+   0027 C9                  300 	ret
+                            301 ;C:/gbdk/ZGB/common/src/Scroll.c:99: void UPDATE_TILE(INT16 x, INT16 y, UINT8* t, UINT8* c) {
+                            302 ;	---------------------------------
+                            303 ; Function UPDATE_TILE
+                            304 ; ---------------------------------
+   0028                     305 _UPDATE_TILE::
+   0028 E8 F5               306 	add	sp, #-11
+                            307 ;C:/gbdk/ZGB/common/src/Scroll.c:100: UINT8 replacement = *t;
+   002A F8 11               308 	ldhl	sp,#17
+   002C 2A                  309 	ld	a,(hl+)
+   002D 5E                  310 	ld	e, (hl)
+   002E F8 05               311 	ldhl	sp,#5
+   0030 22                  312 	ld	(hl+),a
+   0031 73                  313 	ld	(hl),e
+   0032 2B                  314 	dec	hl
+   0033 5E                  315 	ld	e,(hl)
+   0034 23                  316 	inc	hl
+   0035 56                  317 	ld	d,(hl)
+   0036 1A                  318 	ld	a,(de)
+   0037 F8 03               319 	ldhl	sp,#3
+   0039 77                  320 	ld	(hl),a
+                            321 ;C:/gbdk/ZGB/common/src/Scroll.c:108: UINT8 color_map = *c;
+   003A F8 13               322 	ldhl	sp,#(20 - 1)
+   003C 4E                  323 	ld	c,(hl)
+   003D 23                  324 	inc	hl
+   003E 46                  325 	ld	b,(hl)
+   003F 0A                  326 	ld	a,(bc)
+   0040 F8 00               327 	ldhl	sp,#0
+   0042 77                  328 	ld	(hl),a
+                            329 ;C:/gbdk/ZGB/common/src/Scroll.c:113: if(x < 0 || y < 0 || U_LESS_THAN(scroll_tiles_w - 1, x) || U_LESS_THAN(scroll_tiles_h - 1, y)) {
+   0043 F8 0D               330 	ldhl	sp,#13
+   0045 7E                  331 	ld	a, (hl)
+   0046 D6 00               332 	sub	a, #0x00
+   0048 23                  333 	inc	hl
+   0049 7E                  334 	ld	a, (hl)
+   004A DE 00               335 	sbc	a, #0x00
+   004C 56                  336 	ld	d, (hl)
+   004D 3E 00               337 	ld	a,#0x00
+   004F 5F                  338 	ld	e, a
+   0050 CB 7B               339 	bit	7, e
+   0052 28 07               340 	jr	Z,00159$
+   0054 CB 7A               341 	bit	7, d
+   0056 20 08               342 	jr	NZ,00160$
+   0058 BF                  343 	cp	a, a
+   0059 18 05               344 	jr	00160$
+   005B                     345 00159$:
+   005B CB 7A               346 	bit	7, d
+   005D 28 01               347 	jr	Z,00160$
+   005F 37                  348 	scf
+   0060                     349 00160$:
+   0060 DArBFr00            350 	jp	C,00111$
+   0063 F8 0F               351 	ldhl	sp,#15
+   0065 7E                  352 	ld	a, (hl)
+   0066 D6 00               353 	sub	a, #0x00
+   0068 23                  354 	inc	hl
+   0069 7E                  355 	ld	a, (hl)
+   006A DE 00               356 	sbc	a, #0x00
+   006C 56                  357 	ld	d, (hl)
+   006D 3E 00               358 	ld	a,#0x00
+   006F 5F                  359 	ld	e, a
+   0070 CB 7B               360 	bit	7, e
+   0072 28 07               361 	jr	Z,00161$
+   0074 CB 7A               362 	bit	7, d
+   0076 20 08               363 	jr	NZ,00162$
+   0078 BF                  364 	cp	a, a
+   0079 18 05               365 	jr	00162$
+   007B                     366 00161$:
+   007B CB 7A               367 	bit	7, d
+   007D 28 01               368 	jr	Z,00162$
+   007F 37                  369 	scf
+   0080                     370 00162$:
+   0080 DArBFr00            371 	jp	C,00111$
+   0083 21r0Cr00            372 	ld	hl,#_scroll_tiles_w
+   0086 4E                  373 	ld	c,(hl)
+   0087 23                  374 	inc	hl
+   0088 46                  375 	ld	b,(hl)
+   0089 0B                  376 	dec	bc
+   008A F8 0D               377 	ldhl	sp,#13
+   008C 2A                  378 	ld	a,(hl+)
+   008D 5E                  379 	ld	e, (hl)
+   008E F8 07               380 	ldhl	sp,#7
+   0090 22                  381 	ld	(hl+),a
+   0091 73                  382 	ld	(hl),e
+   0092 2B                  383 	dec	hl
+   0093 5E                  384 	ld	e,(hl)
+   0094 23                  385 	inc	hl
+   0095 56                  386 	ld	d,(hl)
+   0096 79                  387 	ld	a,c
+   0097 93                  388 	sub	a,e
+   0098 5F                  389 	ld	e,a
+   0099 78                  390 	ld	a,b
+   009A 9A                  391 	sbc	a,d
+   009B 47                  392 	ld	b,a
+   009C 4B                  393 	ld	c,e
+   009D CB 78               394 	bit	7, b
+   009F 20 1E               395 	jr	NZ,00111$
+   00A1 21r0Er00            396 	ld	hl,#_scroll_tiles_h
+   00A4 4E                  397 	ld	c,(hl)
+   00A5 23                  398 	inc	hl
+   00A6 46                  399 	ld	b,(hl)
+   00A7 0B                  400 	dec	bc
+   00A8 F8 0F               401 	ldhl	sp,#15
+   00AA 2A                  402 	ld	a,(hl+)
+   00AB 5E                  403 	ld	e, (hl)
+   00AC F8 07               404 	ldhl	sp,#7
+   00AE 22                  405 	ld	(hl+),a
+   00AF 73                  406 	ld	(hl),e
+   00B0 2B                  407 	dec	hl
+   00B1 5E                  408 	ld	e,(hl)
+   00B2 23                  409 	inc	hl
+   00B3 56                  410 	ld	d,(hl)
+   00B4 79                  411 	ld	a,c
+   00B5 93                  412 	sub	a,e
+   00B6 5F                  413 	ld	e,a
+   00B7 78                  414 	ld	a,b
+   00B8 9A                  415 	sbc	a,d
+   00B9 47                  416 	ld	b,a
+   00BA 4B                  417 	ld	c,e
+   00BB CB 78               418 	bit	7, b
+   00BD 28 07               419 	jr	Z,00112$
+   00BF                     420 00111$:
+                            421 ;C:/gbdk/ZGB/common/src/Scroll.c:114: replacement = 0;
+   00BF F8 03               422 	ldhl	sp,#3
+   00C1 36 00               423 	ld	(hl),#0x00
+   00C3 C3rC3r01            424 	jp	00113$
+   00C6                     425 00112$:
+                            426 ;C:/gbdk/ZGB/common/src/Scroll.c:116: type = GetTileReplacement(t, &replacement);
+   00C6 F8 03               427 	ldhl	sp,#3
+   00C8 4D                  428 	ld	c,l
+   00C9 44                  429 	ld	b,h
+   00CA C5                  430 	push	bc
+   00CB F8 07               431 	ldhl	sp,#7
+   00CD 2A                  432 	ld	a,(hl+)
+   00CE 66                  433 	ld	h,(hl)
+   00CF 6F                  434 	ld	l,a
+   00D0 E5                  435 	push	hl
+   00D1 CDr00r00            436 	call	_GetTileReplacement
+   00D4 E8 04               437 	add	sp, #4
+   00D6 F8 02               438 	ldhl	sp,#2
+   00D8 73                  439 	ld	(hl),e
+                            440 ;C:/gbdk/ZGB/common/src/Scroll.c:117: if(type != 255u) {
+   00D9 7E                  441 	ld	a,(hl)
+   00DA 3C                  442 	inc	a
+   00DB CArC3r01            443 	jp	Z,00113$
+                            444 ;C:/gbdk/ZGB/common/src/Scroll.c:118: tmp_y = y << 8;
+   00DE F8 0F               445 	ldhl	sp,#15
+   00E0 46                  446 	ld	b,(hl)
+   00E1 0E 00               447 	ld	c,#0x00
+                            448 ;C:/gbdk/ZGB/common/src/Scroll.c:119: id = (0x00FF & x) | ((0xFF00 & tmp_y)); // (y >> 3) << 8 == y << 5
+   00E3 2B                  449 	dec	hl
+   00E4 2B                  450 	dec	hl
+   00E5 5E                  451 	ld	e,(hl)
+   00E6 16 00               452 	ld	d,#0x00
+   00E8 0E 00               453 	ld	c,#0x00
+   00EA 79                  454 	ld	a,c
+   00EB B3                  455 	or	a, e
+   00EC 4F                  456 	ld	c,a
+   00ED 78                  457 	ld	a,b
+   00EE B2                  458 	or	a, d
+   00EF 47                  459 	ld	b,a
+   00F0 F8 01               460 	ldhl	sp,#1
+   00F2 71                  461 	ld	(hl),c
+                            462 ;C:/gbdk/ZGB/common/src/Scroll.c:120: for(i = 0u; i != sprite_manager_updatables[0]; ++i) {
+   00F3 F8 04               463 	ldhl	sp,#4
+   00F5 36 00               464 	ld	(hl),#0x00
+   00F7                     465 00118$:
+   00F7 11r00r00            466 	ld	de, #_sprite_manager_updatables + 0
+   00FA 1A                  467 	ld	a,(de)
+   00FB 4F                  468 	ld	c,a
+   00FC F8 04               469 	ldhl	sp,#4
+   00FE 7E                  470 	ld	a,(hl)
+   00FF 91                  471 	sub	a, c
+   0100 20 04               472 	jr	NZ,00167$
+   0102 3E 01               473 	ld	a,#0x01
+   0104 18 01               474 	jr	00168$
+   0106                     475 00167$:
+   0106 AF                  476 	xor	a,a
+   0107                     477 00168$:
+   0107 F8 07               478 	ldhl	sp,#7
+   0109 77                  479 	ld	(hl),a
+                            480 ;C:/gbdk/ZGB/common/src/Scroll.c:122: if((s->unique_id == id) && ((UINT16)s->type == (UINT16)type)) {
+   010A F8 01               481 	ldhl	sp,#1
+   010C 7E                  482 	ld	a,(hl)
+   010D F8 05               483 	ldhl	sp,#5
+   010F 22                  484 	ld	(hl+),a
+   0110 36 00               485 	ld	(hl),#0x00
+                            486 ;C:/gbdk/ZGB/common/src/Scroll.c:120: for(i = 0u; i != sprite_manager_updatables[0]; ++i) {
+   0112 23                  487 	inc	hl
+   0113 CB 46               488 	bit	0,(hl)
+   0115 C2r78r01            489 	jp	NZ,00104$
+                            490 ;C:/gbdk/ZGB/common/src/Scroll.c:121: s = sprite_manager_sprites[sprite_manager_updatables[i + 1]];
+   0118 F8 04               491 	ldhl	sp,#4
+   011A 4E                  492 	ld	c,(hl)
+   011B 06 00               493 	ld	b,#0x00
+   011D 03                  494 	inc	bc
+   011E 21r00r00            495 	ld	hl,#_sprite_manager_updatables
+   0121 09                  496 	add	hl,bc
+   0122 4D                  497 	ld	c,l
+   0123 44                  498 	ld	b,h
+   0124 0A                  499 	ld	a,(bc)
+   0125 4F                  500 	ld	c,a
+   0126 06 00               501 	ld	b,#0x00
+   0128 CB 21               502 	sla	c
+   012A CB 10               503 	rl	b
+   012C 21r00r00            504 	ld	hl,#_sprite_manager_sprites
+   012F 09                  505 	add	hl,bc
+   0130 4D                  506 	ld	c,l
+   0131 44                  507 	ld	b,h
+   0132 59                  508 	ld	e, c
+   0133 50                  509 	ld	d, b
+   0134 1A                  510 	ld	a,(de)
+   0135 F8 09               511 	ldhl	sp,#9
+   0137 22                  512 	ld	(hl+),a
+   0138 13                  513 	inc	de
+   0139 1A                  514 	ld	a,(de)
+                            515 ;C:/gbdk/ZGB/common/src/Scroll.c:122: if((s->unique_id == id) && ((UINT16)s->type == (UINT16)type)) {
+   013A 32                  516 	ld	(hl-),a
+   013B 5E                  517 	ld	e,(hl)
+   013C 23                  518 	inc	hl
+   013D 56                  519 	ld	d,(hl)
+   013E 21 16 00            520 	ld	hl,#0x0016
+   0141 19                  521 	add	hl,de
+   0142 4D                  522 	ld	c,l
+   0143 44                  523 	ld	b,h
+   0144 59                  524 	ld	e, c
+   0145 50                  525 	ld	d, b
+   0146 1A                  526 	ld	a,(de)
+   0147 4F                  527 	ld	c,a
+   0148 13                  528 	inc	de
+   0149 1A                  529 	ld	a,(de)
+   014A 47                  530 	ld	b,a
+   014B F8 05               531 	ldhl	sp,#5
+   014D 7E                  532 	ld	a,(hl)
+   014E 91                  533 	sub	a, c
+   014F 20 21               534 	jr	NZ,00119$
+   0151 23                  535 	inc	hl
+   0152 7E                  536 	ld	a,(hl)
+   0153 90                  537 	sub	a, b
+   0154 20 1C               538 	jr	NZ,00119$
+   0156 F8 09               539 	ldhl	sp,#(10 - 1)
+   0158 5E                  540 	ld	e,(hl)
+   0159 23                  541 	inc	hl
+   015A 56                  542 	ld	d,(hl)
+   015B 21 10 00            543 	ld	hl,#0x0010
+   015E 19                  544 	add	hl,de
+   015F 4D                  545 	ld	c,l
+   0160 44                  546 	ld	b,h
+   0161 0A                  547 	ld	a,(bc)
+   0162 4F                  548 	ld	c,a
+   0163 06 00               549 	ld	b,#0x00
+   0165 F8 02               550 	ldhl	sp,#2
+   0167 5E                  551 	ld	e,(hl)
+   0168 16 00               552 	ld	d,#0x00
+   016A 79                  553 	ld	a,c
+   016B 93                  554 	sub	a, e
+   016C 20 04               555 	jr	NZ,00173$
+   016E 78                  556 	ld	a,b
+   016F 92                  557 	sub	a, d
+   0170 28 06               558 	jr	Z,00104$
+   0172                     559 00173$:
+                            560 ;C:/gbdk/ZGB/common/src/Scroll.c:123: break;
+   0172                     561 00119$:
+                            562 ;C:/gbdk/ZGB/common/src/Scroll.c:120: for(i = 0u; i != sprite_manager_updatables[0]; ++i) {
+   0172 F8 04               563 	ldhl	sp,#4
+   0174 34                  564 	inc	(hl)
+   0175 C3rF7r00            565 	jp	00118$
+   0178                     566 00104$:
+                            567 ;C:/gbdk/ZGB/common/src/Scroll.c:127: if(i == sprite_manager_updatables[0]) {
+   0178 F8 07               568 	ldhl	sp,#7
+   017A CB 46               569 	bit	0,(hl)
+   017C CArC3r01            570 	jp	Z,00113$
+                            571 ;C:/gbdk/ZGB/common/src/Scroll.c:128: s = SpriteManagerAdd(type, x << 3, (y - 1) << 3);
+   017F F8 0F               572 	ldhl	sp,#15
+   0181 4E                  573 	ld	c,(hl)
+   0182 23                  574 	inc	hl
+   0183 46                  575 	ld	b,(hl)
+   0184 0B                  576 	dec	bc
+   0185 CB 21               577 	sla	c
+   0187 CB 10               578 	rl	b
+   0189 CB 21               579 	sla	c
+   018B CB 10               580 	rl	b
+   018D CB 21               581 	sla	c
+   018F CB 10               582 	rl	b
+   0191 2B                  583 	dec	hl
+   0192 2B                  584 	dec	hl
+   0193 2B                  585 	dec	hl
+   0194 5E                  586 	ld	e,(hl)
+   0195 23                  587 	inc	hl
+   0196 56                  588 	ld	d,(hl)
+   0197 CB 23               589 	sla	e
+   0199 CB 12               590 	rl	d
+   019B CB 23               591 	sla	e
+   019D CB 12               592 	rl	d
+   019F CB 23               593 	sla	e
+   01A1 CB 12               594 	rl	d
+   01A3 C5                  595 	push	bc
+   01A4 D5                  596 	push	de
+   01A5 F8 06               597 	ldhl	sp,#6
+   01A7 7E                  598 	ld	a,(hl)
+   01A8 F5                  599 	push	af
+   01A9 33                  600 	inc	sp
+   01AA CDr00r00            601 	call	_SpriteManagerAdd
+   01AD E8 05               602 	add	sp, #5
+   01AF 4B                  603 	ld	c,e
+   01B0 42                  604 	ld	b,d
+                            605 ;C:/gbdk/ZGB/common/src/Scroll.c:129: if(s) {
+   01B1 78                  606 	ld	a,b
+   01B2 B1                  607 	or	a,c
+   01B3 28 0E               608 	jr	Z,00113$
+                            609 ;C:/gbdk/ZGB/common/src/Scroll.c:130: s->unique_id = id;
+   01B5 21 16 00            610 	ld	hl,#0x0016
+   01B8 09                  611 	add	hl,bc
+   01B9 4D                  612 	ld	c,l
+   01BA 44                  613 	ld	b,h
+   01BB F8 05               614 	ldhl	sp,#5
+   01BD 7E                  615 	ld	a,(hl)
+   01BE 02                  616 	ld	(bc),a
+   01BF 03                  617 	inc	bc
+   01C0 23                  618 	inc	hl
+   01C1 7E                  619 	ld	a,(hl)
+   01C2 02                  620 	ld	(bc),a
+   01C3                     621 00113$:
+                            622 ;C:/gbdk/ZGB/common/src/Scroll.c:136: x = 0x1F & (x + scroll_offset_x);
+   01C3 21r17r02            623 	ld	hl,#_scroll_offset_x
+   01C6 4E                  624 	ld	c,(hl)
+   01C7 06 00               625 	ld	b,#0x00
+   01C9 F8 0D               626 	ldhl	sp,#13
+   01CB 2A                  627 	ld	a,(hl+)
+   01CC 66                  628 	ld	h,(hl)
+   01CD 6F                  629 	ld	l,a
+   01CE 09                  630 	add	hl,bc
+   01CF 4D                  631 	ld	c,l
+   01D0 44                  632 	ld	b,h
+   01D1 79                  633 	ld	a,c
+   01D2 E6 1F               634 	and	a, #0x1f
+   01D4 F8 0D               635 	ldhl	sp,#13
+   01D6 22                  636 	ld	(hl+),a
+   01D7 36 00               637 	ld	(hl),#0x00
+                            638 ;C:/gbdk/ZGB/common/src/Scroll.c:137: y = 0x1F & (y + scroll_offset_y);
+   01D9 21r18r02            639 	ld	hl,#_scroll_offset_y
+   01DC 4E                  640 	ld	c,(hl)
+   01DD 06 00               641 	ld	b,#0x00
+   01DF F8 0F               642 	ldhl	sp,#15
+   01E1 2A                  643 	ld	a,(hl+)
+   01E2 66                  644 	ld	h,(hl)
+   01E3 6F                  645 	ld	l,a
+   01E4 09                  646 	add	hl,bc
+   01E5 4D                  647 	ld	c,l
+   01E6 44                  648 	ld	b,h
+   01E7 79                  649 	ld	a,c
+   01E8 E6 1F               650 	and	a, #0x1f
+   01EA F8 0F               651 	ldhl	sp,#15
+   01EC 22                  652 	ld	(hl+),a
+   01ED 36 00               653 	ld	(hl),#0x00
+                            654 ;C:/gbdk/ZGB/common/src/Scroll.c:138: ZGB_SET_TILE( x, y, replacement);
+   01EF 2B                  655 	dec	hl
+   01F0 4E                  656 	ld	c,(hl)
+   01F1 2B                  657 	dec	hl
+   01F2 2B                  658 	dec	hl
+   01F3 46                  659 	ld	b,(hl)
+   01F4 C5                  660 	push	bc
+   01F5 F8 05               661 	ldhl	sp,#5
+   01F7 7E                  662 	ld	a,(hl)
+   01F8 F5                  663 	push	af
+   01F9 33                  664 	inc	sp
+   01FA 79                  665 	ld	a,c
+   01FB F5                  666 	push	af
+   01FC 33                  667 	inc	sp
+   01FD C5                  668 	push	bc
+   01FE 33                  669 	inc	sp
+   01FF CDr00r00            670 	call	_ZGB_SET_TILE
+   0202 E8 03               671 	add	sp, #3
+   0204 C1                  672 	pop	bc
+                            673 ;C:/gbdk/ZGB/common/src/Scroll.c:140: VBK_REG = 1;
+   0205 21 4F FF            674 	ld	hl,#0xff4f
+   0208 36 01               675 	ld	(hl),#0x01
+                            676 ;C:/gbdk/ZGB/common/src/Scroll.c:141: ZGB_SET_TILE( x, y, color_map);
+   020A F8 00               677 	ldhl	sp,#0
+   020C 7E                  678 	ld	a,(hl)
+   020D F5                  679 	push	af
+   020E 33                  680 	inc	sp
+   020F 79                  681 	ld	a,c
+   0210 F5                  682 	push	af
+   0211 33                  683 	inc	sp
+   0212 C5                  684 	push	bc
+   0213 33                  685 	inc	sp
+   0214 CDr00r00            686 	call	_ZGB_SET_TILE
+   0217 E8 03               687 	add	sp, #3
+                            688 ;C:/gbdk/ZGB/common/src/Scroll.c:142: VBK_REG = 0;
+   0219 21 4F FF            689 	ld	hl,#0xff4f
+   021C 36 00               690 	ld	(hl),#0x00
+   021E E8 0B               691 	add	sp, #11
+   0220 C9                  692 	ret
+                            693 ;C:/gbdk/ZGB/common/src/Scroll.c:146: void ZInitScrollTilesColor(UINT8 first_tile, UINT8 n_tiles, UINT8* tile_data, UINT8 tile_bank, UINT8* palette_entries) {
+                            694 ;	---------------------------------
+                            695 ; Function ZInitScrollTilesColor
+                            696 ; ---------------------------------
+   0221                     697 _ZInitScrollTilesColor::
+   0221 E8 FD               698 	add	sp, #-3
+                            699 ;C:/gbdk/ZGB/common/src/Scroll.c:149: PUSH_BANK(tile_bank);
+   0223 F8 09               700 	ldhl	sp,#9
+   0225 7E                  701 	ld	a,(hl)
+   0226 F5                  702 	push	af
+   0227 33                  703 	inc	sp
+   0228 CDr00r00            704 	call	_PushBank
+   022B 33                  705 	inc	sp
+                            706 ;C:/gbdk/ZGB/common/src/Scroll.c:150: set_bkg_data(first_tile, n_tiles, tile_data);
+   022C F8 07               707 	ldhl	sp,#7
+   022E 2A                  708 	ld	a,(hl+)
+   022F 66                  709 	ld	h,(hl)
+   0230 6F                  710 	ld	l,a
+   0231 E5                  711 	push	hl
+   0232 F8 08               712 	ldhl	sp,#8
+   0234 7E                  713 	ld	a,(hl)
+   0235 F5                  714 	push	af
+   0236 33                  715 	inc	sp
+   0237 2B                  716 	dec	hl
+   0238 7E                  717 	ld	a,(hl)
+   0239 F5                  718 	push	af
+   023A 33                  719 	inc	sp
+   023B CDr00r00            720 	call	_set_bkg_data
+   023E E8 04               721 	add	sp, #4
+                            722 ;C:/gbdk/ZGB/common/src/Scroll.c:151: for(i = first_tile; i < first_tile + n_tiles; ++i) {
+   0240 E5                  723 	push	hl
+   0241 F8 07               724 	ldhl	sp,#7
+   0243 7E                  725 	ld	a,(hl)
+   0244 F8 02               726 	ldhl	sp,#2
+   0246 77                  727 	ld	(hl),a
+   0247 E1                  728 	pop	hl
+   0248                     729 00103$:
+   0248 F8 05               730 	ldhl	sp,#5
+   024A 4E                  731 	ld	c,(hl)
+   024B 06 00               732 	ld	b,#0x00
+   024D 23                  733 	inc	hl
+   024E 7E                  734 	ld	a,(hl)
+   024F F8 01               735 	ldhl	sp,#1
+   0251 22                  736 	ld	(hl+),a
+   0252 36 00               737 	ld	(hl),#0x00
+   0254 2B                  738 	dec	hl
+   0255 2A                  739 	ld	a,(hl+)
+   0256 66                  740 	ld	h,(hl)
+   0257 6F                  741 	ld	l,a
+   0258 09                  742 	add	hl,bc
+   0259 4D                  743 	ld	c,l
+   025A 44                  744 	ld	b,h
+   025B F8 00               745 	ldhl	sp,#0
+   025D 2A                  746 	ld	a,(hl+)
+   025E 22                  747 	ld	(hl+),a
+   025F 36 00               748 	ld	(hl),#0x00
+   0261 2B                  749 	dec	hl
+   0262 7E                  750 	ld	a, (hl)
+   0263 91                  751 	sub	a, c
+   0264 23                  752 	inc	hl
+   0265 7E                  753 	ld	a, (hl)
+   0266 98                  754 	sbc	a, b
+   0267 56                  755 	ld	d, (hl)
+   0268 78                  756 	ld	a,b
+   0269 5F                  757 	ld	e, a
+   026A CB 7B               758 	bit	7, e
+   026C 28 07               759 	jr	Z,00122$
+   026E CB 7A               760 	bit	7, d
+   0270 20 08               761 	jr	NZ,00123$
+   0272 BF                  762 	cp	a, a
+   0273 18 05               763 	jr	00123$
+   0275                     764 00122$:
+   0275 CB 7A               765 	bit	7, d
+   0277 28 01               766 	jr	Z,00123$
+   0279 37                  767 	scf
+   027A                     768 00123$:
+   027A D2rAFr02            769 	jp	NC,00101$
+                            770 ;C:/gbdk/ZGB/common/src/Scroll.c:152: scroll_tile_info[i] = palette_entries ? palette_entries[i] : 0;
+   027D 11r16r01            771 	ld	de,#_scroll_tile_info
+   0280 F8 00               772 	ldhl	sp,#0
+   0282 6E                  773 	ld	l,(hl)
+   0283 26 00               774 	ld	h,#0x00
+   0285 19                  775 	add	hl,de
+   0286 7D                  776 	ld	a,l
+   0287 54                  777 	ld	d,h
+   0288 F8 01               778 	ldhl	sp,#1
+   028A 22                  779 	ld	(hl+),a
+   028B 72                  780 	ld	(hl),d
+   028C F8 0B               781 	ldhl	sp,#11
+   028E 3A                  782 	ld	a,(hl-)
+   028F B6                  783 	or	a,(hl)
+   0290 28 0F               784 	jr	Z,00107$
+   0292 5E                  785 	ld	e,(hl)
+   0293 23                  786 	inc	hl
+   0294 56                  787 	ld	d,(hl)
+   0295 F8 00               788 	ldhl	sp,#0
+   0297 6E                  789 	ld	l,(hl)
+   0298 26 00               790 	ld	h,#0x00
+   029A 19                  791 	add	hl,de
+   029B 4D                  792 	ld	c,l
+   029C 44                  793 	ld	b,h
+   029D 0A                  794 	ld	a,(bc)
+   029E 4F                  795 	ld	c,a
+   029F 18 02               796 	jr	00108$
+   02A1                     797 00107$:
+   02A1 0E 00               798 	ld	c,#0x00
+   02A3                     799 00108$:
+   02A3 F8 01               800 	ldhl	sp,#1
+   02A5 2A                  801 	ld	a,(hl+)
+   02A6 66                  802 	ld	h,(hl)
+   02A7 6F                  803 	ld	l,a
+   02A8 71                  804 	ld	(hl),c
+                            805 ;C:/gbdk/ZGB/common/src/Scroll.c:151: for(i = first_tile; i < first_tile + n_tiles; ++i) {
+   02A9 F8 00               806 	ldhl	sp,#0
+   02AB 34                  807 	inc	(hl)
+   02AC C3r48r02            808 	jp	00103$
+   02AF                     809 00101$:
+                            810 ;C:/gbdk/ZGB/common/src/Scroll.c:154: POP_BANK;
+   02AF CDr00r00            811 	call	_PopBank
+   02B2 E8 03               812 	add	sp, #3
+   02B4 C9                  813 	ret
+                            814 ;C:/gbdk/ZGB/common/src/Scroll.c:157: void InitWindow(UINT8 x, UINT8 y, UINT8 w, UINT8 h, UINT8* map, UINT8 bank, UINT8* cmap) {
+                            815 ;	---------------------------------
+                            816 ; Function InitWindow
+                            817 ; ---------------------------------
+   02B5                     818 _InitWindow::
+                            819 ;C:/gbdk/ZGB/common/src/Scroll.c:159: PUSH_BANK(bank);
+   02B5 F8 08               820 	ldhl	sp,#8
+   02B7 7E                  821 	ld	a,(hl)
+   02B8 F5                  822 	push	af
+   02B9 33                  823 	inc	sp
+   02BA CDr00r00            824 	call	_PushBank
+   02BD 33                  825 	inc	sp
+                            826 ;C:/gbdk/ZGB/common/src/Scroll.c:160: set_win_tiles(x, y, w, h, map);
+   02BE F8 06               827 	ldhl	sp,#6
+   02C0 2A                  828 	ld	a,(hl+)
+   02C1 66                  829 	ld	h,(hl)
+   02C2 6F                  830 	ld	l,a
+   02C3 E5                  831 	push	hl
+   02C4 F8 07               832 	ldhl	sp,#7
+   02C6 7E                  833 	ld	a,(hl)
+   02C7 F5                  834 	push	af
+   02C8 33                  835 	inc	sp
+   02C9 2B                  836 	dec	hl
+   02CA 7E                  837 	ld	a,(hl)
+   02CB F5                  838 	push	af
+   02CC 33                  839 	inc	sp
+   02CD 2B                  840 	dec	hl
+   02CE 7E                  841 	ld	a,(hl)
+   02CF F5                  842 	push	af
+   02D0 33                  843 	inc	sp
+   02D1 2B                  844 	dec	hl
+   02D2 7E                  845 	ld	a,(hl)
+   02D3 F5                  846 	push	af
+   02D4 33                  847 	inc	sp
+   02D5 CDr00r00            848 	call	_set_win_tiles
+   02D8 E8 06               849 	add	sp, #6
+                            850 ;C:/gbdk/ZGB/common/src/Scroll.c:163: if(cmap) {
+   02DA F8 0A               851 	ldhl	sp,#10
+   02DC 3A                  852 	ld	a,(hl-)
+   02DD B6                  853 	or	a,(hl)
+   02DE CAr00r00            854 	jp	Z,_PopBank
+                            855 ;C:/gbdk/ZGB/common/src/Scroll.c:164: VBK_REG = 1;
+   02E1 21 4F FF            856 	ld	hl,#0xff4f
+   02E4 36 01               857 	ld	(hl),#0x01
+                            858 ;C:/gbdk/ZGB/common/src/Scroll.c:165: set_win_tiles(x, y, w, h, cmap);
+   02E6 F8 09               859 	ldhl	sp,#9
+   02E8 2A                  860 	ld	a,(hl+)
+   02E9 66                  861 	ld	h,(hl)
+   02EA 6F                  862 	ld	l,a
+   02EB E5                  863 	push	hl
+   02EC F8 07               864 	ldhl	sp,#7
+   02EE 7E                  865 	ld	a,(hl)
+   02EF F5                  866 	push	af
+   02F0 33                  867 	inc	sp
+   02F1 2B                  868 	dec	hl
+   02F2 7E                  869 	ld	a,(hl)
+   02F3 F5                  870 	push	af
+   02F4 33                  871 	inc	sp
+   02F5 2B                  872 	dec	hl
+   02F6 7E                  873 	ld	a,(hl)
+   02F7 F5                  874 	push	af
+   02F8 33                  875 	inc	sp
+   02F9 2B                  876 	dec	hl
+   02FA 7E                  877 	ld	a,(hl)
+   02FB F5                  878 	push	af
+   02FC 33                  879 	inc	sp
+   02FD CDr00r00            880 	call	_set_win_tiles
+   0300 E8 06               881 	add	sp, #6
+                            882 ;C:/gbdk/ZGB/common/src/Scroll.c:166: VBK_REG = 0;
+   0302 21 4F FF            883 	ld	hl,#0xff4f
+   0305 36 00               884 	ld	(hl),#0x00
+                            885 ;C:/gbdk/ZGB/common/src/Scroll.c:170: POP_BANK;
+   0307 C3r00r00            886 	jp	_PopBank
+                            887 ;C:/gbdk/ZGB/common/src/Scroll.c:175: void ClampScrollLimits(UINT16* x, UINT16* y) {
+                            888 ;	---------------------------------
+                            889 ; Function ClampScrollLimits
+                            890 ; ---------------------------------
+   030A                     891 _ClampScrollLimits::
+   030A E8 FA               892 	add	sp, #-6
+                            893 ;C:/gbdk/ZGB/common/src/Scroll.c:176: if(clamp_enabled) {
+   030C 21r2Dr02            894 	ld	hl,#_clamp_enabled
+   030F 7E                  895 	ld	a,(hl)
+   0310 B7                  896 	or	a, a
+   0311 CArADr03            897 	jp	Z,00111$
+                            898 ;C:/gbdk/ZGB/common/src/Scroll.c:177: if(U_LESS_THAN(*x, 0u)) {
+   0314 F8 08               899 	ldhl	sp,#8
+   0316 2A                  900 	ld	a,(hl+)
+   0317 5E                  901 	ld	e, (hl)
+   0318 F8 04               902 	ldhl	sp,#4
+   031A 22                  903 	ld	(hl+),a
+   031B 73                  904 	ld	(hl),e
+   031C 2B                  905 	dec	hl
+   031D 5E                  906 	ld	e,(hl)
+   031E 23                  907 	inc	hl
+   031F 56                  908 	ld	d,(hl)
+   0320 1A                  909 	ld	a,(de)
+   0321 4F                  910 	ld	c,a
+   0322 13                  911 	inc	de
+   0323 1A                  912 	ld	a,(de)
+   0324 47                  913 	ld	b,a
+   0325 CB 78               914 	bit	7, b
+   0327 28 0A               915 	jr	Z,00102$
+                            916 ;C:/gbdk/ZGB/common/src/Scroll.c:178: *x = 0u;		
+   0329 F8 04               917 	ldhl	sp,#4
+   032B 2A                  918 	ld	a,(hl+)
+   032C 66                  919 	ld	h,(hl)
+   032D 6F                  920 	ld	l,a
+   032E 36 00               921 	ld	(hl),#0x00
+   0330 23                  922 	inc	hl
+   0331 36 00               923 	ld	(hl),#0x00
+   0333                     924 00102$:
+                            925 ;C:/gbdk/ZGB/common/src/Scroll.c:180: if(*x > (scroll_w - SCREENWIDTH)) {
+   0333 F8 04               926 	ldhl	sp,#(5 - 1)
+   0335 5E                  927 	ld	e,(hl)
+   0336 23                  928 	inc	hl
+   0337 56                  929 	ld	d,(hl)
+   0338 1A                  930 	ld	a,(de)
+   0339 F8 00               931 	ldhl	sp,#0
+   033B 22                  932 	ld	(hl+),a
+   033C 13                  933 	inc	de
+   033D 1A                  934 	ld	a,(de)
+   033E 77                  935 	ld	(hl),a
+   033F 21r08r00            936 	ld	hl,#_scroll_w
+   0342 7E                  937 	ld	a,(hl)
+   0343 C6 60               938 	add	a,#0x60
+   0345 4F                  939 	ld	c,a
+   0346 23                  940 	inc	hl
+   0347 7E                  941 	ld	a,(hl)
+   0348 CE FF               942 	adc	a,#0xff
+   034A 47                  943 	ld	b,a
+   034B F8 00               944 	ldhl	sp,#0
+   034D 79                  945 	ld	a,c
+   034E 96                  946 	sub	a, (hl)
+   034F 23                  947 	inc	hl
+   0350 78                  948 	ld	a,b
+   0351 9E                  949 	sbc	a, (hl)
+   0352 30 08               950 	jr	NC,00104$
+                            951 ;C:/gbdk/ZGB/common/src/Scroll.c:181: *x = (scroll_w - SCREENWIDTH);
+   0354 F8 04               952 	ldhl	sp,#4
+   0356 2A                  953 	ld	a,(hl+)
+   0357 66                  954 	ld	h,(hl)
+   0358 6F                  955 	ld	l,a
+   0359 71                  956 	ld	(hl),c
+   035A 23                  957 	inc	hl
+   035B 70                  958 	ld	(hl),b
+   035C                     959 00104$:
+                            960 ;C:/gbdk/ZGB/common/src/Scroll.c:183: if(U_LESS_THAN(*y, 0u)) {
+   035C F8 0A               961 	ldhl	sp,#10
+   035E 2A                  962 	ld	a,(hl+)
+   035F 5E                  963 	ld	e, (hl)
+   0360 F8 00               964 	ldhl	sp,#0
+   0362 22                  965 	ld	(hl+),a
+   0363 73                  966 	ld	(hl),e
+   0364 D1                  967 	pop	de
+   0365 D5                  968 	push	de
+   0366 1A                  969 	ld	a,(de)
+   0367 4F                  970 	ld	c,a
+   0368 13                  971 	inc	de
+   0369 1A                  972 	ld	a,(de)
+   036A 47                  973 	ld	b,a
+   036B CB 78               974 	bit	7, b
+   036D 28 07               975 	jr	Z,00106$
+                            976 ;C:/gbdk/ZGB/common/src/Scroll.c:184: *y = 0u;		
+   036F E1                  977 	pop	hl
+   0370 E5                  978 	push	hl
+   0371 36 00               979 	ld	(hl),#0x00
+   0373 23                  980 	inc	hl
+   0374 36 00               981 	ld	(hl),#0x00
+   0376                     982 00106$:
+                            983 ;C:/gbdk/ZGB/common/src/Scroll.c:186: if(*y > (scroll_h - SCREENHEIGHT + scroll_h_border)) {
+   0376 D1                  984 	pop	de
+   0377 D5                  985 	push	de
+   0378 1A                  986 	ld	a,(de)
+   0379 F8 04               987 	ldhl	sp,#4
+   037B 22                  988 	ld	(hl+),a
+   037C 13                  989 	inc	de
+   037D 1A                  990 	ld	a,(de)
+   037E 77                  991 	ld	(hl),a
+   037F 21r0Ar00            992 	ld	hl,#_scroll_h
+   0382 7E                  993 	ld	a,(hl)
+   0383 C6 70               994 	add	a,#0x70
+   0385 4F                  995 	ld	c,a
+   0386 23                  996 	inc	hl
+   0387 7E                  997 	ld	a,(hl)
+   0388 CE FF               998 	adc	a,#0xff
+   038A 47                  999 	ld	b,a
+   038B 21r2Cr02           1000 	ld	hl,#_scroll_h_border
+   038E 5E                 1001 	ld	e,(hl)
+   038F 7E                 1002 	ld	a,(hl)
+   0390 17                 1003 	rla
+   0391 9F                 1004 	sbc	a, a
+   0392 57                 1005 	ld	d,a
+   0393 F8 02              1006 	ldhl	sp,#2
+   0395 73                 1007 	ld	(hl),e
+   0396 23                 1008 	inc	hl
+   0397 72                 1009 	ld	(hl),d
+   0398 2B                 1010 	dec	hl
+   0399 2A                 1011 	ld	a,(hl+)
+   039A 66                 1012 	ld	h,(hl)
+   039B 6F                 1013 	ld	l,a
+   039C 09                 1014 	add	hl,bc
+   039D 4D                 1015 	ld	c,l
+   039E 44                 1016 	ld	b,h
+   039F F8 04              1017 	ldhl	sp,#4
+   03A1 79                 1018 	ld	a,c
+   03A2 96                 1019 	sub	a, (hl)
+   03A3 23                 1020 	inc	hl
+   03A4 78                 1021 	ld	a,b
+   03A5 9E                 1022 	sbc	a, (hl)
+   03A6 30 05              1023 	jr	NC,00111$
+                           1024 ;C:/gbdk/ZGB/common/src/Scroll.c:187: *y = (scroll_h - SCREENHEIGHT + scroll_h_border);
+   03A8 E1                 1025 	pop	hl
+   03A9 E5                 1026 	push	hl
+   03AA 71                 1027 	ld	(hl),c
+   03AB 23                 1028 	inc	hl
+   03AC 70                 1029 	ld	(hl),b
+   03AD                    1030 00111$:
+   03AD E8 06              1031 	add	sp, #6
+   03AF C9                 1032 	ret
+                           1033 ;C:/gbdk/ZGB/common/src/Scroll.c:192: void ScrollSetMap(UINT16 map_w, UINT16 map_h, unsigned char* map, UINT8 bank, unsigned char* cmap) {
+                           1034 ;	---------------------------------
+                           1035 ; Function ScrollSetMap
+                           1036 ; ---------------------------------
+   03B0                    1037 _ScrollSetMap::
+   03B0 E8 FE              1038 	add	sp, #-2
+                           1039 ;C:/gbdk/ZGB/common/src/Scroll.c:193: scroll_tiles_w = map_w;
+   03B2 F8 04              1040 	ldhl	sp,#(5 - 1)
+   03B4 5E                 1041 	ld	e,(hl)
+   03B5 23                 1042 	inc	hl
+   03B6 56                 1043 	ld	d,(hl)
+   03B7 21r0Cr00           1044 	ld	hl,#_scroll_tiles_w
+   03BA 73                 1045 	ld	(hl),e
+   03BB 23                 1046 	inc	hl
+   03BC 72                 1047 	ld	(hl),d
+                           1048 ;C:/gbdk/ZGB/common/src/Scroll.c:194: scroll_tiles_h = map_h;
+   03BD F8 06              1049 	ldhl	sp,#(7 - 1)
+   03BF 4E                 1050 	ld	c,(hl)
+   03C0 23                 1051 	inc	hl
+   03C1 46                 1052 	ld	b,(hl)
+   03C2 21r0Er00           1053 	ld	hl,#_scroll_tiles_h
+   03C5 71                 1054 	ld	(hl),c
+   03C6 23                 1055 	inc	hl
+   03C7 70                 1056 	ld	(hl),b
+                           1057 ;C:/gbdk/ZGB/common/src/Scroll.c:195: scroll_map = map;
+   03C8 E5                 1058 	push	hl
+   03C9 F8 0A              1059 	ldhl	sp,#10
+   03CB 7E                 1060 	ld	a,(hl)
+   03CC 21r00r00           1061 	ld	hl,#_scroll_map
+   03CF 77                 1062 	ld	(hl),a
+   03D0 E1                 1063 	pop	hl
+   03D1 E5                 1064 	push	hl
+   03D2 F8 0B              1065 	ldhl	sp,#11
+   03D4 7E                 1066 	ld	a,(hl)
+   03D5 21r01r00           1067 	ld	hl,#_scroll_map + 1
+   03D8 77                 1068 	ld	(hl),a
+   03D9 E1                 1069 	pop	hl
+                           1070 ;C:/gbdk/ZGB/common/src/Scroll.c:197: scroll_cmap = cmap;
+   03DA E5                 1071 	push	hl
+   03DB F8 0D              1072 	ldhl	sp,#13
+   03DD 7E                 1073 	ld	a,(hl)
+   03DE 21r02r00           1074 	ld	hl,#_scroll_cmap
+   03E1 77                 1075 	ld	(hl),a
+   03E2 E1                 1076 	pop	hl
+   03E3 E5                 1077 	push	hl
+   03E4 F8 0E              1078 	ldhl	sp,#14
+   03E6 7E                 1079 	ld	a,(hl)
+   03E7 21r03r00           1080 	ld	hl,#_scroll_cmap + 1
+   03EA 77                 1081 	ld	(hl),a
+   03EB E1                 1082 	pop	hl
+                           1083 ;C:/gbdk/ZGB/common/src/Scroll.c:199: scroll_x = 0;
+   03EC 21r04r00           1084 	ld	hl,#_scroll_x
+   03EF 36 00              1085 	ld	(hl),#0x00
+   03F1 23                 1086 	inc	hl
+   03F2 36 00              1087 	ld	(hl),#0x00
+                           1088 ;C:/gbdk/ZGB/common/src/Scroll.c:200: scroll_y = 0;
+   03F4 21r06r00           1089 	ld	hl,#_scroll_y
+   03F7 36 00              1090 	ld	(hl),#0x00
+   03F9 23                 1091 	inc	hl
+   03FA 36 00              1092 	ld	(hl),#0x00
+                           1093 ;C:/gbdk/ZGB/common/src/Scroll.c:201: scroll_w = map_w << 3;
+   03FC CB 23              1094 	sla	e
+   03FE CB 12              1095 	rl	d
+   0400 CB 23              1096 	sla	e
+   0402 CB 12              1097 	rl	d
+   0404 CB 23              1098 	sla	e
+   0406 CB 12              1099 	rl	d
+   0408 21r08r00           1100 	ld	hl,#_scroll_w
+   040B 73                 1101 	ld	(hl),e
+   040C 23                 1102 	inc	hl
+   040D 72                 1103 	ld	(hl),d
+                           1104 ;C:/gbdk/ZGB/common/src/Scroll.c:202: scroll_h = map_h << 3;
+   040E CB 21              1105 	sla	c
+   0410 CB 10              1106 	rl	b
+   0412 CB 21              1107 	sla	c
+   0414 CB 10              1108 	rl	b
+   0416 CB 21              1109 	sla	c
+   0418 CB 10              1110 	rl	b
+   041A 21r0Ar00           1111 	ld	hl,#_scroll_h
+   041D 71                 1112 	ld	(hl),c
+   041E 23                 1113 	inc	hl
+   041F 70                 1114 	ld	(hl),b
+                           1115 ;C:/gbdk/ZGB/common/src/Scroll.c:203: scroll_bank = bank;
+   0420 E5                 1116 	push	hl
+   0421 F8 0C              1117 	ldhl	sp,#12
+   0423 7E                 1118 	ld	a,(hl)
+   0424 21r16r02           1119 	ld	hl,#_scroll_bank
+   0427 77                 1120 	ld	(hl),a
+   0428 E1                 1121 	pop	hl
+                           1122 ;C:/gbdk/ZGB/common/src/Scroll.c:204: if(scroll_target) {
+   0429 21r11r00           1123 	ld	hl,#_scroll_target + 1
+   042C 3A                 1124 	ld	a,(hl-)
+   042D B6                 1125 	or	a,(hl)
+   042E CAr7Ar04           1126 	jp	Z,00102$
+                           1127 ;C:/gbdk/ZGB/common/src/Scroll.c:205: scroll_x = scroll_target->x - (SCREENWIDTH >> 1);
+   0431 2A                 1128 	ld	a,(hl+)
+   0432 5E                 1129 	ld	e, (hl)
+   0433 F8 00              1130 	ldhl	sp,#0
+   0435 22                 1131 	ld	(hl+),a
+   0436 73                 1132 	ld	(hl),e
+   0437 D1                 1133 	pop	de
+   0438 D5                 1134 	push	de
+   0439 21 07 00           1135 	ld	hl,#0x0007
+   043C 19                 1136 	add	hl,de
+   043D 4D                 1137 	ld	c,l
+   043E 44                 1138 	ld	b,h
+   043F 59                 1139 	ld	e, c
+   0440 50                 1140 	ld	d, b
+   0441 1A                 1141 	ld	a,(de)
+   0442 4F                 1142 	ld	c,a
+   0443 13                 1143 	inc	de
+   0444 1A                 1144 	ld	a,(de)
+   0445 47                 1145 	ld	b,a
+   0446 79                 1146 	ld	a,c
+   0447 C6 B0              1147 	add	a,#0xb0
+   0449 21r04r00           1148 	ld	hl,#_scroll_x
+   044C 77                 1149 	ld	(hl),a
+   044D 78                 1150 	ld	a,b
+   044E CE FF              1151 	adc	a,#0xff
+   0450 23                 1152 	inc	hl
+   0451 77                 1153 	ld	(hl),a
+                           1154 ;C:/gbdk/ZGB/common/src/Scroll.c:206: scroll_y = scroll_target->y - BOTTOM_MOVEMENT_LIMIT; //Move the camera to its bottom limit
+   0452 D1                 1155 	pop	de
+   0453 D5                 1156 	push	de
+   0454 21 09 00           1157 	ld	hl,#0x0009
+   0457 19                 1158 	add	hl,de
+   0458 4D                 1159 	ld	c,l
+   0459 44                 1160 	ld	b,h
+   045A 59                 1161 	ld	e, c
+   045B 50                 1162 	ld	d, b
+   045C 1A                 1163 	ld	a,(de)
+   045D 4F                 1164 	ld	c,a
+   045E 13                 1165 	inc	de
+   045F 1A                 1166 	ld	a,(de)
+   0460 47                 1167 	ld	b,a
+   0461 79                 1168 	ld	a,c
+   0462 C6 A6              1169 	add	a,#0xa6
+   0464 21r06r00           1170 	ld	hl,#_scroll_y
+   0467 77                 1171 	ld	(hl),a
+   0468 78                 1172 	ld	a,b
+   0469 CE FF              1173 	adc	a,#0xff
+   046B 23                 1174 	inc	hl
+   046C 77                 1175 	ld	(hl),a
+                           1176 ;C:/gbdk/ZGB/common/src/Scroll.c:207: ClampScrollLimits(&scroll_x, &scroll_y);
+   046D 21r06r00           1177 	ld	hl,#_scroll_y
+   0470 E5                 1178 	push	hl
+   0471 21r04r00           1179 	ld	hl,#_scroll_x
+   0474 E5                 1180 	push	hl
+   0475 CDr0Ar03           1181 	call	_ClampScrollLimits
+   0478 E8 04              1182 	add	sp, #4
+   047A                    1183 00102$:
+                           1184 ;C:/gbdk/ZGB/common/src/Scroll.c:209: pending_h_i = 0;
+   047A 21r1Dr02           1185 	ld	hl,#_pending_h_i
+   047D 36 00              1186 	ld	(hl),#0x00
+                           1187 ;C:/gbdk/ZGB/common/src/Scroll.c:210: pending_w_i = 0;
+   047F 21r2Ar02           1188 	ld	hl,#_pending_w_i
+   0482 36 00              1189 	ld	(hl),#0x00
+   0484 E8 02              1190 	add	sp, #2
+   0486 C9                 1191 	ret
+                           1192 ;C:/gbdk/ZGB/common/src/Scroll.c:213: void InitScroll(UINT16 map_w, UINT16 map_h, unsigned char* map, const UINT8* coll_list, const UINT8* coll_list_down, UINT8 bank, unsigned char* color_map) {
+                           1193 ;	---------------------------------
+                           1194 ; Function InitScroll
+                           1195 ; ---------------------------------
+   0487                    1196 _InitScroll::
+   0487 E8 FB              1197 	add	sp, #-5
+                           1198 ;C:/gbdk/ZGB/common/src/Scroll.c:217: ScrollSetMap(map_w, map_h, map, bank, color_map);
+   0489 F8 12              1199 	ldhl	sp,#18
+   048B 2A                 1200 	ld	a,(hl+)
+   048C 66                 1201 	ld	h,(hl)
+   048D 6F                 1202 	ld	l,a
+   048E E5                 1203 	push	hl
+   048F F8 13              1204 	ldhl	sp,#19
+   0491 7E                 1205 	ld	a,(hl)
+   0492 F5                 1206 	push	af
+   0493 33                 1207 	inc	sp
+   0494 F8 0E              1208 	ldhl	sp,#14
+   0496 2A                 1209 	ld	a,(hl+)
+   0497 66                 1210 	ld	h,(hl)
+   0498 6F                 1211 	ld	l,a
+   0499 E5                 1212 	push	hl
+   049A F8 0E              1213 	ldhl	sp,#14
+   049C 2A                 1214 	ld	a,(hl+)
+   049D 66                 1215 	ld	h,(hl)
+   049E 6F                 1216 	ld	l,a
+   049F E5                 1217 	push	hl
+   04A0 F8 0E              1218 	ldhl	sp,#14
+   04A2 2A                 1219 	ld	a,(hl+)
+   04A3 66                 1220 	ld	h,(hl)
+   04A4 6F                 1221 	ld	l,a
+   04A5 E5                 1222 	push	hl
+   04A6 CDrB0r03           1223 	call	_ScrollSetMap
+   04A9 E8 09              1224 	add	sp, #9
+                           1225 ;C:/gbdk/ZGB/common/src/Scroll.c:219: for(i = 0u; i != 128; ++i) {
+   04AB F8 00              1226 	ldhl	sp,#0
+   04AD 36 00              1227 	ld	(hl),#0x00
+   04AF                    1228 00109$:
+                           1229 ;C:/gbdk/ZGB/common/src/Scroll.c:220: scroll_collisions[i] = 0u;
+   04AF 11r16r00           1230 	ld	de,#_scroll_collisions
+   04B2 F8 00              1231 	ldhl	sp,#0
+   04B4 6E                 1232 	ld	l,(hl)
+   04B5 26 00              1233 	ld	h,#0x00
+   04B7 19                 1234 	add	hl,de
+   04B8 4D                 1235 	ld	c,l
+   04B9 44                 1236 	ld	b,h
+   04BA AF                 1237 	xor	a, a
+   04BB 02                 1238 	ld	(bc),a
+                           1239 ;C:/gbdk/ZGB/common/src/Scroll.c:221: scroll_collisions_down[i] = 0u;
+   04BC 11r96r00           1240 	ld	de,#_scroll_collisions_down
+   04BF F8 00              1241 	ldhl	sp,#0
+   04C1 6E                 1242 	ld	l,(hl)
+   04C2 26 00              1243 	ld	h,#0x00
+   04C4 19                 1244 	add	hl,de
+   04C5 4D                 1245 	ld	c,l
+   04C6 44                 1246 	ld	b,h
+   04C7 AF                 1247 	xor	a, a
+   04C8 02                 1248 	ld	(bc),a
+                           1249 ;C:/gbdk/ZGB/common/src/Scroll.c:219: for(i = 0u; i != 128; ++i) {
+   04C9 F8 00              1250 	ldhl	sp,#0
+   04CB 34                 1251 	inc	(hl)
+   04CC 7E                 1252 	ld	a,(hl)
+   04CD D6 80              1253 	sub	a, #0x80
+   04CF 20 DE              1254 	jr	NZ,00109$
+                           1255 ;C:/gbdk/ZGB/common/src/Scroll.c:223: if(coll_list) {
+   04D1 F8 0E              1256 	ldhl	sp,#14
+   04D3 3A                 1257 	ld	a,(hl-)
+   04D4 B6                 1258 	or	a,(hl)
+   04D5 28 27              1259 	jr	Z,00104$
+                           1260 ;C:/gbdk/ZGB/common/src/Scroll.c:224: for(i = 0u; coll_list[i] != 0u; ++i) {
+   04D7 F8 00              1261 	ldhl	sp,#0
+   04D9 36 00              1262 	ld	(hl),#0x00
+   04DB                    1263 00112$:
+   04DB F8 0D              1264 	ldhl	sp,#(14 - 1)
+   04DD 5E                 1265 	ld	e,(hl)
+   04DE 23                 1266 	inc	hl
+   04DF 56                 1267 	ld	d,(hl)
+   04E0 F8 00              1268 	ldhl	sp,#0
+   04E2 6E                 1269 	ld	l,(hl)
+   04E3 26 00              1270 	ld	h,#0x00
+   04E5 19                 1271 	add	hl,de
+   04E6 4D                 1272 	ld	c,l
+   04E7 44                 1273 	ld	b,h
+   04E8 0A                 1274 	ld	a,(bc)
+   04E9 4F                 1275 	ld	c,a
+   04EA B7                 1276 	or	a, a
+   04EB 28 11              1277 	jr	Z,00104$
+                           1278 ;C:/gbdk/ZGB/common/src/Scroll.c:225: scroll_collisions[coll_list[i]] = 1u;
+   04ED 3Er16              1279 	ld	a,#<(_scroll_collisions)
+   04EF 81                 1280 	add	a, c
+   04F0 4F                 1281 	ld	c,a
+   04F1 3Es00              1282 	ld	a,#>(_scroll_collisions)
+   04F3 CE 00              1283 	adc	a, #0x00
+   04F5 47                 1284 	ld	b,a
+   04F6 3E 01              1285 	ld	a,#0x01
+   04F8 02                 1286 	ld	(bc),a
+                           1287 ;C:/gbdk/ZGB/common/src/Scroll.c:224: for(i = 0u; coll_list[i] != 0u; ++i) {
+   04F9 F8 00              1288 	ldhl	sp,#0
+   04FB 34                 1289 	inc	(hl)
+   04FC 18 DD              1290 	jr	00112$
+   04FE                    1291 00104$:
+                           1292 ;C:/gbdk/ZGB/common/src/Scroll.c:228: if(coll_list_down) {
+   04FE F8 10              1293 	ldhl	sp,#16
+   0500 3A                 1294 	ld	a,(hl-)
+   0501 B6                 1295 	or	a,(hl)
+   0502 28 27              1296 	jr	Z,00107$
+                           1297 ;C:/gbdk/ZGB/common/src/Scroll.c:229: for(i = 0u; coll_list_down[i] != 0u; ++i) {
+   0504 F8 00              1298 	ldhl	sp,#0
+   0506 36 00              1299 	ld	(hl),#0x00
+   0508                    1300 00115$:
+   0508 F8 0F              1301 	ldhl	sp,#(16 - 1)
+   050A 5E                 1302 	ld	e,(hl)
+   050B 23                 1303 	inc	hl
+   050C 56                 1304 	ld	d,(hl)
+   050D F8 00              1305 	ldhl	sp,#0
+   050F 6E                 1306 	ld	l,(hl)
+   0510 26 00              1307 	ld	h,#0x00
+   0512 19                 1308 	add	hl,de
+   0513 4D                 1309 	ld	c,l
+   0514 44                 1310 	ld	b,h
+   0515 0A                 1311 	ld	a,(bc)
+   0516 4F                 1312 	ld	c,a
+   0517 B7                 1313 	or	a, a
+   0518 28 11              1314 	jr	Z,00107$
+                           1315 ;C:/gbdk/ZGB/common/src/Scroll.c:230: scroll_collisions_down[coll_list_down[i]] = 1u;
+   051A 3Er96              1316 	ld	a,#<(_scroll_collisions_down)
+   051C 81                 1317 	add	a, c
+   051D 4F                 1318 	ld	c,a
+   051E 3Es00              1319 	ld	a,#>(_scroll_collisions_down)
+   0520 CE 00              1320 	adc	a, #0x00
+   0522 47                 1321 	ld	b,a
+   0523 3E 01              1322 	ld	a,#0x01
+   0525 02                 1323 	ld	(bc),a
+                           1324 ;C:/gbdk/ZGB/common/src/Scroll.c:229: for(i = 0u; coll_list_down[i] != 0u; ++i) {
+   0526 F8 00              1325 	ldhl	sp,#0
+   0528 34                 1326 	inc	(hl)
+   0529 18 DD              1327 	jr	00115$
+   052B                    1328 00107$:
+                           1329 ;C:/gbdk/ZGB/common/src/Scroll.c:235: PUSH_BANK(bank);
+   052B F8 11              1330 	ldhl	sp,#17
+   052D 7E                 1331 	ld	a,(hl)
+   052E F5                 1332 	push	af
+   052F 33                 1333 	inc	sp
+   0530 CDr00r00           1334 	call	_PushBank
+   0533 33                 1335 	inc	sp
+                           1336 ;C:/gbdk/ZGB/common/src/Scroll.c:236: y = scroll_y >> 3;
+   0534 21r06r00           1337 	ld	hl,#_scroll_y
+   0537 7E                 1338 	ld	a,(hl)
+   0538 F8 01              1339 	ldhl	sp,#1
+   053A 77                 1340 	ld	(hl),a
+   053B 21r07r00           1341 	ld	hl,#_scroll_y + 1
+   053E 7E                 1342 	ld	a,(hl)
+   053F F8 02              1343 	ldhl	sp,#2
+   0541 77                 1344 	ld	(hl),a
+   0542 CB 2E              1345 	sra	(hl)
+   0544 2B                 1346 	dec	hl
+   0545 CB 1E              1347 	rr	(hl)
+   0547 23                 1348 	inc	hl
+   0548 CB 2E              1349 	sra	(hl)
+   054A 2B                 1350 	dec	hl
+   054B CB 1E              1351 	rr	(hl)
+   054D 23                 1352 	inc	hl
+   054E CB 2E              1353 	sra	(hl)
+   0550 2B                 1354 	dec	hl
+   0551 CB 1E              1355 	rr	(hl)
+                           1356 ;C:/gbdk/ZGB/common/src/Scroll.c:237: for(i = 0u; i != (SCREEN_TILE_REFRES_H) && y != scroll_h; ++i, y ++) {
+   0553 2B                 1357 	dec	hl
+   0554 36 00              1358 	ld	(hl),#0x00
+   0556                    1359 00119$:
+   0556 F8 00              1360 	ldhl	sp,#0
+   0558 7E                 1361 	ld	a,(hl)
+   0559 D6 15              1362 	sub	a, #0x15
+   055B CArAEr05           1363 	jp	Z,00108$
+   055E F8 01              1364 	ldhl	sp,#(2 - 1)
+   0560 4E                 1365 	ld	c,(hl)
+   0561 23                 1366 	inc	hl
+   0562 46                 1367 	ld	b,(hl)
+   0563 21r0Ar00           1368 	ld	hl,#_scroll_h
+   0566 7E                 1369 	ld	a,(hl)
+   0567 91                 1370 	sub	a, c
+   0568 20 06              1371 	jr	NZ,00178$
+   056A 23                 1372 	inc	hl
+   056B 7E                 1373 	ld	a,(hl)
+   056C 90                 1374 	sub	a, b
+   056D CArAEr05           1375 	jp	Z,00108$
+   0570                    1376 00178$:
+                           1377 ;C:/gbdk/ZGB/common/src/Scroll.c:238: ScrollUpdateRow((scroll_x >> 3) - SCREEN_PAD_LEFT,  y - SCREEN_PAD_TOP);
+   0570 F8 01              1378 	ldhl	sp,#(2 - 1)
+   0572 5E                 1379 	ld	e,(hl)
+   0573 23                 1380 	inc	hl
+   0574 56                 1381 	ld	d,(hl)
+   0575 21 01 00           1382 	ld	hl,#0x0001
+   0578 7B                 1383 	ld	a,e
+   0579 95                 1384 	sub	a,l
+   057A 5F                 1385 	ld	e,a
+   057B 7A                 1386 	ld	a,d
+   057C 9C                 1387 	sbc	a,h
+   057D F8 04              1388 	ldhl	sp,#4
+   057F 32                 1389 	ld	(hl-),a
+   0580 73                 1390 	ld	(hl),e
+   0581 21r05r00           1391 	ld	hl,#_scroll_x + 1
+   0584 2B                 1392 	dec	hl
+   0585 4E                 1393 	ld	c,(hl)
+   0586 23                 1394 	inc	hl
+   0587 46                 1395 	ld	b,(hl)
+   0588 CB 28              1396 	sra	b
+   058A CB 19              1397 	rr	c
+   058C CB 28              1398 	sra	b
+   058E CB 19              1399 	rr	c
+   0590 CB 28              1400 	sra	b
+   0592 CB 19              1401 	rr	c
+   0594 0B                 1402 	dec	bc
+   0595 F8 03              1403 	ldhl	sp,#3
+   0597 2A                 1404 	ld	a,(hl+)
+   0598 66                 1405 	ld	h,(hl)
+   0599 6F                 1406 	ld	l,a
+   059A E5                 1407 	push	hl
+   059B C5                 1408 	push	bc
+   059C CDr8Br06           1409 	call	_ScrollUpdateRow
+   059F E8 04              1410 	add	sp, #4
+                           1411 ;C:/gbdk/ZGB/common/src/Scroll.c:237: for(i = 0u; i != (SCREEN_TILE_REFRES_H) && y != scroll_h; ++i, y ++) {
+   05A1 F8 00              1412 	ldhl	sp,#0
+   05A3 34                 1413 	inc	(hl)
+   05A4 23                 1414 	inc	hl
+   05A5 34                 1415 	inc	(hl)
+   05A6 C2r56r05           1416 	jp	NZ,00119$
+   05A9 23                 1417 	inc	hl
+   05AA 34                 1418 	inc	(hl)
+   05AB C3r56r05           1419 	jp	00119$
+   05AE                    1420 00108$:
+                           1421 ;C:/gbdk/ZGB/common/src/Scroll.c:240: POP_BANK;
+   05AE CDr00r00           1422 	call	_PopBank
+   05B1 E8 05              1423 	add	sp, #5
+   05B3 C9                 1424 	ret
+                           1425 ;C:/gbdk/ZGB/common/src/Scroll.c:243: void ScrollUpdateRowR() {
+                           1426 ;	---------------------------------
+                           1427 ; Function ScrollUpdateRowR
+                           1428 ; ---------------------------------
+   05B4                    1429 _ScrollUpdateRowR::
+   05B4 E8 FB              1430 	add	sp, #-5
+                           1431 ;C:/gbdk/ZGB/common/src/Scroll.c:246: for(i = 0u; i != 5 && pending_w_i != 0; ++i, -- pending_w_i)  {
+   05B6 F8 00              1432 	ldhl	sp,#0
+   05B8 36 00              1433 	ld	(hl),#0x00
+   05BA                    1434 00104$:
+   05BA F8 00              1435 	ldhl	sp,#0
+   05BC 7E                 1436 	ld	a,(hl)
+   05BD D6 05              1437 	sub	a, #0x05
+   05BF CAr1Cr06           1438 	jp	Z,00106$
+   05C2 21r2Ar02           1439 	ld	hl,#_pending_w_i
+   05C5 7E                 1440 	ld	a,(hl)
+   05C6 B7                 1441 	or	a, a
+   05C7 CAr1Cr06           1442 	jp	Z,00106$
+                           1443 ;C:/gbdk/ZGB/common/src/Scroll.c:248: UPDATE_TILE(pending_w_x ++, pending_w_y, pending_w_map ++, pending_w_cmap++);
+   05CA 21r24r02           1444 	ld	hl,#_pending_w_cmap
+   05CD 2A                 1445 	ld	a,(hl+)
+   05CE 5E                 1446 	ld	e, (hl)
+   05CF F8 03              1447 	ldhl	sp,#3
+   05D1 22                 1448 	ld	(hl+),a
+   05D2 73                 1449 	ld	(hl),e
+   05D3 21r24r02           1450 	ld	hl,#_pending_w_cmap
+   05D6 34                 1451 	inc	(hl)
+   05D7 20 02              1452 	jr	NZ,00122$
+   05D9 23                 1453 	inc	hl
+   05DA 34                 1454 	inc	(hl)
+   05DB                    1455 00122$:
+   05DB 21r20r02           1456 	ld	hl,#_pending_w_map
+   05DE 2A                 1457 	ld	a,(hl+)
+   05DF 5E                 1458 	ld	e, (hl)
+   05E0 F8 01              1459 	ldhl	sp,#1
+   05E2 22                 1460 	ld	(hl+),a
+   05E3 73                 1461 	ld	(hl),e
+   05E4 21r20r02           1462 	ld	hl,#_pending_w_map
+   05E7 34                 1463 	inc	(hl)
+   05E8 20 02              1464 	jr	NZ,00123$
+   05EA 23                 1465 	inc	hl
+   05EB 34                 1466 	inc	(hl)
+   05EC                    1467 00123$:
+   05EC 21r27r02           1468 	ld	hl,#_pending_w_x + 1
+   05EF 2B                 1469 	dec	hl
+   05F0 4E                 1470 	ld	c,(hl)
+   05F1 23                 1471 	inc	hl
+   05F2 46                 1472 	ld	b,(hl)
+   05F3 2B                 1473 	dec	hl
+   05F4 34                 1474 	inc	(hl)
+   05F5 20 02              1475 	jr	NZ,00124$
+   05F7 23                 1476 	inc	hl
+   05F8 34                 1477 	inc	(hl)
+   05F9                    1478 00124$:
+   05F9 F8 03              1479 	ldhl	sp,#3
+   05FB 2A                 1480 	ld	a,(hl+)
+   05FC 66                 1481 	ld	h,(hl)
+   05FD 6F                 1482 	ld	l,a
+   05FE E5                 1483 	push	hl
+   05FF F8 03              1484 	ldhl	sp,#3
+   0601 2A                 1485 	ld	a,(hl+)
+   0602 66                 1486 	ld	h,(hl)
+   0603 6F                 1487 	ld	l,a
+   0604 E5                 1488 	push	hl
+   0605 21r28r02           1489 	ld	hl,#_pending_w_y
+   0608 2A                 1490 	ld	a,(hl+)
+   0609 66                 1491 	ld	h,(hl)
+   060A 6F                 1492 	ld	l,a
+   060B E5                 1493 	push	hl
+   060C C5                 1494 	push	bc
+   060D CDr28r00           1495 	call	_UPDATE_TILE
+   0610 E8 08              1496 	add	sp, #8
+                           1497 ;C:/gbdk/ZGB/common/src/Scroll.c:246: for(i = 0u; i != 5 && pending_w_i != 0; ++i, -- pending_w_i)  {
+   0612 F8 00              1498 	ldhl	sp,#0
+   0614 34                 1499 	inc	(hl)
+   0615 21r2Ar02           1500 	ld	hl,#_pending_w_i
+   0618 35                 1501 	dec	(hl)
+   0619 C3rBAr05           1502 	jp	00104$
+   061C                    1503 00106$:
+   061C E8 05              1504 	add	sp, #5
+   061E C9                 1505 	ret
+                           1506 ;C:/gbdk/ZGB/common/src/Scroll.c:255: void ScrollUpdateRowWithDelay(INT16 x, INT16 y) {
+                           1507 ;	---------------------------------
+                           1508 ; Function ScrollUpdateRowWithDelay
+                           1509 ; ---------------------------------
+   061F                    1510 _ScrollUpdateRowWithDelay::
+   061F E8 FE              1511 	add	sp, #-2
+                           1512 ;C:/gbdk/ZGB/common/src/Scroll.c:256: while(pending_w_i) {
+   0621                    1513 00101$:
+   0621 21r2Ar02           1514 	ld	hl,#_pending_w_i
+   0624 7E                 1515 	ld	a,(hl)
+   0625 B7                 1516 	or	a, a
+   0626 28 05              1517 	jr	Z,00103$
+                           1518 ;C:/gbdk/ZGB/common/src/Scroll.c:257: ScrollUpdateRowR();
+   0628 CDrB4r05           1519 	call	_ScrollUpdateRowR
+   062B 18 F4              1520 	jr	00101$
+   062D                    1521 00103$:
+                           1522 ;C:/gbdk/ZGB/common/src/Scroll.c:260: pending_w_x = x;
+   062D F8 04              1523 	ldhl	sp,#4
+   062F 2A                 1524 	ld	a,(hl+)
+   0630 5E                 1525 	ld	e, (hl)
+   0631 21r26r02           1526 	ld	hl,#_pending_w_x
+   0634 22                 1527 	ld	(hl+),a
+   0635 73                 1528 	ld	(hl),e
+                           1529 ;C:/gbdk/ZGB/common/src/Scroll.c:261: pending_w_y = y;
+   0636 F8 06              1530 	ldhl	sp,#(7 - 1)
+   0638 4E                 1531 	ld	c,(hl)
+   0639 23                 1532 	inc	hl
+   063A 46                 1533 	ld	b,(hl)
+   063B 21r28r02           1534 	ld	hl,#_pending_w_y
+   063E 71                 1535 	ld	(hl),c
+   063F 23                 1536 	inc	hl
+   0640 70                 1537 	ld	(hl),b
+                           1538 ;C:/gbdk/ZGB/common/src/Scroll.c:262: pending_w_i = SCREEN_TILE_REFRES_W;
+   0641 21r2Ar02           1539 	ld	hl,#_pending_w_i
+   0644 36 17              1540 	ld	(hl),#0x17
+                           1541 ;C:/gbdk/ZGB/common/src/Scroll.c:263: pending_w_map = scroll_map + scroll_tiles_w * y + x;
+   0646 C5                 1542 	push	bc
+   0647 21r0Cr00           1543 	ld	hl,#_scroll_tiles_w
+   064A 2A                 1544 	ld	a,(hl+)
+   064B 66                 1545 	ld	h,(hl)
+   064C 6F                 1546 	ld	l,a
+   064D E5                 1547 	push	hl
+   064E CDr00r00           1548 	call	__mulint
+   0651 E8 04              1549 	add	sp, #4
+   0653 F8 01              1550 	ldhl	sp,#1
+   0655 72                 1551 	ld	(hl),d
+   0656 2B                 1552 	dec	hl
+   0657 73                 1553 	ld	(hl),e
+   0658 D1                 1554 	pop	de
+   0659 D5                 1555 	push	de
+   065A 21r00r00           1556 	ld	hl,#_scroll_map
+   065D 2A                 1557 	ld	a,(hl+)
+   065E 66                 1558 	ld	h,(hl)
+   065F 6F                 1559 	ld	l,a
+   0660 19                 1560 	add	hl,de
+   0661 4D                 1561 	ld	c,l
+   0662 44                 1562 	ld	b,h
+   0663 F8 04              1563 	ldhl	sp,#4
+   0665 2A                 1564 	ld	a,(hl+)
+   0666 66                 1565 	ld	h,(hl)
+   0667 6F                 1566 	ld	l,a
+   0668 09                 1567 	add	hl,bc
+   0669 7D                 1568 	ld	a,l
+   066A 54                 1569 	ld	d,h
+   066B 21r20r02           1570 	ld	hl,#_pending_w_map
+   066E 22                 1571 	ld	(hl+),a
+   066F 72                 1572 	ld	(hl),d
+                           1573 ;C:/gbdk/ZGB/common/src/Scroll.c:266: pending_w_cmap = scroll_cmap + scroll_tiles_w * y + x;
+   0670 D1                 1574 	pop	de
+   0671 D5                 1575 	push	de
+   0672 21r02r00           1576 	ld	hl,#_scroll_cmap
+   0675 2A                 1577 	ld	a,(hl+)
+   0676 66                 1578 	ld	h,(hl)
+   0677 6F                 1579 	ld	l,a
+   0678 19                 1580 	add	hl,de
+   0679 4D                 1581 	ld	c,l
+   067A 44                 1582 	ld	b,h
+   067B F8 04              1583 	ldhl	sp,#4
+   067D 2A                 1584 	ld	a,(hl+)
+   067E 66                 1585 	ld	h,(hl)
+   067F 6F                 1586 	ld	l,a
+   0680 09                 1587 	add	hl,bc
+   0681 7D                 1588 	ld	a,l
+   0682 54                 1589 	ld	d,h
+   0683 21r24r02           1590 	ld	hl,#_pending_w_cmap
+   0686 22                 1591 	ld	(hl+),a
+   0687 72                 1592 	ld	(hl),d
+   0688 E8 02              1593 	add	sp, #2
+   068A C9                 1594 	ret
+                           1595 ;C:/gbdk/ZGB/common/src/Scroll.c:270: void ScrollUpdateRow(INT16 x, INT16 y) {
+                           1596 ;	---------------------------------
+                           1597 ; Function ScrollUpdateRow
+                           1598 ; ---------------------------------
+   068B                    1599 _ScrollUpdateRow::
+   068B E8 F5              1600 	add	sp, #-11
+                           1601 ;C:/gbdk/ZGB/common/src/Scroll.c:272: unsigned char* map = scroll_map + scroll_tiles_w * y + x;
+   068D F8 0F              1602 	ldhl	sp,#(16 - 1)
+   068F 4E                 1603 	ld	c,(hl)
+   0690 23                 1604 	inc	hl
+   0691 46                 1605 	ld	b,(hl)
+   0692 C5                 1606 	push	bc
+   0693 21r0Cr00           1607 	ld	hl,#_scroll_tiles_w
+   0696 2A                 1608 	ld	a,(hl+)
+   0697 66                 1609 	ld	h,(hl)
+   0698 6F                 1610 	ld	l,a
+   0699 E5                 1611 	push	hl
+   069A CDr00r00           1612 	call	__mulint
+   069D E8 04              1613 	add	sp, #4
+   069F F8 0A              1614 	ldhl	sp,#10
+   06A1 72                 1615 	ld	(hl),d
+   06A2 2B                 1616 	dec	hl
+   06A3 73                 1617 	ld	(hl),e
+   06A4 F8 09              1618 	ldhl	sp,#(10 - 1)
+   06A6 5E                 1619 	ld	e,(hl)
+   06A7 23                 1620 	inc	hl
+   06A8 56                 1621 	ld	d,(hl)
+   06A9 21r00r00           1622 	ld	hl,#_scroll_map
+   06AC 2A                 1623 	ld	a,(hl+)
+   06AD 66                 1624 	ld	h,(hl)
+   06AE 6F                 1625 	ld	l,a
+   06AF 19                 1626 	add	hl,de
+   06B0 4D                 1627 	ld	c,l
+   06B1 44                 1628 	ld	b,h
+   06B2 F8 0D              1629 	ldhl	sp,#13
+   06B4 2A                 1630 	ld	a,(hl+)
+   06B5 66                 1631 	ld	h,(hl)
+   06B6 6F                 1632 	ld	l,a
+   06B7 09                 1633 	add	hl,bc
+   06B8 4D                 1634 	ld	c,l
+   06B9 44                 1635 	ld	b,h
+   06BA 33                 1636 	inc	sp
+   06BB 33                 1637 	inc	sp
+   06BC C5                 1638 	push	bc
+                           1639 ;C:/gbdk/ZGB/common/src/Scroll.c:275: unsigned char* cmap = scroll_cmap + scroll_tiles_w * y + x;
+   06BD F8 09              1640 	ldhl	sp,#(10 - 1)
+   06BF 5E                 1641 	ld	e,(hl)
+   06C0 23                 1642 	inc	hl
+   06C1 56                 1643 	ld	d,(hl)
+   06C2 21r02r00           1644 	ld	hl,#_scroll_cmap
+   06C5 2A                 1645 	ld	a,(hl+)
+   06C6 66                 1646 	ld	h,(hl)
+   06C7 6F                 1647 	ld	l,a
+   06C8 19                 1648 	add	hl,de
+   06C9 4D                 1649 	ld	c,l
+   06CA 44                 1650 	ld	b,h
+   06CB F8 0D              1651 	ldhl	sp,#13
+   06CD 2A                 1652 	ld	a,(hl+)
+   06CE 66                 1653 	ld	h,(hl)
+   06CF 6F                 1654 	ld	l,a
+   06D0 09                 1655 	add	hl,bc
+   06D1 4D                 1656 	ld	c,l
+   06D2 44                 1657 	ld	b,h
+                           1658 ;C:/gbdk/ZGB/common/src/Scroll.c:278: PUSH_BANK(scroll_bank);
+   06D3 C5                 1659 	push	bc
+   06D4 21r16r02           1660 	ld	hl,#_scroll_bank
+   06D7 7E                 1661 	ld	a,(hl)
+   06D8 F5                 1662 	push	af
+   06D9 33                 1663 	inc	sp
+   06DA CDr00r00           1664 	call	_PushBank
+   06DD 33                 1665 	inc	sp
+   06DE C1                 1666 	pop	bc
+                           1667 ;C:/gbdk/ZGB/common/src/Scroll.c:279: for(i = 0u; i != SCREEN_TILE_REFRES_W; ++i) {
+   06DF F8 09              1668 	ldhl	sp,#9
+   06E1 71                 1669 	ld	(hl),c
+   06E2 23                 1670 	inc	hl
+   06E3 70                 1671 	ld	(hl),b
+   06E4 F8 00              1672 	ldhl	sp,#0
+   06E6 2A                 1673 	ld	a,(hl+)
+   06E7 5E                 1674 	ld	e, (hl)
+   06E8 F8 07              1675 	ldhl	sp,#7
+   06EA 22                 1676 	ld	(hl+),a
+   06EB 73                 1677 	ld	(hl),e
+   06EC F8 02              1678 	ldhl	sp,#2
+   06EE 36 00              1679 	ld	(hl),#0x00
+   06F0                    1680 00102$:
+                           1681 ;C:/gbdk/ZGB/common/src/Scroll.c:281: UPDATE_TILE(x + i, y, map ++, cmap ++);
+   06F0 F8 09              1682 	ldhl	sp,#9
+   06F2 2A                 1683 	ld	a,(hl+)
+   06F3 5E                 1684 	ld	e, (hl)
+   06F4 F8 03              1685 	ldhl	sp,#3
+   06F6 22                 1686 	ld	(hl+),a
+   06F7 73                 1687 	ld	(hl),e
+   06F8 F8 09              1688 	ldhl	sp,#9
+   06FA 34                 1689 	inc	(hl)
+   06FB 20 02              1690 	jr	NZ,00115$
+   06FD 23                 1691 	inc	hl
+   06FE 34                 1692 	inc	(hl)
+   06FF                    1693 00115$:
+   06FF F8 07              1694 	ldhl	sp,#7
+   0701 2A                 1695 	ld	a,(hl+)
+   0702 5E                 1696 	ld	e, (hl)
+   0703 F8 05              1697 	ldhl	sp,#5
+   0705 22                 1698 	ld	(hl+),a
+   0706 73                 1699 	ld	(hl),e
+   0707 23                 1700 	inc	hl
+   0708 34                 1701 	inc	(hl)
+   0709 20 02              1702 	jr	NZ,00116$
+   070B 23                 1703 	inc	hl
+   070C 34                 1704 	inc	(hl)
+   070D                    1705 00116$:
+   070D F8 02              1706 	ldhl	sp,#2
+   070F 4E                 1707 	ld	c,(hl)
+   0710 06 00              1708 	ld	b,#0x00
+   0712 F8 0D              1709 	ldhl	sp,#13
+   0714 2A                 1710 	ld	a,(hl+)
+   0715 66                 1711 	ld	h,(hl)
+   0716 6F                 1712 	ld	l,a
+   0717 09                 1713 	add	hl,bc
+   0718 4D                 1714 	ld	c,l
+   0719 44                 1715 	ld	b,h
+   071A F8 03              1716 	ldhl	sp,#3
+   071C 2A                 1717 	ld	a,(hl+)
+   071D 66                 1718 	ld	h,(hl)
+   071E 6F                 1719 	ld	l,a
+   071F E5                 1720 	push	hl
+   0720 F8 07              1721 	ldhl	sp,#7
+   0722 2A                 1722 	ld	a,(hl+)
+   0723 66                 1723 	ld	h,(hl)
+   0724 6F                 1724 	ld	l,a
+   0725 E5                 1725 	push	hl
+   0726 F8 13              1726 	ldhl	sp,#19
+   0728 2A                 1727 	ld	a,(hl+)
+   0729 66                 1728 	ld	h,(hl)
+   072A 6F                 1729 	ld	l,a
+   072B E5                 1730 	push	hl
+   072C C5                 1731 	push	bc
+   072D CDr28r00           1732 	call	_UPDATE_TILE
+   0730 E8 08              1733 	add	sp, #8
+                           1734 ;C:/gbdk/ZGB/common/src/Scroll.c:279: for(i = 0u; i != SCREEN_TILE_REFRES_W; ++i) {
+   0732 F8 02              1735 	ldhl	sp,#2
+   0734 34                 1736 	inc	(hl)
+   0735 7E                 1737 	ld	a,(hl)
+   0736 D6 17              1738 	sub	a, #0x17
+   0738 C2rF0r06           1739 	jp	NZ,00102$
+                           1740 ;C:/gbdk/ZGB/common/src/Scroll.c:286: POP_BANK;
+   073B CDr00r00           1741 	call	_PopBank
+   073E E8 0B              1742 	add	sp, #11
+   0740 C9                 1743 	ret
+                           1744 ;C:/gbdk/ZGB/common/src/Scroll.c:289: void ScrollUpdateColumnR() {
+                           1745 ;	---------------------------------
+                           1746 ; Function ScrollUpdateColumnR
+                           1747 ; ---------------------------------
+   0741                    1748 _ScrollUpdateColumnR::
+   0741 3B                 1749 	dec	sp
+                           1750 ;C:/gbdk/ZGB/common/src/Scroll.c:292: for(i = 0u; i != 5 && pending_h_i != 0; ++i, pending_h_i --) {
+   0742 F8 00              1751 	ldhl	sp,#0
+   0744 36 00              1752 	ld	(hl),#0x00
+   0746                    1753 00104$:
+   0746 F8 00              1754 	ldhl	sp,#0
+   0748 7E                 1755 	ld	a,(hl)
+   0749 D6 05              1756 	sub	a, #0x05
+   074B CArB2r07           1757 	jp	Z,00106$
+   074E 21r1Dr02           1758 	ld	hl,#_pending_h_i
+   0751 7E                 1759 	ld	a,(hl)
+   0752 B7                 1760 	or	a, a
+   0753 CArB2r07           1761 	jp	Z,00106$
+                           1762 ;C:/gbdk/ZGB/common/src/Scroll.c:294: UPDATE_TILE(pending_h_x, pending_h_y ++, pending_h_map, pending_h_cmap);
+   0756 21r1Cr02           1763 	ld	hl,#_pending_h_y + 1
+   0759 2B                 1764 	dec	hl
+   075A 4E                 1765 	ld	c,(hl)
+   075B 23                 1766 	inc	hl
+   075C 46                 1767 	ld	b,(hl)
+   075D 2B                 1768 	dec	hl
+   075E 34                 1769 	inc	(hl)
+   075F 20 02              1770 	jr	NZ,00122$
+   0761 23                 1771 	inc	hl
+   0762 34                 1772 	inc	(hl)
+   0763                    1773 00122$:
+   0763 21r22r02           1774 	ld	hl,#_pending_h_cmap
+   0766 2A                 1775 	ld	a,(hl+)
+   0767 66                 1776 	ld	h,(hl)
+   0768 6F                 1777 	ld	l,a
+   0769 E5                 1778 	push	hl
+   076A 21r1Er02           1779 	ld	hl,#_pending_h_map
+   076D 2A                 1780 	ld	a,(hl+)
+   076E 66                 1781 	ld	h,(hl)
+   076F 6F                 1782 	ld	l,a
+   0770 E5                 1783 	push	hl
+   0771 C5                 1784 	push	bc
+   0772 21r19r02           1785 	ld	hl,#_pending_h_x
+   0775 2A                 1786 	ld	a,(hl+)
+   0776 66                 1787 	ld	h,(hl)
+   0777 6F                 1788 	ld	l,a
+   0778 E5                 1789 	push	hl
+   0779 CDr28r00           1790 	call	_UPDATE_TILE
+   077C E8 08              1791 	add	sp, #8
+                           1792 ;C:/gbdk/ZGB/common/src/Scroll.c:295: pending_h_map += scroll_tiles_w;
+   077E 21r1Er02           1793 	ld	hl,#_pending_h_map
+   0781 7E                 1794 	ld	a,(hl)
+   0782 21r0Cr00           1795 	ld	hl,#_scroll_tiles_w
+   0785 86                 1796 	add	a, (hl)
+   0786 21r1Er02           1797 	ld	hl,#_pending_h_map
+   0789 22                 1798 	ld	(hl+),a
+   078A 7E                 1799 	ld	a,(hl)
+   078B 21r0Dr00           1800 	ld	hl,#_scroll_tiles_w + 1
+   078E 8E                 1801 	adc	a, (hl)
+   078F 21r1Fr02           1802 	ld	hl,#_pending_h_map + 1
+   0792 77                 1803 	ld	(hl),a
+                           1804 ;C:/gbdk/ZGB/common/src/Scroll.c:296: pending_h_cmap += scroll_tiles_w;
+   0793 21r22r02           1805 	ld	hl,#_pending_h_cmap
+   0796 7E                 1806 	ld	a,(hl)
+   0797 21r0Cr00           1807 	ld	hl,#_scroll_tiles_w
+   079A 86                 1808 	add	a, (hl)
+   079B 21r22r02           1809 	ld	hl,#_pending_h_cmap
+   079E 22                 1810 	ld	(hl+),a
+   079F 7E                 1811 	ld	a,(hl)
+   07A0 21r0Dr00           1812 	ld	hl,#_scroll_tiles_w + 1
+   07A3 8E                 1813 	adc	a, (hl)
+   07A4 21r23r02           1814 	ld	hl,#_pending_h_cmap + 1
+   07A7 77                 1815 	ld	(hl),a
+                           1816 ;C:/gbdk/ZGB/common/src/Scroll.c:292: for(i = 0u; i != 5 && pending_h_i != 0; ++i, pending_h_i --) {
+   07A8 F8 00              1817 	ldhl	sp,#0
+   07AA 34                 1818 	inc	(hl)
+   07AB 21r1Dr02           1819 	ld	hl,#_pending_h_i
+   07AE 35                 1820 	dec	(hl)
+   07AF C3r46r07           1821 	jp	00104$
+   07B2                    1822 00106$:
+   07B2 33                 1823 	inc	sp
+   07B3 C9                 1824 	ret
+                           1825 ;C:/gbdk/ZGB/common/src/Scroll.c:304: void ScrollUpdateColumnWithDelay(INT16 x, INT16 y) {
+                           1826 ;	---------------------------------
+                           1827 ; Function ScrollUpdateColumnWithDelay
+                           1828 ; ---------------------------------
+   07B4                    1829 _ScrollUpdateColumnWithDelay::
+   07B4 E8 FE              1830 	add	sp, #-2
+                           1831 ;C:/gbdk/ZGB/common/src/Scroll.c:305: while(pending_h_i) {
+   07B6                    1832 00101$:
+   07B6 21r1Dr02           1833 	ld	hl,#_pending_h_i
+   07B9 7E                 1834 	ld	a,(hl)
+   07BA B7                 1835 	or	a, a
+   07BB 28 05              1836 	jr	Z,00103$
+                           1837 ;C:/gbdk/ZGB/common/src/Scroll.c:306: ScrollUpdateColumnR();
+   07BD CDr41r07           1838 	call	_ScrollUpdateColumnR
+   07C0 18 F4              1839 	jr	00101$
+   07C2                    1840 00103$:
+                           1841 ;C:/gbdk/ZGB/common/src/Scroll.c:309: pending_h_x = x;
+   07C2 F8 04              1842 	ldhl	sp,#4
+   07C4 2A                 1843 	ld	a,(hl+)
+   07C5 5E                 1844 	ld	e, (hl)
+   07C6 21r19r02           1845 	ld	hl,#_pending_h_x
+   07C9 22                 1846 	ld	(hl+),a
+   07CA 73                 1847 	ld	(hl),e
+                           1848 ;C:/gbdk/ZGB/common/src/Scroll.c:310: pending_h_y = y;
+   07CB F8 06              1849 	ldhl	sp,#(7 - 1)
+   07CD 4E                 1850 	ld	c,(hl)
+   07CE 23                 1851 	inc	hl
+   07CF 46                 1852 	ld	b,(hl)
+   07D0 21r1Br02           1853 	ld	hl,#_pending_h_y
+   07D3 71                 1854 	ld	(hl),c
+   07D4 23                 1855 	inc	hl
+   07D5 70                 1856 	ld	(hl),b
+                           1857 ;C:/gbdk/ZGB/common/src/Scroll.c:311: pending_h_i = SCREEN_TILE_REFRES_H;
+   07D6 21r1Dr02           1858 	ld	hl,#_pending_h_i
+   07D9 36 15              1859 	ld	(hl),#0x15
+                           1860 ;C:/gbdk/ZGB/common/src/Scroll.c:312: pending_h_map = scroll_map + scroll_tiles_w * y + x;
+   07DB C5                 1861 	push	bc
+   07DC 21r0Cr00           1862 	ld	hl,#_scroll_tiles_w
+   07DF 2A                 1863 	ld	a,(hl+)
+   07E0 66                 1864 	ld	h,(hl)
+   07E1 6F                 1865 	ld	l,a
+   07E2 E5                 1866 	push	hl
+   07E3 CDr00r00           1867 	call	__mulint
+   07E6 E8 04              1868 	add	sp, #4
+   07E8 F8 01              1869 	ldhl	sp,#1
+   07EA 72                 1870 	ld	(hl),d
+   07EB 2B                 1871 	dec	hl
+   07EC 73                 1872 	ld	(hl),e
+   07ED D1                 1873 	pop	de
+   07EE D5                 1874 	push	de
+   07EF 21r00r00           1875 	ld	hl,#_scroll_map
+   07F2 2A                 1876 	ld	a,(hl+)
+   07F3 66                 1877 	ld	h,(hl)
+   07F4 6F                 1878 	ld	l,a
+   07F5 19                 1879 	add	hl,de
+   07F6 4D                 1880 	ld	c,l
+   07F7 44                 1881 	ld	b,h
+   07F8 F8 04              1882 	ldhl	sp,#4
+   07FA 2A                 1883 	ld	a,(hl+)
+   07FB 66                 1884 	ld	h,(hl)
+   07FC 6F                 1885 	ld	l,a
+   07FD 09                 1886 	add	hl,bc
+   07FE 7D                 1887 	ld	a,l
+   07FF 54                 1888 	ld	d,h
+   0800 21r1Er02           1889 	ld	hl,#_pending_h_map
+   0803 22                 1890 	ld	(hl+),a
+   0804 72                 1891 	ld	(hl),d
+                           1892 ;C:/gbdk/ZGB/common/src/Scroll.c:315: pending_h_cmap = scroll_cmap + scroll_tiles_w * y + x;
+   0805 D1                 1893 	pop	de
+   0806 D5                 1894 	push	de
+   0807 21r02r00           1895 	ld	hl,#_scroll_cmap
+   080A 2A                 1896 	ld	a,(hl+)
+   080B 66                 1897 	ld	h,(hl)
+   080C 6F                 1898 	ld	l,a
+   080D 19                 1899 	add	hl,de
+   080E 4D                 1900 	ld	c,l
+   080F 44                 1901 	ld	b,h
+   0810 F8 04              1902 	ldhl	sp,#4
+   0812 2A                 1903 	ld	a,(hl+)
+   0813 66                 1904 	ld	h,(hl)
+   0814 6F                 1905 	ld	l,a
+   0815 09                 1906 	add	hl,bc
+   0816 7D                 1907 	ld	a,l
+   0817 54                 1908 	ld	d,h
+   0818 21r22r02           1909 	ld	hl,#_pending_h_cmap
+   081B 22                 1910 	ld	(hl+),a
+   081C 72                 1911 	ld	(hl),d
+   081D E8 02              1912 	add	sp, #2
+   081F C9                 1913 	ret
+                           1914 ;C:/gbdk/ZGB/common/src/Scroll.c:319: void ScrollUpdateColumn(INT16 x, INT16 y) {
+                           1915 ;	---------------------------------
+                           1916 ; Function ScrollUpdateColumn
+                           1917 ; ---------------------------------
+   0820                    1918 _ScrollUpdateColumn::
+   0820 E8 F9              1919 	add	sp, #-7
+                           1920 ;C:/gbdk/ZGB/common/src/Scroll.c:321: unsigned char* map = &scroll_map[scroll_tiles_w * y + x];
+   0822 F8 0B              1921 	ldhl	sp,#(12 - 1)
+   0824 4E                 1922 	ld	c,(hl)
+   0825 23                 1923 	inc	hl
+   0826 46                 1924 	ld	b,(hl)
+   0827 C5                 1925 	push	bc
+   0828 21r0Cr00           1926 	ld	hl,#_scroll_tiles_w
+   082B 2A                 1927 	ld	a,(hl+)
+   082C 66                 1928 	ld	h,(hl)
+   082D 6F                 1929 	ld	l,a
+   082E E5                 1930 	push	hl
+   082F CDr00r00           1931 	call	__mulint
+   0832 E8 04              1932 	add	sp, #4
+   0834 F8 06              1933 	ldhl	sp,#6
+   0836 72                 1934 	ld	(hl),d
+   0837 2B                 1935 	dec	hl
+   0838 73                 1936 	ld	(hl),e
+   0839 F8 09              1937 	ldhl	sp,#(10 - 1)
+   083B 4E                 1938 	ld	c,(hl)
+   083C 23                 1939 	inc	hl
+   083D 46                 1940 	ld	b,(hl)
+   083E F8 05              1941 	ldhl	sp,#5
+   0840 2A                 1942 	ld	a,(hl+)
+   0841 66                 1943 	ld	h,(hl)
+   0842 6F                 1944 	ld	l,a
+   0843 09                 1945 	add	hl,bc
+   0844 4D                 1946 	ld	c,l
+   0845 44                 1947 	ld	b,h
+   0846 21r00r00           1948 	ld	hl,#_scroll_map
+   0849 2A                 1949 	ld	a,(hl+)
+   084A 66                 1950 	ld	h,(hl)
+   084B 6F                 1951 	ld	l,a
+   084C 09                 1952 	add	hl,bc
+   084D 7D                 1953 	ld	a,l
+   084E 54                 1954 	ld	d,h
+   084F F8 02              1955 	ldhl	sp,#2
+   0851 22                 1956 	ld	(hl+),a
+   0852 72                 1957 	ld	(hl),d
+                           1958 ;C:/gbdk/ZGB/common/src/Scroll.c:323: unsigned char* cmap = &scroll_cmap[scroll_tiles_w * y + x];
+   0853 79                 1959 	ld	a,c
+   0854 21r02r00           1960 	ld	hl,#_scroll_cmap
+   0857 86                 1961 	add	a, (hl)
+   0858 4F                 1962 	ld	c,a
+   0859 78                 1963 	ld	a,b
+   085A 23                 1964 	inc	hl
+   085B 8E                 1965 	adc	a, (hl)
+   085C 47                 1966 	ld	b,a
+   085D 33                 1967 	inc	sp
+   085E 33                 1968 	inc	sp
+   085F C5                 1969 	push	bc
+                           1970 ;C:/gbdk/ZGB/common/src/Scroll.c:326: PUSH_BANK(scroll_bank);
+   0860 21r16r02           1971 	ld	hl,#_scroll_bank
+   0863 7E                 1972 	ld	a,(hl)
+   0864 F5                 1973 	push	af
+   0865 33                 1974 	inc	sp
+   0866 CDr00r00           1975 	call	_PushBank
+   0869 33                 1976 	inc	sp
+                           1977 ;C:/gbdk/ZGB/common/src/Scroll.c:327: for(i = 0u; i != SCREEN_TILE_REFRES_H; ++i) {
+   086A F8 04              1978 	ldhl	sp,#4
+   086C 36 00              1979 	ld	(hl),#0x00
+   086E                    1980 00102$:
+                           1981 ;C:/gbdk/ZGB/common/src/Scroll.c:329: UPDATE_TILE(x, y + i, map, cmap);
+   086E F8 04              1982 	ldhl	sp,#4
+   0870 4E                 1983 	ld	c,(hl)
+   0871 06 00              1984 	ld	b,#0x00
+   0873 F8 0B              1985 	ldhl	sp,#11
+   0875 2A                 1986 	ld	a,(hl+)
+   0876 66                 1987 	ld	h,(hl)
+   0877 6F                 1988 	ld	l,a
+   0878 09                 1989 	add	hl,bc
+   0879 4D                 1990 	ld	c,l
+   087A 44                 1991 	ld	b,h
+   087B E1                 1992 	pop	hl
+   087C E5                 1993 	push	hl
+   087D E5                 1994 	push	hl
+   087E F8 04              1995 	ldhl	sp,#4
+   0880 2A                 1996 	ld	a,(hl+)
+   0881 66                 1997 	ld	h,(hl)
+   0882 6F                 1998 	ld	l,a
+   0883 E5                 1999 	push	hl
+   0884 C5                 2000 	push	bc
+   0885 F8 0F              2001 	ldhl	sp,#15
+   0887 2A                 2002 	ld	a,(hl+)
+   0888 66                 2003 	ld	h,(hl)
+   0889 6F                 2004 	ld	l,a
+   088A E5                 2005 	push	hl
+   088B CDr28r00           2006 	call	_UPDATE_TILE
+   088E E8 08              2007 	add	sp, #8
+                           2008 ;C:/gbdk/ZGB/common/src/Scroll.c:330: map += scroll_tiles_w;
+   0890 F8 02              2009 	ldhl	sp,#(3 - 1)
+   0892 5E                 2010 	ld	e,(hl)
+   0893 23                 2011 	inc	hl
+   0894 56                 2012 	ld	d,(hl)
+   0895 21r0Cr00           2013 	ld	hl,#_scroll_tiles_w
+   0898 2A                 2014 	ld	a,(hl+)
+   0899 66                 2015 	ld	h,(hl)
+   089A 6F                 2016 	ld	l,a
+   089B 19                 2017 	add	hl,de
+   089C 7D                 2018 	ld	a,l
+   089D 54                 2019 	ld	d,h
+   089E F8 02              2020 	ldhl	sp,#2
+   08A0 22                 2021 	ld	(hl+),a
+   08A1 72                 2022 	ld	(hl),d
+                           2023 ;C:/gbdk/ZGB/common/src/Scroll.c:331: cmap += scroll_tiles_w;
+   08A2 D1                 2024 	pop	de
+   08A3 D5                 2025 	push	de
+   08A4 21r0Cr00           2026 	ld	hl,#_scroll_tiles_w
+   08A7 2A                 2027 	ld	a,(hl+)
+   08A8 66                 2028 	ld	h,(hl)
+   08A9 6F                 2029 	ld	l,a
+   08AA 19                 2030 	add	hl,de
+   08AB 33                 2031 	inc	sp
+   08AC 33                 2032 	inc	sp
+   08AD E5                 2033 	push	hl
+                           2034 ;C:/gbdk/ZGB/common/src/Scroll.c:327: for(i = 0u; i != SCREEN_TILE_REFRES_H; ++i) {
+   08AE F8 04              2035 	ldhl	sp,#4
+   08B0 34                 2036 	inc	(hl)
+   08B1 7E                 2037 	ld	a,(hl)
+   08B2 D6 15              2038 	sub	a, #0x15
+   08B4 C2r6Er08           2039 	jp	NZ,00102$
+                           2040 ;C:/gbdk/ZGB/common/src/Scroll.c:337: POP_BANK;
+   08B7 CDr00r00           2041 	call	_PopBank
+   08BA E8 07              2042 	add	sp, #7
+   08BC C9                 2043 	ret
+                           2044 ;C:/gbdk/ZGB/common/src/Scroll.c:340: void RefreshScroll() {
+                           2045 ;	---------------------------------
+                           2046 ; Function RefreshScroll
+                           2047 ; ---------------------------------
+   08BD                    2048 _RefreshScroll::
+   08BD E8 F8              2049 	add	sp, #-8
+                           2050 ;C:/gbdk/ZGB/common/src/Scroll.c:341: UINT16 ny = scroll_y;
+   08BF 21r06r00           2051 	ld	hl,#_scroll_y
+   08C2 2A                 2052 	ld	a,(hl+)
+   08C3 5E                 2053 	ld	e, (hl)
+   08C4 F8 06              2054 	ldhl	sp,#6
+   08C6 22                 2055 	ld	(hl+),a
+   08C7 73                 2056 	ld	(hl),e
+                           2057 ;C:/gbdk/ZGB/common/src/Scroll.c:343: if(scroll_target) {
+   08C8 21r11r00           2058 	ld	hl,#_scroll_target + 1
+   08CB 3A                 2059 	ld	a,(hl-)
+   08CC B6                 2060 	or	a,(hl)
+   08CD CAr63r09           2061 	jp	Z,00108$
+                           2062 ;C:/gbdk/ZGB/common/src/Scroll.c:344: if(U_LESS_THAN(BOTTOM_MOVEMENT_LIMIT, scroll_target->y - scroll_y)) {
+   08D0 2A                 2063 	ld	a,(hl+)
+   08D1 5E                 2064 	ld	e, (hl)
+   08D2 F8 04              2065 	ldhl	sp,#4
+   08D4 22                 2066 	ld	(hl+),a
+   08D5 73                 2067 	ld	(hl),e
+   08D6 2B                 2068 	dec	hl
+   08D7 5E                 2069 	ld	e,(hl)
+   08D8 23                 2070 	inc	hl
+   08D9 56                 2071 	ld	d,(hl)
+   08DA 21 09 00           2072 	ld	hl,#0x0009
+   08DD 19                 2073 	add	hl,de
+   08DE 4D                 2074 	ld	c,l
+   08DF 44                 2075 	ld	b,h
+   08E0 59                 2076 	ld	e, c
+   08E1 50                 2077 	ld	d, b
+   08E2 1A                 2078 	ld	a,(de)
+   08E3 F8 02              2079 	ldhl	sp,#2
+   08E5 22                 2080 	ld	(hl+),a
+   08E6 13                 2081 	inc	de
+   08E7 1A                 2082 	ld	a,(de)
+   08E8 77                 2083 	ld	(hl),a
+   08E9 21r07r00           2084 	ld	hl,#_scroll_y + 1
+   08EC 2B                 2085 	dec	hl
+   08ED 4E                 2086 	ld	c,(hl)
+   08EE 23                 2087 	inc	hl
+   08EF 46                 2088 	ld	b,(hl)
+   08F0 F8 02              2089 	ldhl	sp,#(3 - 1)
+   08F2 5E                 2090 	ld	e,(hl)
+   08F3 23                 2091 	inc	hl
+   08F4 56                 2092 	ld	d,(hl)
+   08F5 7B                 2093 	ld	a,e
+   08F6 91                 2094 	sub	a,c
+   08F7 5F                 2095 	ld	e,a
+   08F8 7A                 2096 	ld	a,d
+   08F9 98                 2097 	sbc	a,b
+   08FA 47                 2098 	ld	b,a
+   08FB 4B                 2099 	ld	c,e
+   08FC 11 5A 00           2100 	ld	de,#0x005a
+   08FF 7B                 2101 	ld	a,e
+   0900 91                 2102 	sub	a,c
+   0901 5F                 2103 	ld	e,a
+   0902 7A                 2104 	ld	a,d
+   0903 98                 2105 	sbc	a,b
+   0904 2B                 2106 	dec	hl
+   0905 2B                 2107 	dec	hl
+   0906 32                 2108 	ld	(hl-),a
+   0907 73                 2109 	ld	(hl),e
+   0908 23                 2110 	inc	hl
+   0909 CB 7E              2111 	bit	7, (hl)
+   090B 28 13              2112 	jr	Z,00104$
+                           2113 ;C:/gbdk/ZGB/common/src/Scroll.c:345: ny = scroll_target->y - BOTTOM_MOVEMENT_LIMIT;
+   090D F8 02              2114 	ldhl	sp,#(3 - 1)
+   090F 5E                 2115 	ld	e,(hl)
+   0910 23                 2116 	inc	hl
+   0911 56                 2117 	ld	d,(hl)
+   0912 21 5A 00           2118 	ld	hl,#0x005a
+   0915 7B                 2119 	ld	a,e
+   0916 95                 2120 	sub	a,l
+   0917 5F                 2121 	ld	e,a
+   0918 7A                 2122 	ld	a,d
+   0919 9C                 2123 	sbc	a,h
+   091A F8 07              2124 	ldhl	sp,#7
+   091C 32                 2125 	ld	(hl-),a
+   091D 73                 2126 	ld	(hl),e
+   091E 18 1D              2127 	jr	00105$
+   0920                    2128 00104$:
+                           2129 ;C:/gbdk/ZGB/common/src/Scroll.c:346: } else if(U_LESS_THAN(scroll_target->y - scroll_y, TOP_MOVEMENT_LIMIT)) {
+   0920 79                 2130 	ld	a,c
+   0921 C6 D8              2131 	add	a,#0xd8
+   0923 4F                 2132 	ld	c,a
+   0924 78                 2133 	ld	a,b
+   0925 CE FF              2134 	adc	a,#0xff
+   0927 47                 2135 	ld	b,a
+   0928 CB 78              2136 	bit	7, b
+   092A 28 11              2137 	jr	Z,00105$
+                           2138 ;C:/gbdk/ZGB/common/src/Scroll.c:347: ny = scroll_target->y - TOP_MOVEMENT_LIMIT;
+   092C F8 02              2139 	ldhl	sp,#(3 - 1)
+   092E 5E                 2140 	ld	e,(hl)
+   092F 23                 2141 	inc	hl
+   0930 56                 2142 	ld	d,(hl)
+   0931 21 28 00           2143 	ld	hl,#0x0028
+   0934 7B                 2144 	ld	a,e
+   0935 95                 2145 	sub	a,l
+   0936 5F                 2146 	ld	e,a
+   0937 7A                 2147 	ld	a,d
+   0938 9C                 2148 	sbc	a,h
+   0939 F8 07              2149 	ldhl	sp,#7
+   093B 32                 2150 	ld	(hl-),a
+   093C 73                 2151 	ld	(hl),e
+   093D                    2152 00105$:
+                           2153 ;C:/gbdk/ZGB/common/src/Scroll.c:350: MoveScroll(scroll_target->x - (SCREENWIDTH >> 1), ny);
+   093D F8 04              2154 	ldhl	sp,#(5 - 1)
+   093F 5E                 2155 	ld	e,(hl)
+   0940 23                 2156 	inc	hl
+   0941 56                 2157 	ld	d,(hl)
+   0942 21 07 00           2158 	ld	hl,#0x0007
+   0945 19                 2159 	add	hl,de
+   0946 4D                 2160 	ld	c,l
+   0947 44                 2161 	ld	b,h
+   0948 59                 2162 	ld	e, c
+   0949 50                 2163 	ld	d, b
+   094A 1A                 2164 	ld	a,(de)
+   094B 4F                 2165 	ld	c,a
+   094C 13                 2166 	inc	de
+   094D 1A                 2167 	ld	a,(de)
+   094E 47                 2168 	ld	b,a
+   094F 79                 2169 	ld	a,c
+   0950 C6 B0              2170 	add	a,#0xb0
+   0952 4F                 2171 	ld	c,a
+   0953 78                 2172 	ld	a,b
+   0954 CE FF              2173 	adc	a,#0xff
+   0956 47                 2174 	ld	b,a
+   0957 F8 06              2175 	ldhl	sp,#6
+   0959 2A                 2176 	ld	a,(hl+)
+   095A 66                 2177 	ld	h,(hl)
+   095B 6F                 2178 	ld	l,a
+   095C E5                 2179 	push	hl
+   095D C5                 2180 	push	bc
+   095E CDr66r09           2181 	call	_MoveScroll
+   0961 E8 04              2182 	add	sp, #4
+   0963                    2183 00108$:
+   0963 E8 08              2184 	add	sp, #8
+   0965 C9                 2185 	ret
+                           2186 ;C:/gbdk/ZGB/common/src/Scroll.c:354: void MoveScroll(INT16 x, INT16 y) {
+                           2187 ;	---------------------------------
+                           2188 ; Function MoveScroll
+                           2189 ; ---------------------------------
+   0966                    2190 _MoveScroll::
+   0966 E8 F6              2191 	add	sp, #-10
+                           2192 ;C:/gbdk/ZGB/common/src/Scroll.c:357: PUSH_BANK(scroll_bank);
+   0968 21r16r02           2193 	ld	hl,#_scroll_bank
+   096B 7E                 2194 	ld	a,(hl)
+   096C F5                 2195 	push	af
+   096D 33                 2196 	inc	sp
+   096E CDr00r00           2197 	call	_PushBank
+   0971 33                 2198 	inc	sp
+                           2199 ;C:/gbdk/ZGB/common/src/Scroll.c:358: ClampScrollLimits(&x, &y);
+   0972 F8 0E              2200 	ldhl	sp,#14
+   0974 5D                 2201 	ld	e,l
+   0975 54                 2202 	ld	d,h
+   0976 F8 0C              2203 	ldhl	sp,#12
+   0978 4D                 2204 	ld	c,l
+   0979 44                 2205 	ld	b,h
+   097A D5                 2206 	push	de
+   097B C5                 2207 	push	bc
+   097C CDr0Ar03           2208 	call	_ClampScrollLimits
+   097F E8 04              2209 	add	sp, #4
+                           2210 ;C:/gbdk/ZGB/common/src/Scroll.c:360: current_column = scroll_x >> 3;
+   0981 21r04r00           2211 	ld	hl,#_scroll_x
+   0984 7E                 2212 	ld	a,(hl)
+   0985 F8 02              2213 	ldhl	sp,#2
+   0987 77                 2214 	ld	(hl),a
+   0988 21r05r00           2215 	ld	hl,#_scroll_x + 1
+   098B 7E                 2216 	ld	a,(hl)
+   098C F8 03              2217 	ldhl	sp,#3
+   098E 77                 2218 	ld	(hl),a
+   098F CB 2E              2219 	sra	(hl)
+   0991 2B                 2220 	dec	hl
+   0992 CB 1E              2221 	rr	(hl)
+   0994 23                 2222 	inc	hl
+   0995 CB 2E              2223 	sra	(hl)
+   0997 2B                 2224 	dec	hl
+   0998 CB 1E              2225 	rr	(hl)
+   099A 23                 2226 	inc	hl
+   099B CB 2E              2227 	sra	(hl)
+   099D 2B                 2228 	dec	hl
+   099E CB 1E              2229 	rr	(hl)
+                           2230 ;C:/gbdk/ZGB/common/src/Scroll.c:361: new_column     = x >> 3;
+   09A0 F8 0C              2231 	ldhl	sp,#(13 - 1)
+   09A2 4E                 2232 	ld	c,(hl)
+   09A3 23                 2233 	inc	hl
+   09A4 46                 2234 	ld	b,(hl)
+   09A5 CB 28              2235 	sra	b
+   09A7 CB 19              2236 	rr	c
+   09A9 CB 28              2237 	sra	b
+   09AB CB 19              2238 	rr	c
+   09AD CB 28              2239 	sra	b
+   09AF CB 19              2240 	rr	c
+                           2241 ;C:/gbdk/ZGB/common/src/Scroll.c:362: current_row    = scroll_y >> 3;
+   09B1 21r06r00           2242 	ld	hl,#_scroll_y
+   09B4 7E                 2243 	ld	a,(hl)
+   09B5 F8 00              2244 	ldhl	sp,#0
+   09B7 77                 2245 	ld	(hl),a
+   09B8 21r07r00           2246 	ld	hl,#_scroll_y + 1
+   09BB 7E                 2247 	ld	a,(hl)
+   09BC F8 01              2248 	ldhl	sp,#1
+   09BE 77                 2249 	ld	(hl),a
+   09BF CB 2E              2250 	sra	(hl)
+   09C1 2B                 2251 	dec	hl
+   09C2 CB 1E              2252 	rr	(hl)
+   09C4 23                 2253 	inc	hl
+   09C5 CB 2E              2254 	sra	(hl)
+   09C7 2B                 2255 	dec	hl
+   09C8 CB 1E              2256 	rr	(hl)
+   09CA 23                 2257 	inc	hl
+   09CB CB 2E              2258 	sra	(hl)
+   09CD 2B                 2259 	dec	hl
+   09CE CB 1E              2260 	rr	(hl)
+                           2261 ;C:/gbdk/ZGB/common/src/Scroll.c:363: new_row        = y >> 3;
+   09D0 F8 0E              2262 	ldhl	sp,#14
+   09D2 7E                 2263 	ld	a,(hl)
+   09D3 F8 04              2264 	ldhl	sp,#4
+   09D5 77                 2265 	ld	(hl),a
+   09D6 F8 0F              2266 	ldhl	sp,#15
+   09D8 7E                 2267 	ld	a,(hl)
+   09D9 F8 05              2268 	ldhl	sp,#5
+   09DB 77                 2269 	ld	(hl),a
+   09DC CB 2E              2270 	sra	(hl)
+   09DE 2B                 2271 	dec	hl
+   09DF CB 1E              2272 	rr	(hl)
+   09E1 23                 2273 	inc	hl
+   09E2 CB 2E              2274 	sra	(hl)
+   09E4 2B                 2275 	dec	hl
+   09E5 CB 1E              2276 	rr	(hl)
+   09E7 23                 2277 	inc	hl
+   09E8 CB 2E              2278 	sra	(hl)
+   09EA 2B                 2279 	dec	hl
+   09EB CB 1E              2280 	rr	(hl)
+                           2281 ;C:/gbdk/ZGB/common/src/Scroll.c:367: ScrollUpdateColumnWithDelay(new_column - SCREEN_PAD_LEFT + SCREEN_TILE_REFRES_W - 1, new_row - SCREEN_PAD_TOP);
+   09ED 5E                 2282 	ld	e,(hl)
+   09EE 23                 2283 	inc	hl
+   09EF 56                 2284 	ld	d,(hl)
+   09F0 21 01 00           2285 	ld	hl,#0x0001
+   09F3 7B                 2286 	ld	a,e
+   09F4 95                 2287 	sub	a,l
+   09F5 5F                 2288 	ld	e,a
+   09F6 7A                 2289 	ld	a,d
+   09F7 9C                 2290 	sbc	a,h
+   09F8 F8 07              2291 	ldhl	sp,#7
+   09FA 32                 2292 	ld	(hl-),a
+   09FB 73                 2293 	ld	(hl),e
+                           2294 ;C:/gbdk/ZGB/common/src/Scroll.c:369: ScrollUpdateColumnWithDelay(new_column - SCREEN_PAD_LEFT, new_row - SCREEN_PAD_TOP);
+   09FC 11 01 00           2295 	ld	de,#0x0001
+   09FF 79                 2296 	ld	a,c
+   0A00 93                 2297 	sub	a,e
+   0A01 5F                 2298 	ld	e,a
+   0A02 78                 2299 	ld	a,b
+   0A03 9A                 2300 	sbc	a,d
+   0A04 F8 09              2301 	ldhl	sp,#9
+   0A06 32                 2302 	ld	(hl-),a
+   0A07 73                 2303 	ld	(hl),e
+                           2304 ;C:/gbdk/ZGB/common/src/Scroll.c:365: if(current_column != new_column) {
+   0A08 F8 02              2305 	ldhl	sp,#2
+   0A0A 7E                 2306 	ld	a,(hl)
+   0A0B 91                 2307 	sub	a, c
+   0A0C 20 06              2308 	jr	NZ,00141$
+   0A0E 23                 2309 	inc	hl
+   0A0F 7E                 2310 	ld	a,(hl)
+   0A10 90                 2311 	sub	a, b
+   0A11 CAr55r0A           2312 	jp	Z,00105$
+   0A14                    2313 00141$:
+                           2314 ;C:/gbdk/ZGB/common/src/Scroll.c:366: if(new_column > current_column) {
+   0A14 F8 02              2315 	ldhl	sp,#2
+   0A16 7E                 2316 	ld	a, (hl)
+   0A17 91                 2317 	sub	a, c
+   0A18 23                 2318 	inc	hl
+   0A19 7E                 2319 	ld	a, (hl)
+   0A1A 98                 2320 	sbc	a, b
+   0A1B 56                 2321 	ld	d, (hl)
+   0A1C 78                 2322 	ld	a,b
+   0A1D 5F                 2323 	ld	e, a
+   0A1E CB 7B              2324 	bit	7, e
+   0A20 28 07              2325 	jr	Z,00142$
+   0A22 CB 7A              2326 	bit	7, d
+   0A24 20 08              2327 	jr	NZ,00143$
+   0A26 BF                 2328 	cp	a, a
+   0A27 18 05              2329 	jr	00143$
+   0A29                    2330 00142$:
+   0A29 CB 7A              2331 	bit	7, d
+   0A2B 28 01              2332 	jr	Z,00143$
+   0A2D 37                 2333 	scf
+   0A2E                    2334 00143$:
+   0A2E 30 14              2335 	jr	NC,00102$
+                           2336 ;C:/gbdk/ZGB/common/src/Scroll.c:367: ScrollUpdateColumnWithDelay(new_column - SCREEN_PAD_LEFT + SCREEN_TILE_REFRES_W - 1, new_row - SCREEN_PAD_TOP);
+   0A30 21 15 00           2337 	ld	hl,#0x0015
+   0A33 09                 2338 	add	hl,bc
+   0A34 4D                 2339 	ld	c,l
+   0A35 44                 2340 	ld	b,h
+   0A36 F8 06              2341 	ldhl	sp,#6
+   0A38 2A                 2342 	ld	a,(hl+)
+   0A39 66                 2343 	ld	h,(hl)
+   0A3A 6F                 2344 	ld	l,a
+   0A3B E5                 2345 	push	hl
+   0A3C C5                 2346 	push	bc
+   0A3D CDrB4r07           2347 	call	_ScrollUpdateColumnWithDelay
+   0A40 E8 04              2348 	add	sp, #4
+   0A42 18 11              2349 	jr	00105$
+   0A44                    2350 00102$:
+                           2351 ;C:/gbdk/ZGB/common/src/Scroll.c:369: ScrollUpdateColumnWithDelay(new_column - SCREEN_PAD_LEFT, new_row - SCREEN_PAD_TOP);
+   0A44 F8 06              2352 	ldhl	sp,#6
+   0A46 2A                 2353 	ld	a,(hl+)
+   0A47 66                 2354 	ld	h,(hl)
+   0A48 6F                 2355 	ld	l,a
+   0A49 E5                 2356 	push	hl
+   0A4A F8 0A              2357 	ldhl	sp,#10
+   0A4C 2A                 2358 	ld	a,(hl+)
+   0A4D 66                 2359 	ld	h,(hl)
+   0A4E 6F                 2360 	ld	l,a
+   0A4F E5                 2361 	push	hl
+   0A50 CDrB4r07           2362 	call	_ScrollUpdateColumnWithDelay
+   0A53 E8 04              2363 	add	sp, #4
+   0A55                    2364 00105$:
+                           2365 ;C:/gbdk/ZGB/common/src/Scroll.c:373: if(current_row != new_row) {
+   0A55 F8 00              2366 	ldhl	sp,#0
+   0A57 7E                 2367 	ld	a,(hl)
+   0A58 F8 04              2368 	ldhl	sp,#4
+   0A5A 96                 2369 	sub	a, (hl)
+   0A5B 20 09              2370 	jr	NZ,00144$
+   0A5D F8 01              2371 	ldhl	sp,#1
+   0A5F 7E                 2372 	ld	a,(hl)
+   0A60 F8 05              2373 	ldhl	sp,#5
+   0A62 96                 2374 	sub	a, (hl)
+   0A63 CArB1r0A           2375 	jp	Z,00110$
+   0A66                    2376 00144$:
+                           2377 ;C:/gbdk/ZGB/common/src/Scroll.c:374: if(new_row > current_row) {
+   0A66 F8 00              2378 	ldhl	sp,#0
+   0A68 54                 2379 	ld	d, h
+   0A69 5D                 2380 	ld	e, l
+   0A6A F8 04              2381 	ldhl	sp,#4
+   0A6C 1A                 2382 	ld	a, (de)
+   0A6D 96                 2383 	sub	a, (hl)
+   0A6E 23                 2384 	inc	hl
+   0A6F 13                 2385 	inc	de
+   0A70 1A                 2386 	ld	a, (de)
+   0A71 9E                 2387 	sbc	a, (hl)
+   0A72 1A                 2388 	ld	a, (de)
+   0A73 57                 2389 	ld	d, a
+   0A74 5E                 2390 	ld	e, (hl)
+   0A75 CB 7B              2391 	bit	7, e
+   0A77 28 07              2392 	jr	Z,00145$
+   0A79 CB 7A              2393 	bit	7, d
+   0A7B 20 08              2394 	jr	NZ,00146$
+   0A7D BF                 2395 	cp	a, a
+   0A7E 18 05              2396 	jr	00146$
+   0A80                    2397 00145$:
+   0A80 CB 7A              2398 	bit	7, d
+   0A82 28 01              2399 	jr	Z,00146$
+   0A84 37                 2400 	scf
+   0A85                    2401 00146$:
+   0A85 30 19              2402 	jr	NC,00107$
+                           2403 ;C:/gbdk/ZGB/common/src/Scroll.c:375: ScrollUpdateRowWithDelay(new_column - SCREEN_PAD_LEFT, new_row - SCREEN_PAD_TOP + SCREEN_TILE_REFRES_H - 1);
+   0A87 F8 04              2404 	ldhl	sp,#(5 - 1)
+   0A89 5E                 2405 	ld	e,(hl)
+   0A8A 23                 2406 	inc	hl
+   0A8B 56                 2407 	ld	d,(hl)
+   0A8C 21 13 00           2408 	ld	hl,#0x0013
+   0A8F 19                 2409 	add	hl,de
+   0A90 4D                 2410 	ld	c,l
+   0A91 44                 2411 	ld	b,h
+   0A92 C5                 2412 	push	bc
+   0A93 F8 0A              2413 	ldhl	sp,#10
+   0A95 2A                 2414 	ld	a,(hl+)
+   0A96 66                 2415 	ld	h,(hl)
+   0A97 6F                 2416 	ld	l,a
+   0A98 E5                 2417 	push	hl
+   0A99 CDr1Fr06           2418 	call	_ScrollUpdateRowWithDelay
+   0A9C E8 04              2419 	add	sp, #4
+   0A9E 18 11              2420 	jr	00110$
+   0AA0                    2421 00107$:
+                           2422 ;C:/gbdk/ZGB/common/src/Scroll.c:377: ScrollUpdateRowWithDelay(new_column - SCREEN_PAD_LEFT, new_row - SCREEN_PAD_TOP);
+   0AA0 F8 06              2423 	ldhl	sp,#6
+   0AA2 2A                 2424 	ld	a,(hl+)
+   0AA3 66                 2425 	ld	h,(hl)
+   0AA4 6F                 2426 	ld	l,a
+   0AA5 E5                 2427 	push	hl
+   0AA6 F8 0A              2428 	ldhl	sp,#10
+   0AA8 2A                 2429 	ld	a,(hl+)
+   0AA9 66                 2430 	ld	h,(hl)
+   0AAA 6F                 2431 	ld	l,a
+   0AAB E5                 2432 	push	hl
+   0AAC CDr1Fr06           2433 	call	_ScrollUpdateRowWithDelay
+   0AAF E8 04              2434 	add	sp, #4
+   0AB1                    2435 00110$:
+                           2436 ;C:/gbdk/ZGB/common/src/Scroll.c:381: scroll_x = x;
+   0AB1 F8 0C              2437 	ldhl	sp,#12
+   0AB3 2A                 2438 	ld	a,(hl+)
+   0AB4 5E                 2439 	ld	e, (hl)
+   0AB5 21r04r00           2440 	ld	hl,#_scroll_x
+   0AB8 22                 2441 	ld	(hl+),a
+   0AB9 73                 2442 	ld	(hl),e
+                           2443 ;C:/gbdk/ZGB/common/src/Scroll.c:382: scroll_y = y;
+   0ABA F8 0E              2444 	ldhl	sp,#14
+   0ABC 2A                 2445 	ld	a,(hl+)
+   0ABD 5E                 2446 	ld	e, (hl)
+   0ABE 21r06r00           2447 	ld	hl,#_scroll_y
+   0AC1 22                 2448 	ld	(hl+),a
+   0AC2 73                 2449 	ld	(hl),e
+                           2450 ;C:/gbdk/ZGB/common/src/Scroll.c:384: if(pending_w_i) {
+   0AC3 21r2Ar02           2451 	ld	hl,#_pending_w_i
+   0AC6 7E                 2452 	ld	a,(hl)
+   0AC7 B7                 2453 	or	a, a
+   0AC8 28 03              2454 	jr	Z,00112$
+                           2455 ;C:/gbdk/ZGB/common/src/Scroll.c:385: ScrollUpdateRowR();
+   0ACA CDrB4r05           2456 	call	_ScrollUpdateRowR
+   0ACD                    2457 00112$:
+                           2458 ;C:/gbdk/ZGB/common/src/Scroll.c:387: if(pending_h_i) {
+   0ACD 21r1Dr02           2459 	ld	hl,#_pending_h_i
+   0AD0 7E                 2460 	ld	a,(hl)
+   0AD1 B7                 2461 	or	a, a
+   0AD2 28 03              2462 	jr	Z,00114$
+                           2463 ;C:/gbdk/ZGB/common/src/Scroll.c:388: ScrollUpdateColumnR();
+   0AD4 CDr41r07           2464 	call	_ScrollUpdateColumnR
+   0AD7                    2465 00114$:
+                           2466 ;C:/gbdk/ZGB/common/src/Scroll.c:390: POP_BANK;
+   0AD7 CDr00r00           2467 	call	_PopBank
+   0ADA E8 0A              2468 	add	sp, #10
+   0ADC C9                 2469 	ret
+                           2470 ;C:/gbdk/ZGB/common/src/Scroll.c:393: UINT8* GetScrollTilePtr(UINT16 x, UINT16 y) {
+                           2471 ;	---------------------------------
+                           2472 ; Function GetScrollTilePtr
+                           2473 ; ---------------------------------
+   0ADD                    2474 _GetScrollTilePtr::
+                           2475 ;C:/gbdk/ZGB/common/src/Scroll.c:396: return scroll_map + (scroll_tiles_w * y + x); //TODO: fix this mult!!
+   0ADD F8 04              2476 	ldhl	sp,#4
+   0ADF 2A                 2477 	ld	a,(hl+)
+   0AE0 66                 2478 	ld	h,(hl)
+   0AE1 6F                 2479 	ld	l,a
+   0AE2 E5                 2480 	push	hl
+   0AE3 21r0Cr00           2481 	ld	hl,#_scroll_tiles_w
+   0AE6 2A                 2482 	ld	a,(hl+)
+   0AE7 66                 2483 	ld	h,(hl)
+   0AE8 6F                 2484 	ld	l,a
+   0AE9 E5                 2485 	push	hl
+   0AEA CDr00r00           2486 	call	__mulint
+   0AED E8 04              2487 	add	sp, #4
+   0AEF 4B                 2488 	ld	c,e
+   0AF0 42                 2489 	ld	b,d
+   0AF1 F8 02              2490 	ldhl	sp,#2
+   0AF3 2A                 2491 	ld	a,(hl+)
+   0AF4 66                 2492 	ld	h,(hl)
+   0AF5 6F                 2493 	ld	l,a
+   0AF6 09                 2494 	add	hl,bc
+   0AF7 4D                 2495 	ld	c,l
+   0AF8 44                 2496 	ld	b,h
+   0AF9 79                 2497 	ld	a,c
+   0AFA 21r00r00           2498 	ld	hl,#_scroll_map
+   0AFD 86                 2499 	add	a, (hl)
+   0AFE 4F                 2500 	ld	c,a
+   0AFF 78                 2501 	ld	a,b
+   0B00 23                 2502 	inc	hl
+   0B01 8E                 2503 	adc	a, (hl)
+   0B02 47                 2504 	ld	b,a
+   0B03 59                 2505 	ld	e, c
+   0B04 50                 2506 	ld	d, b
+   0B05 C9                 2507 	ret
+                           2508 ;C:/gbdk/ZGB/common/src/Scroll.c:399: UINT8 GetScrollTile(UINT16 x, UINT16 y) {
+                           2509 ;	---------------------------------
+                           2510 ; Function GetScrollTile
+                           2511 ; ---------------------------------
+   0B06                    2512 _GetScrollTile::
+                           2513 ;C:/gbdk/ZGB/common/src/Scroll.c:401: x = x >>3;
+   0B06 F8 03              2514 	ldhl	sp,#3
+   0B08 CB 3E              2515 	srl	(hl)
+   0B0A 2B                 2516 	dec	hl
+   0B0B CB 1E              2517 	rr	(hl)
+   0B0D 23                 2518 	inc	hl
+   0B0E CB 3E              2519 	srl	(hl)
+   0B10 2B                 2520 	dec	hl
+   0B11 CB 1E              2521 	rr	(hl)
+   0B13 23                 2522 	inc	hl
+   0B14 CB 3E              2523 	srl	(hl)
+   0B16 2B                 2524 	dec	hl
+   0B17 CB 1E              2525 	rr	(hl)
+                           2526 ;C:/gbdk/ZGB/common/src/Scroll.c:402: y = y >>3;
+   0B19 F8 05              2527 	ldhl	sp,#5
+   0B1B CB 3E              2528 	srl	(hl)
+   0B1D 2B                 2529 	dec	hl
+   0B1E CB 1E              2530 	rr	(hl)
+   0B20 23                 2531 	inc	hl
+   0B21 CB 3E              2532 	srl	(hl)
+   0B23 2B                 2533 	dec	hl
+   0B24 CB 1E              2534 	rr	(hl)
+   0B26 23                 2535 	inc	hl
+   0B27 CB 3E              2536 	srl	(hl)
+   0B29 2B                 2537 	dec	hl
+   0B2A CB 1E              2538 	rr	(hl)
+                           2539 ;C:/gbdk/ZGB/common/src/Scroll.c:403: PUSH_BANK(scroll_bank);
+   0B2C 21r16r02           2540 	ld	hl,#_scroll_bank
+   0B2F 7E                 2541 	ld	a,(hl)
+   0B30 F5                 2542 	push	af
+   0B31 33                 2543 	inc	sp
+   0B32 CDr00r00           2544 	call	_PushBank
+   0B35 33                 2545 	inc	sp
+                           2546 ;C:/gbdk/ZGB/common/src/Scroll.c:404: ret = *GetScrollTilePtr(x,y);
+   0B36 F8 04              2547 	ldhl	sp,#4
+   0B38 2A                 2548 	ld	a,(hl+)
+   0B39 66                 2549 	ld	h,(hl)
+   0B3A 6F                 2550 	ld	l,a
+   0B3B E5                 2551 	push	hl
+   0B3C F8 04              2552 	ldhl	sp,#4
+   0B3E 2A                 2553 	ld	a,(hl+)
+   0B3F 66                 2554 	ld	h,(hl)
+   0B40 6F                 2555 	ld	l,a
+   0B41 E5                 2556 	push	hl
+   0B42 CDrDDr0A           2557 	call	_GetScrollTilePtr
+   0B45 E8 04              2558 	add	sp, #4
+   0B47 1A                 2559 	ld	a,(de)
+   0B48 5F                 2560 	ld	e,a
+                           2561 ;C:/gbdk/ZGB/common/src/Scroll.c:405: POP_BANK;
+   0B49 D5                 2562 	push	de
+   0B4A CDr00r00           2563 	call	_PopBank
+   0B4D D1                 2564 	pop	de
+                           2565 ;C:/gbdk/ZGB/common/src/Scroll.c:406: return ret;
+   0B4E C9                 2566 	ret
+                           2567 ;C:/gbdk/ZGB/common/src/Scroll.c:409: UINT8 ScrollFindTile(UINT16 map_w, unsigned char* map, UINT8 bank, UINT8 tile,
+                           2568 ;	---------------------------------
+                           2569 ; Function ScrollFindTile
+                           2570 ; ---------------------------------
+   0B4F                    2571 _ScrollFindTile::
+   0B4F E8 F5              2572 	add	sp, #-11
+                           2573 ;C:/gbdk/ZGB/common/src/Scroll.c:413: UINT16 yt = 0;
+   0B51 F8 01              2574 	ldhl	sp,#1
+   0B53 36 00              2575 	ld	(hl),#0x00
+   0B55 23                 2576 	inc	hl
+   0B56 36 00              2577 	ld	(hl),#0x00
+                           2578 ;C:/gbdk/ZGB/common/src/Scroll.c:414: UINT8 found = 1;
+   0B58 2B                 2579 	dec	hl
+   0B59 2B                 2580 	dec	hl
+   0B5A 36 01              2581 	ld	(hl),#0x01
+                           2582 ;C:/gbdk/ZGB/common/src/Scroll.c:416: PUSH_BANK(bank);
+   0B5C F8 11              2583 	ldhl	sp,#17
+   0B5E 7E                 2584 	ld	a,(hl)
+   0B5F F5                 2585 	push	af
+   0B60 33                 2586 	inc	sp
+   0B61 CDr00r00           2587 	call	_PushBank
+   0B64 33                 2588 	inc	sp
+                           2589 ;C:/gbdk/ZGB/common/src/Scroll.c:417: for(xt = start_x; xt != start_x + w; ++ xt) {
+   0B65 F8 13              2590 	ldhl	sp,#19
+   0B67 7E                 2591 	ld	a,(hl)
+   0B68 F8 03              2592 	ldhl	sp,#3
+   0B6A 22                 2593 	ld	(hl+),a
+   0B6B 36 00              2594 	ld	(hl),#0x00
+   0B6D 2B                 2595 	dec	hl
+   0B6E 2A                 2596 	ld	a,(hl+)
+   0B6F 5E                 2597 	ld	e, (hl)
+   0B70 F8 07              2598 	ldhl	sp,#7
+   0B72 22                 2599 	ld	(hl+),a
+   0B73 73                 2600 	ld	(hl),e
+   0B74                    2601 00110$:
+   0B74 F8 13              2602 	ldhl	sp,#19
+   0B76 4E                 2603 	ld	c,(hl)
+   0B77 06 00              2604 	ld	b,#0x00
+   0B79 23                 2605 	inc	hl
+   0B7A 23                 2606 	inc	hl
+   0B7B 7E                 2607 	ld	a,(hl)
+   0B7C F8 09              2608 	ldhl	sp,#9
+   0B7E 22                 2609 	ld	(hl+),a
+   0B7F 36 00              2610 	ld	(hl),#0x00
+   0B81 2B                 2611 	dec	hl
+   0B82 2A                 2612 	ld	a,(hl+)
+   0B83 66                 2613 	ld	h,(hl)
+   0B84 6F                 2614 	ld	l,a
+   0B85 09                 2615 	add	hl,bc
+   0B86 4D                 2616 	ld	c,l
+   0B87 44                 2617 	ld	b,h
+   0B88 F8 07              2618 	ldhl	sp,#7
+   0B8A 7E                 2619 	ld	a,(hl)
+   0B8B 91                 2620 	sub	a, c
+   0B8C 20 06              2621 	jr	NZ,00134$
+   0B8E 23                 2622 	inc	hl
+   0B8F 7E                 2623 	ld	a,(hl)
+   0B90 90                 2624 	sub	a, b
+   0B91 CAr1Br0C           2625 	jp	Z,00104$
+   0B94                    2626 00134$:
+                           2627 ;C:/gbdk/ZGB/common/src/Scroll.c:418: for(yt = start_y; yt != start_y + h; ++ yt) {
+   0B94 F8 14              2628 	ldhl	sp,#20
+   0B96 7E                 2629 	ld	a,(hl)
+   0B97 F8 01              2630 	ldhl	sp,#1
+   0B99 22                 2631 	ld	(hl+),a
+   0B9A 36 00              2632 	ld	(hl),#0x00
+   0B9C 2B                 2633 	dec	hl
+   0B9D 2A                 2634 	ld	a,(hl+)
+   0B9E 5E                 2635 	ld	e, (hl)
+   0B9F F8 09              2636 	ldhl	sp,#9
+   0BA1 22                 2637 	ld	(hl+),a
+   0BA2 73                 2638 	ld	(hl),e
+   0BA3                    2639 00107$:
+   0BA3 F8 14              2640 	ldhl	sp,#20
+   0BA5 7E                 2641 	ld	a,(hl)
+   0BA6 F8 05              2642 	ldhl	sp,#5
+   0BA8 22                 2643 	ld	(hl+),a
+   0BA9 36 00              2644 	ld	(hl),#0x00
+   0BAB F8 16              2645 	ldhl	sp,#22
+   0BAD 4E                 2646 	ld	c,(hl)
+   0BAE 06 00              2647 	ld	b,#0x00
+   0BB0 F8 05              2648 	ldhl	sp,#5
+   0BB2 2A                 2649 	ld	a,(hl+)
+   0BB3 66                 2650 	ld	h,(hl)
+   0BB4 6F                 2651 	ld	l,a
+   0BB5 09                 2652 	add	hl,bc
+   0BB6 4D                 2653 	ld	c,l
+   0BB7 44                 2654 	ld	b,h
+   0BB8 F8 09              2655 	ldhl	sp,#9
+   0BBA 7E                 2656 	ld	a,(hl)
+   0BBB 91                 2657 	sub	a, c
+   0BBC 20 06              2658 	jr	NZ,00135$
+   0BBE 23                 2659 	inc	hl
+   0BBF 7E                 2660 	ld	a,(hl)
+   0BC0 90                 2661 	sub	a, b
+   0BC1 CAr09r0C           2662 	jp	Z,00111$
+   0BC4                    2663 00135$:
+                           2664 ;C:/gbdk/ZGB/common/src/Scroll.c:419: if(map[map_w * yt + xt] == (UINT16)tile) { //That cast over there is mandatory and gave me a lot of headaches
+   0BC4 F8 09              2665 	ldhl	sp,#9
+   0BC6 2A                 2666 	ld	a,(hl+)
+   0BC7 66                 2667 	ld	h,(hl)
+   0BC8 6F                 2668 	ld	l,a
+   0BC9 E5                 2669 	push	hl
+   0BCA F8 0F              2670 	ldhl	sp,#15
+   0BCC 2A                 2671 	ld	a,(hl+)
+   0BCD 66                 2672 	ld	h,(hl)
+   0BCE 6F                 2673 	ld	l,a
+   0BCF E5                 2674 	push	hl
+   0BD0 CDr00r00           2675 	call	__mulint
+   0BD3 E8 04              2676 	add	sp, #4
+   0BD5 4B                 2677 	ld	c,e
+   0BD6 42                 2678 	ld	b,d
+   0BD7 F8 07              2679 	ldhl	sp,#7
+   0BD9 2A                 2680 	ld	a,(hl+)
+   0BDA 66                 2681 	ld	h,(hl)
+   0BDB 6F                 2682 	ld	l,a
+   0BDC 09                 2683 	add	hl,bc
+   0BDD 4D                 2684 	ld	c,l
+   0BDE 44                 2685 	ld	b,h
+   0BDF F8 0F              2686 	ldhl	sp,#15
+   0BE1 2A                 2687 	ld	a,(hl+)
+   0BE2 66                 2688 	ld	h,(hl)
+   0BE3 6F                 2689 	ld	l,a
+   0BE4 09                 2690 	add	hl,bc
+   0BE5 4D                 2691 	ld	c,l
+   0BE6 44                 2692 	ld	b,h
+   0BE7 0A                 2693 	ld	a,(bc)
+   0BE8 4F                 2694 	ld	c,a
+   0BE9 F8 12              2695 	ldhl	sp,#18
+   0BEB 46                 2696 	ld	b,(hl)
+   0BEC 11 00 00           2697 	ld	de,#0x0000
+   0BEF 78                 2698 	ld	a,b
+   0BF0 91                 2699 	sub	a, c
+   0BF1 20 04              2700 	jr	NZ,00136$
+   0BF3 7B                 2701 	ld	a,e
+   0BF4 92                 2702 	sub	a, d
+   0BF5 28 28              2703 	jr	Z,00105$
+   0BF7                    2704 00136$:
+                           2705 ;C:/gbdk/ZGB/common/src/Scroll.c:418: for(yt = start_y; yt != start_y + h; ++ yt) {
+   0BF7 F8 09              2706 	ldhl	sp,#9
+   0BF9 34                 2707 	inc	(hl)
+   0BFA 20 02              2708 	jr	NZ,00137$
+   0BFC 23                 2709 	inc	hl
+   0BFD 34                 2710 	inc	(hl)
+   0BFE                    2711 00137$:
+   0BFE F8 09              2712 	ldhl	sp,#9
+   0C00 2A                 2713 	ld	a,(hl+)
+   0C01 5E                 2714 	ld	e, (hl)
+   0C02 F8 01              2715 	ldhl	sp,#1
+   0C04 22                 2716 	ld	(hl+),a
+   0C05 73                 2717 	ld	(hl),e
+   0C06 C3rA3r0B           2718 	jp	00107$
+   0C09                    2719 00111$:
+                           2720 ;C:/gbdk/ZGB/common/src/Scroll.c:417: for(xt = start_x; xt != start_x + w; ++ xt) {
+   0C09 F8 07              2721 	ldhl	sp,#7
+   0C0B 34                 2722 	inc	(hl)
+   0C0C 20 02              2723 	jr	NZ,00138$
+   0C0E 23                 2724 	inc	hl
+   0C0F 34                 2725 	inc	(hl)
+   0C10                    2726 00138$:
+   0C10 F8 07              2727 	ldhl	sp,#7
+   0C12 2A                 2728 	ld	a,(hl+)
+   0C13 5E                 2729 	ld	e, (hl)
+   0C14 F8 03              2730 	ldhl	sp,#3
+   0C16 22                 2731 	ld	(hl+),a
+   0C17 73                 2732 	ld	(hl),e
+   0C18 C3r74r0B           2733 	jp	00110$
+   0C1B                    2734 00104$:
+                           2735 ;C:/gbdk/ZGB/common/src/Scroll.c:424: found = 0;
+   0C1B F8 00              2736 	ldhl	sp,#0
+   0C1D 36 00              2737 	ld	(hl),#0x00
+                           2738 ;C:/gbdk/ZGB/common/src/Scroll.c:426: done:
+   0C1F                    2739 00105$:
+                           2740 ;C:/gbdk/ZGB/common/src/Scroll.c:427: POP_BANK;
+   0C1F CDr00r00           2741 	call	_PopBank
+                           2742 ;C:/gbdk/ZGB/common/src/Scroll.c:428: *x = xt;
+   0C22 F8 17              2743 	ldhl	sp,#(24 - 1)
+   0C24 4E                 2744 	ld	c,(hl)
+   0C25 23                 2745 	inc	hl
+   0C26 46                 2746 	ld	b,(hl)
+   0C27 F8 03              2747 	ldhl	sp,#3
+   0C29 7E                 2748 	ld	a,(hl)
+   0C2A 02                 2749 	ld	(bc),a
+   0C2B 03                 2750 	inc	bc
+   0C2C 23                 2751 	inc	hl
+   0C2D 7E                 2752 	ld	a,(hl)
+   0C2E 02                 2753 	ld	(bc),a
+                           2754 ;C:/gbdk/ZGB/common/src/Scroll.c:429: *y = yt;
+   0C2F F8 19              2755 	ldhl	sp,#(26 - 1)
+   0C31 4E                 2756 	ld	c,(hl)
+   0C32 23                 2757 	inc	hl
+   0C33 46                 2758 	ld	b,(hl)
+   0C34 F8 01              2759 	ldhl	sp,#1
+   0C36 7E                 2760 	ld	a,(hl)
+   0C37 02                 2761 	ld	(bc),a
+   0C38 03                 2762 	inc	bc
+   0C39 23                 2763 	inc	hl
+   0C3A 7E                 2764 	ld	a,(hl)
+   0C3B 02                 2765 	ld	(bc),a
+                           2766 ;C:/gbdk/ZGB/common/src/Scroll.c:431: return found;
+   0C3C 2B                 2767 	dec	hl
+   0C3D 2B                 2768 	dec	hl
+   0C3E 5E                 2769 	ld	e,(hl)
+   0C3F E8 0B              2770 	add	sp, #11
+   0C41 C9                 2771 	ret
+                           2772 ;C:/gbdk/ZGB/common/src/Scroll.c:435: void EditCollision(UINT8 tile, UINT8 col){
+                           2773 ;	---------------------------------
+                           2774 ; Function EditCollision
+                           2775 ; ---------------------------------
+   0C42                    2776 _EditCollision::
+                           2777 ;C:/gbdk/ZGB/common/src/Scroll.c:436: scroll_collisions[tile] = col;
+   0C42 11r16r00           2778 	ld	de,#_scroll_collisions
+   0C45 F8 02              2779 	ldhl	sp,#2
+   0C47 6E                 2780 	ld	l,(hl)
+   0C48 26 00              2781 	ld	h,#0x00
+   0C4A 19                 2782 	add	hl,de
+   0C4B 4D                 2783 	ld	c,l
+   0C4C 44                 2784 	ld	b,h
+   0C4D F8 03              2785 	ldhl	sp,#3
+   0C4F 7E                 2786 	ld	a,(hl)
+   0C50 02                 2787 	ld	(bc),a
+   0C51 C9                 2788 	ret
+                           2789 ;C:/gbdk/ZGB/common/src/Scroll.c:438: void EditCollisionDown(UINT8 tile, UINT8 col){
+                           2790 ;	---------------------------------
+                           2791 ; Function EditCollisionDown
+                           2792 ; ---------------------------------
+   0C52                    2793 _EditCollisionDown::
+                           2794 ;C:/gbdk/ZGB/common/src/Scroll.c:439: scroll_collisions_down[tile] = col;
+   0C52 11r96r00           2795 	ld	de,#_scroll_collisions_down
+   0C55 F8 02              2796 	ldhl	sp,#2
+   0C57 6E                 2797 	ld	l,(hl)
+   0C58 26 00              2798 	ld	h,#0x00
+   0C5A 19                 2799 	add	hl,de
+   0C5B 4D                 2800 	ld	c,l
+   0C5C 44                 2801 	ld	b,h
+   0C5D F8 03              2802 	ldhl	sp,#3
+   0C5F 7E                 2803 	ld	a,(hl)
+   0C60 02                 2804 	ld	(bc),a
+   0C61 C9                 2805 	ret
+                           2806 ;C:/gbdk/ZGB/common/src/Scroll.c:464: void DMA_TRANSFER(UINT16 *source,UINT16 *destination){
+                           2807 ;	---------------------------------
+                           2808 ; Function DMA_TRANSFER
+                           2809 ; ---------------------------------
+   0C62                    2810 _DMA_TRANSFER::
+                           2811 ;C:/gbdk/ZGB/common/src/Scroll.c:493: __endasm;
+   0C62 C5                 2812 	PUSH	BC
+   0C63 F8 07              2813 	LDA	HL,7(SP)
+   0C65 56                 2814 	LD	D,(HL)
+   0C66 2B                 2815 	DEC	HL
+   0C67 5E                 2816 	LD	E,(HL)
+   0C68 7A                 2817 	LD	A,D
+   0C69 E0 53              2818 	LDH	(0x53),A
+   0C6B 7B                 2819 	LD	A,E
+   0C6C E0 54              2820 	LDH	(0x54),A
+   0C6E 2B                 2821 	DEC	HL
+   0C6F 46                 2822 	LD	B,(HL)
+   0C70 2B                 2823 	DEC	HL
+   0C71 4E                 2824 	LD	C,(HL)
+   0C72 78                 2825 	LD	A,B
+   0C73 E0 51              2826 	LDH	(0x51),A
+   0C75 79                 2827 	LD	A,C
+   0C76 E0 52              2828 	LDH	(0x52),A
+   0C78 3E 0F              2829 	LD	A,#15
+   0C7A E0 55              2830 	LDH	(0x55),A
+   0C7C C1                 2831 	POP	BC
+                           2832 ;C:/gbdk/ZGB/common/src/Scroll.c:494: source; destination;
+   0C7D C9                 2833 	ret
+                           2834 ;C:/gbdk/ZGB/common/src/Scroll.c:497: void CPU_TRANSFER(UINT16 *source,UINT16 *destination){
+                           2835 ;	---------------------------------
+                           2836 ; Function CPU_TRANSFER
+                           2837 ; ---------------------------------
+   0C7E                    2838 _CPU_TRANSFER::
+                           2839 ;C:/gbdk/ZGB/common/src/Scroll.c:581: __endasm;
+   0C7E C5                 2840 	PUSH	BC
+   0C7F F8 07              2841 	LDA	HL,7(SP)
+   0C81 56                 2842 	LD	D,(HL)
+   0C82 2B                 2843 	DEC	HL
+   0C83 5E                 2844 	LD	E,(HL)
+   0C84 2B                 2845 	DEC	HL
+   0C85 46                 2846 	LD	B,(HL)
+   0C86 2B                 2847 	DEC	HL
+   0C87 4E                 2848 	LD	C,(HL)
+   0C88 60                 2849 	LD	H,B
+   0C89 69                 2850 	LD	L,C
+   0C8A 3E 04              2851 	LD	A,#4
+   0C8C EAr39r02           2852 	LD	(#_Parallax_Columns),A
+   0C8F                    2853 	2$:
+   0C8F 0E 07              2854 	LD	C,#7
+   0C91                    2855 	1$:
+   0C91 2A                 2856 	LD	A,(HLI)
+   0C92 12                 2857 	LD	(DE),A
+   0C93 1C                 2858 	INC	E
+   0C94 2A                 2859 	LD	A,(HLI)
+   0C95 12                 2860 	LD	(DE),A
+   0C96 1C                 2861 	INC	E
+   0C97 2A                 2862 	LD	A,(HLI)
+   0C98 12                 2863 	LD	(DE),A
+   0C99 1C                 2864 	INC	E
+   0C9A 2A                 2865 	LD	A,(HLI)
+   0C9B 12                 2866 	LD	(DE),A
+   0C9C 1C                 2867 	INC	E
+   0C9D 2A                 2868 	LD	A,(HLI)
+   0C9E 12                 2869 	LD	(DE),A
+   0C9F 1C                 2870 	INC	E
+   0CA0 2A                 2871 	LD	A,(HLI)
+   0CA1 12                 2872 	LD	(DE),A
+   0CA2 1C                 2873 	INC	E
+   0CA3 2A                 2874 	LD	A,(HLI)
+   0CA4 12                 2875 	LD	(DE),A
+   0CA5 1C                 2876 	INC	E
+   0CA6 2A                 2877 	LD	A,(HLI)
+   0CA7 12                 2878 	LD	(DE),A
+   0CA8 1C                 2879 	INC	E
+   0CA9 0D                 2880 	DEC	C
+   0CAA 20 E5              2881 	JR	NZ,1$
+   0CAC 2A                 2882 	LD	A,(HLI)
+   0CAD 12                 2883 	LD	(DE),A
+   0CAE 1C                 2884 	INC	E
+   0CAF 2A                 2885 	LD	A,(HLI)
+   0CB0 12                 2886 	LD	(DE),A
+   0CB1 1C                 2887 	INC	E
+   0CB2 2A                 2888 	LD	A,(HLI)
+   0CB3 12                 2889 	LD	(DE),A
+   0CB4 1C                 2890 	INC	E
+   0CB5 2A                 2891 	LD	A,(HLI)
+   0CB6 12                 2892 	LD	(DE),A
+   0CB7 1C                 2893 	INC	E
+   0CB8 2A                 2894 	LD	A,(HLI)
+   0CB9 12                 2895 	LD	(DE),A
+   0CBA 1C                 2896 	INC	E
+   0CBB 2A                 2897 	LD	A,(HLI)
+   0CBC 12                 2898 	LD	(DE),A
+   0CBD 1C                 2899 	INC	E
+   0CBE 2A                 2900 	LD	A,(HLI)
+   0CBF 12                 2901 	LD	(DE),A
+   0CC0 13                 2902 	INC	DE
+   0CC1 2A                 2903 	LD	A,(HLI)
+   0CC2 12                 2904 	LD	(DE),A
+   0CC3 1C                 2905 	INC	E
+   0CC4 06 00              2906 	LD	B,#0
+   0CC6 0E 40              2907 	LD	C,#64
+   0CC8 09                 2908 	ADD	HL,BC
+   0CC9 FAr39r02           2909 	LD	A,(#_Parallax_Columns)
+   0CCC 3D                 2910 	DEC	A
+   0CCD EAr39r02           2911 	LD	(#_Parallax_Columns),A
+   0CD0 20 BD              2912 	JR	NZ,2$
+   0CD2 C1                 2913 	POP	BC
+                           2914 ;C:/gbdk/ZGB/common/src/Scroll.c:582: source; destination;
+   0CD3 C9                 2915 	ret
+                           2916 ;C:/gbdk/ZGB/common/src/Scroll.c:587: void Update_Parallax(){
+                           2917 ;	---------------------------------
+                           2918 ; Function Update_Parallax
+                           2919 ; ---------------------------------
+   0CD4                    2920 _Update_Parallax::
+                           2921 ;C:/gbdk/ZGB/common/src/Scroll.c:591: if (Parallax == 2) {
+   0CD4 21r36r02           2922 	ld	hl,#_Parallax
+   0CD7 7E                 2923 	ld	a,(hl)
+   0CD8 D6 02              2924 	sub	a, #0x02
+   0CDA C0                 2925 	ret	NZ
+                           2926 ;C:/gbdk/ZGB/common/src/Scroll.c:592: DMA_TRANSFER((UINT16*)0xD000,(UINT16*)0x8800); //Tile 129
+   0CDB 21 00 88           2927 	ld	hl,#0x8800
+   0CDE E5                 2928 	push	hl
+   0CDF 26 D0              2929 	ld	h, #0xd0
+   0CE1 E5                 2930 	push	hl
+   0CE2 CDr62r0C           2931 	call	_DMA_TRANSFER
+   0CE5 E8 04              2932 	add	sp, #4
+   0CE7 C9                 2933 	ret
+                           2934 ;C:/gbdk/ZGB/common/src/Scroll.c:597: void Set_Parallax(unsigned char *tiles, UINT8 bank){
+                           2935 ;	---------------------------------
+                           2936 ; Function Set_Parallax
+                           2937 ; ---------------------------------
+   0CE8                    2938 _Set_Parallax::
+                           2939 ;C:/gbdk/ZGB/common/src/Scroll.c:599: ParaOffsetX = 0;
+   0CE8 21r2Fr02           2940 	ld	hl,#_ParaOffsetX
+   0CEB 36 00              2941 	ld	(hl),#0x00
+   0CED 23                 2942 	inc	hl
+   0CEE 36 00              2943 	ld	(hl),#0x00
+                           2944 ;C:/gbdk/ZGB/common/src/Scroll.c:600: ParaOffsetY = 0;
+   0CF0 21r31r02           2945 	ld	hl,#_ParaOffsetY
+   0CF3 36 00              2946 	ld	(hl),#0x00
+   0CF5 23                 2947 	inc	hl
+   0CF6 36 00              2948 	ld	(hl),#0x00
+                           2949 ;C:/gbdk/ZGB/common/src/Scroll.c:601: Parallax = 0;
+   0CF8 21r36r02           2950 	ld	hl,#_Parallax
+   0CFB 36 00              2951 	ld	(hl),#0x00
+                           2952 ;C:/gbdk/ZGB/common/src/Scroll.c:602: PUSH_BANK(bank);
+   0CFD F8 04              2953 	ldhl	sp,#4
+   0CFF 7E                 2954 	ld	a,(hl)
+   0D00 F5                 2955 	push	af
+   0D01 33                 2956 	inc	sp
+   0D02 CDr00r00           2957 	call	_PushBank
+   0D05 33                 2958 	inc	sp
+                           2959 ;C:/gbdk/ZGB/common/src/Scroll.c:603: Para_Tiles = tiles;
+   0D06 F8 02              2960 	ldhl	sp,#2
+   0D08 2A                 2961 	ld	a,(hl+)
+   0D09 5E                 2962 	ld	e, (hl)
+   0D0A 21r3Ar02           2963 	ld	hl,#_Para_Tiles
+   0D0D 22                 2964 	ld	(hl+),a
+   0D0E 73                 2965 	ld	(hl),e
+                           2966 ;C:/gbdk/ZGB/common/src/Scroll.c:605: CPU_TRANSFER(Para_Tiles+ParaOffsetX+ParaOffsetY,(UINT16*)0xD000); 
+   0D0F 2B                 2967 	dec	hl
+   0D10 7E                 2968 	ld	a,(hl)
+   0D11 21r2Fr02           2969 	ld	hl,#_ParaOffsetX
+   0D14 86                 2970 	add	a, (hl)
+   0D15 4F                 2971 	ld	c,a
+   0D16 21r3Br02           2972 	ld	hl,#_Para_Tiles + 1
+   0D19 7E                 2973 	ld	a,(hl)
+   0D1A 21r30r02           2974 	ld	hl,#_ParaOffsetX + 1
+   0D1D 8E                 2975 	adc	a, (hl)
+   0D1E 47                 2976 	ld	b,a
+   0D1F 79                 2977 	ld	a,c
+   0D20 21r31r02           2978 	ld	hl,#_ParaOffsetY
+   0D23 86                 2979 	add	a, (hl)
+   0D24 4F                 2980 	ld	c,a
+   0D25 78                 2981 	ld	a,b
+   0D26 23                 2982 	inc	hl
+   0D27 8E                 2983 	adc	a, (hl)
+   0D28 47                 2984 	ld	b,a
+   0D29 21 00 D0           2985 	ld	hl,#0xd000
+   0D2C E5                 2986 	push	hl
+   0D2D C5                 2987 	push	bc
+   0D2E CDr7Er0C           2988 	call	_CPU_TRANSFER
+   0D31 E8 04              2989 	add	sp, #4
+                           2990 ;C:/gbdk/ZGB/common/src/Scroll.c:606: pbank = bank;
+   0D33 E5                 2991 	push	hl
+   0D34 F8 06              2992 	ldhl	sp,#6
+   0D36 7E                 2993 	ld	a,(hl)
+   0D37 21r35r02           2994 	ld	hl,#_pbank
+   0D3A 77                 2995 	ld	(hl),a
+   0D3B E1                 2996 	pop	hl
+                           2997 ;C:/gbdk/ZGB/common/src/Scroll.c:609: POP_BANK;
+   0D3C C3r00r00           2998 	jp	_PopBank
+                           2999 ;C:/gbdk/ZGB/common/src/Scroll.c:613: void Move_Parallax(){
+                           3000 ;	---------------------------------
+                           3001 ; Function Move_Parallax
+                           3002 ; ---------------------------------
+   0D3F                    3003 _Move_Parallax::
+                           3004 ;C:/gbdk/ZGB/common/src/Scroll.c:615: if (Parallax == 2){
+   0D3F 21r36r02           3005 	ld	hl,#_Parallax
+   0D42 7E                 3006 	ld	a,(hl)
+   0D43 D6 02              3007 	sub	a, #0x02
+   0D45 C2rE9r0D           3008 	jp	NZ,00104$
+                           3009 ;C:/gbdk/ZGB/common/src/Scroll.c:616: PUSH_BANK(1);
+   0D48 3E 01              3010 	ld	a,#0x01
+   0D4A F5                 3011 	push	af
+   0D4B 33                 3012 	inc	sp
+   0D4C CDr00r00           3013 	call	_PushBank
+   0D4F 33                 3014 	inc	sp
+                           3015 ;C:/gbdk/ZGB/common/src/Scroll.c:617: SX = SCX_REG;
+   0D50 11 43 FF           3016 	ld	de,#0xff43
+   0D53 1A                 3017 	ld	a,(de)
+   0D54 21r37r02           3018 	ld	hl,#_SX
+   0D57 77                 3019 	ld	(hl),a
+                           3020 ;C:/gbdk/ZGB/common/src/Scroll.c:618: ParaOffsetX = Parallax_TableX[SX]; 
+   0D58 4E                 3021 	ld	c,(hl)
+   0D59 06 00              3022 	ld	b,#0x00
+   0D5B CB 21              3023 	sla	c
+   0D5D CB 10              3024 	rl	b
+   0D5F 21r00r00           3025 	ld	hl,#_Parallax_TableX
+   0D62 09                 3026 	add	hl,bc
+   0D63 4D                 3027 	ld	c,l
+   0D64 44                 3028 	ld	b,h
+   0D65 59                 3029 	ld	e, c
+   0D66 50                 3030 	ld	d, b
+   0D67 1A                 3031 	ld	a,(de)
+   0D68 21r2Fr02           3032 	ld	hl,#_ParaOffsetX
+   0D6B 22                 3033 	ld	(hl+),a
+   0D6C 13                 3034 	inc	de
+   0D6D 1A                 3035 	ld	a,(de)
+   0D6E 77                 3036 	ld	(hl),a
+                           3037 ;C:/gbdk/ZGB/common/src/Scroll.c:619: SY = SCY_REG;
+   0D6F 11 42 FF           3038 	ld	de,#0xff42
+   0D72 1A                 3039 	ld	a,(de)
+   0D73 21r38r02           3040 	ld	hl,#_SY
+   0D76 77                 3041 	ld	(hl),a
+                           3042 ;C:/gbdk/ZGB/common/src/Scroll.c:620: ParaOffsetY = Parallax_TableY[SY];
+   0D77 4E                 3043 	ld	c,(hl)
+   0D78 06 00              3044 	ld	b,#0x00
+   0D7A CB 21              3045 	sla	c
+   0D7C CB 10              3046 	rl	b
+   0D7E 21r00r00           3047 	ld	hl,#_Parallax_TableY
+   0D81 09                 3048 	add	hl,bc
+   0D82 4D                 3049 	ld	c,l
+   0D83 44                 3050 	ld	b,h
+   0D84 59                 3051 	ld	e, c
+   0D85 50                 3052 	ld	d, b
+   0D86 1A                 3053 	ld	a,(de)
+   0D87 21r31r02           3054 	ld	hl,#_ParaOffsetY
+   0D8A 22                 3055 	ld	(hl+),a
+   0D8B 13                 3056 	inc	de
+   0D8C 1A                 3057 	ld	a,(de)
+   0D8D 77                 3058 	ld	(hl),a
+                           3059 ;C:/gbdk/ZGB/common/src/Scroll.c:621: POP_BANK;
+   0D8E CDr00r00           3060 	call	_PopBank
+                           3061 ;C:/gbdk/ZGB/common/src/Scroll.c:622: PUSH_BANK(pbank);
+   0D91 21r35r02           3062 	ld	hl,#_pbank
+   0D94 7E                 3063 	ld	a,(hl)
+   0D95 F5                 3064 	push	af
+   0D96 33                 3065 	inc	sp
+   0D97 CDr00r00           3066 	call	_PushBank
+   0D9A 33                 3067 	inc	sp
+                           3068 ;C:/gbdk/ZGB/common/src/Scroll.c:625: if (ParaOffset == 64) ParaOffset = 0;
+   0D9B 21r33r02           3069 	ld	hl,#_ParaOffset
+   0D9E 7E                 3070 	ld	a,(hl)
+   0D9F D6 40              3071 	sub	a, #0x40
+   0DA1 20 0D              3072 	jr	NZ,00102$
+   0DA3 23                 3073 	inc	hl
+   0DA4 7E                 3074 	ld	a,(hl)
+   0DA5 B7                 3075 	or	a, a
+   0DA6 20 08              3076 	jr	NZ,00102$
+   0DA8 21r33r02           3077 	ld	hl,#_ParaOffset
+   0DAB 36 00              3078 	ld	(hl),#0x00
+   0DAD 23                 3079 	inc	hl
+   0DAE 36 00              3080 	ld	(hl),#0x00
+   0DB0                    3081 00102$:
+                           3082 ;C:/gbdk/ZGB/common/src/Scroll.c:626: CPU_TRANSFER(Para_Tiles+ParaOffsetX+ParaOffsetY,(UINT16*)0xD000); //Copy Tiles to VRam 
+   0DB0 21r3Ar02           3083 	ld	hl,#_Para_Tiles
+   0DB3 7E                 3084 	ld	a,(hl)
+   0DB4 21r2Fr02           3085 	ld	hl,#_ParaOffsetX
+   0DB7 86                 3086 	add	a, (hl)
+   0DB8 4F                 3087 	ld	c,a
+   0DB9 21r3Br02           3088 	ld	hl,#_Para_Tiles + 1
+   0DBC 7E                 3089 	ld	a,(hl)
+   0DBD 21r30r02           3090 	ld	hl,#_ParaOffsetX + 1
+   0DC0 8E                 3091 	adc	a, (hl)
+   0DC1 47                 3092 	ld	b,a
+   0DC2 79                 3093 	ld	a,c
+   0DC3 21r31r02           3094 	ld	hl,#_ParaOffsetY
+   0DC6 86                 3095 	add	a, (hl)
+   0DC7 4F                 3096 	ld	c,a
+   0DC8 78                 3097 	ld	a,b
+   0DC9 23                 3098 	inc	hl
+   0DCA 8E                 3099 	adc	a, (hl)
+   0DCB 47                 3100 	ld	b,a
+   0DCC 21 00 D0           3101 	ld	hl,#0xd000
+   0DCF E5                 3102 	push	hl
+   0DD0 C5                 3103 	push	bc
+   0DD1 CDr7Er0C           3104 	call	_CPU_TRANSFER
+   0DD4 E8 04              3105 	add	sp, #4
+                           3106 ;C:/gbdk/ZGB/common/src/Scroll.c:627: POP_BANK;
+   0DD6 CDr00r00           3107 	call	_PopBank
+                           3108 ;C:/gbdk/ZGB/common/src/Scroll.c:628: Parallax = 0;
+   0DD9 21r36r02           3109 	ld	hl,#_Parallax
+   0DDC 36 00              3110 	ld	(hl),#0x00
+                           3111 ;C:/gbdk/ZGB/common/src/Scroll.c:629: ParaOffset+=2;
+   0DDE 21r33r02           3112 	ld	hl,#_ParaOffset
+   0DE1 7E                 3113 	ld	a,(hl)
+   0DE2 C6 02              3114 	add	a, #0x02
+   0DE4 22                 3115 	ld	(hl+),a
+   0DE5 7E                 3116 	ld	a,(hl)
+   0DE6 CE 00              3117 	adc	a, #0x00
+   0DE8 77                 3118 	ld	(hl),a
+   0DE9                    3119 00104$:
+                           3120 ;C:/gbdk/ZGB/common/src/Scroll.c:631: Parallax++;
+   0DE9 21r36r02           3121 	ld	hl,#_Parallax
+   0DEC 34                 3122 	inc	(hl)
+   0DED C9                 3123 	ret
+                           3124 	.area _CODE
+                           3125 	.area _CABS (ABS)

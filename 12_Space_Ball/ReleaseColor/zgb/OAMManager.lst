@@ -1,0 +1,405 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module OAMManager
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _PopBank
+                             12 	.globl _PushBank
+                             13 	.globl _set_sprite_data
+                             14 	.globl _oam1
+                             15 	.globl _oam0
+                             16 	.globl _oam
+                             17 	.globl _oam_mirror
+                             18 	.globl _sprites_pal
+                             19 	.globl _last_sprite_loaded
+                             20 	.globl _LoadSprite
+                             21 	.globl _SwapOAMs
+                             22 	.globl _ClearOAMs
+                             23 	.globl _DrawOAMSprite
+                             24 ;--------------------------------------------------------
+                             25 ; ram data
+                             26 ;--------------------------------------------------------
+                             27 	.area _DATA
+   0000                      28 _last_sprite_loaded::
+   0000                      29 	.ds 1
+   0001                      30 _sprites_pal::
+   0001                      31 	.ds 256
+                     CF00    32 _oam_mirror	=	0xcf00
+   0101                      33 _oam::
+   0101                      34 	.ds 2
+   0103                      35 _oam0::
+   0103                      36 	.ds 2
+   0105                      37 _oam1::
+   0105                      38 	.ds 2
+                             39 ;--------------------------------------------------------
+                             40 ; absolute external ram data
+                             41 ;--------------------------------------------------------
+                             42 	.area _DABS (ABS)
+                             43 ;--------------------------------------------------------
+                             44 ; global & static initialisations
+                             45 ;--------------------------------------------------------
+                             46 	.area _HOME
+                             47 	.area _GSINIT
+                             48 	.area _GSFINAL
+                             49 	.area _GSINIT
+                             50 ;C:/gbdk/ZGB/common/src/OAMManager.c:5: UINT8 last_sprite_loaded = 0;
+   0000 21r00r00             51 	ld	hl,#_last_sprite_loaded
+   0003 36 00                52 	ld	(hl),#0x00
+                             53 ;C:/gbdk/ZGB/common/src/OAMManager.c:28: UINT8* oam  = (__REG)0xC000;
+   0005 21r01r01             54 	ld	hl,#_oam
+   0008 36 00                55 	ld	(hl),#0x00
+   000A 23                   56 	inc	hl
+   000B 36 C0                57 	ld	(hl),#0xc0
+                             58 ;C:/gbdk/ZGB/common/src/OAMManager.c:29: UINT8* oam0 = (__REG)0xC000;
+   000D 21r03r01             59 	ld	hl,#_oam0
+   0010 36 00                60 	ld	(hl),#0x00
+   0012 23                   61 	inc	hl
+   0013 36 C0                62 	ld	(hl),#0xc0
+                             63 ;C:/gbdk/ZGB/common/src/OAMManager.c:30: UINT8* oam1 = (__REG)0xCF00;
+   0015 21r05r01             64 	ld	hl,#_oam1
+   0018 36 00                65 	ld	(hl),#0x00
+   001A 23                   66 	inc	hl
+   001B 36 CF                67 	ld	(hl),#0xcf
+                             68 ;--------------------------------------------------------
+                             69 ; Home
+                             70 ;--------------------------------------------------------
+                             71 	.area _HOME
+                             72 	.area _HOME
+                             73 ;--------------------------------------------------------
+                             74 ; code
+                             75 ;--------------------------------------------------------
+                             76 	.area _CODE
+                             77 ;C:/gbdk/ZGB/common/src/OAMManager.c:8: UINT8 LoadSprite(UINT8 n_tiles, unsigned char* data, UINT8 bank, UINT8 frame_size, unsigned char* palette_idx) {
+                             78 ;	---------------------------------
+                             79 ; Function LoadSprite
+                             80 ; ---------------------------------
+   0000                      81 _LoadSprite::
+   0000 E8 FC                82 	add	sp, #-4
+                             83 ;C:/gbdk/ZGB/common/src/OAMManager.c:10: UINT8* sprites_pal_ptr = &sprites_pal[last_sprite_loaded];
+   0002 3Er01                84 	ld	a,#<(_sprites_pal)
+   0004 21r00r00             85 	ld	hl,#_last_sprite_loaded
+   0007 86                   86 	add	a, (hl)
+   0008 4F                   87 	ld	c,a
+   0009 3Es00                88 	ld	a,#>(_sprites_pal)
+   000B CE 00                89 	adc	a, #0x00
+   000D 47                   90 	ld	b,a
+                             91 ;C:/gbdk/ZGB/common/src/OAMManager.c:12: PUSH_BANK(bank);
+   000E C5                   92 	push	bc
+   000F F8 0B                93 	ldhl	sp,#11
+   0011 7E                   94 	ld	a,(hl)
+   0012 F5                   95 	push	af
+   0013 33                   96 	inc	sp
+   0014 CDr00r00             97 	call	_PushBank
+   0017 33                   98 	inc	sp
+   0018 C1                   99 	pop	bc
+                            100 ;C:/gbdk/ZGB/common/src/OAMManager.c:13: set_sprite_data(last_sprite_loaded, n_tiles, data);
+   0019 C5                  101 	push	bc
+   001A F8 09               102 	ldhl	sp,#9
+   001C 2A                  103 	ld	a,(hl+)
+   001D 66                  104 	ld	h,(hl)
+   001E 6F                  105 	ld	l,a
+   001F E5                  106 	push	hl
+   0020 F8 0A               107 	ldhl	sp,#10
+   0022 7E                  108 	ld	a,(hl)
+   0023 F5                  109 	push	af
+   0024 33                  110 	inc	sp
+   0025 21r00r00            111 	ld	hl,#_last_sprite_loaded
+   0028 7E                  112 	ld	a,(hl)
+   0029 F5                  113 	push	af
+   002A 33                  114 	inc	sp
+   002B CDr00r00            115 	call	_set_sprite_data
+   002E E8 04               116 	add	sp, #4
+   0030 C1                  117 	pop	bc
+                            118 ;C:/gbdk/ZGB/common/src/OAMManager.c:14: last_sprite_loaded += n_tiles;
+   0031 21r00r00            119 	ld	hl,#_last_sprite_loaded
+   0034 7E                  120 	ld	a,(hl)
+   0035 F8 06               121 	ldhl	sp,#6
+   0037 86                  122 	add	a, (hl)
+   0038 21r00r00            123 	ld	hl,#_last_sprite_loaded
+   003B 77                  124 	ld	(hl),a
+                            125 ;C:/gbdk/ZGB/common/src/OAMManager.c:16: for(i = 0; i != n_tiles; ++i, sprites_pal_ptr ++) {
+   003C F8 00               126 	ldhl	sp,#0
+   003E 36 00               127 	ld	(hl),#0x00
+   0040                     128 00106$:
+   0040 F8 06               129 	ldhl	sp,#6
+   0042 7E                  130 	ld	a,(hl)
+   0043 F8 00               131 	ldhl	sp,#0
+   0045 96                  132 	sub	a, (hl)
+   0046 CAr86r00            133 	jp	Z,00104$
+                            134 ;C:/gbdk/ZGB/common/src/OAMManager.c:17: if(palette_idx)
+   0049 F8 0C               135 	ldhl	sp,#12
+   004B 3A                  136 	ld	a,(hl-)
+   004C B6                  137 	or	a,(hl)
+   004D CAr7Dr00            138 	jp	Z,00102$
+                            139 ;C:/gbdk/ZGB/common/src/OAMManager.c:18: *sprites_pal_ptr = *(palette_idx + (i >> frame_size)); 
+   0050 2B                  140 	dec	hl
+   0051 7E                  141 	ld	a,(hl)
+   0052 F5                  142 	push	af
+   0053 F8 02               143 	ldhl	sp,#2
+   0055 7E                  144 	ld	a,(hl)
+   0056 F8 05               145 	ldhl	sp,#5
+   0058 77                  146 	ld	(hl),a
+   0059 F1                  147 	pop	af
+   005A 3C                  148 	inc	a
+   005B 18 04               149 	jr	00125$
+   005D                     150 00124$:
+   005D F8 03               151 	ldhl	sp,#3
+   005F CB 3E               152 	srl	(hl)
+   0061                     153 00125$:
+   0061 3D                  154 	dec	a
+   0062 20 F9               155 	jr	NZ,00124$
+   0064 F8 0B               156 	ldhl	sp,#(12 - 1)
+   0066 5E                  157 	ld	e,(hl)
+   0067 23                  158 	inc	hl
+   0068 56                  159 	ld	d,(hl)
+   0069 F8 03               160 	ldhl	sp,#3
+   006B 6E                  161 	ld	l,(hl)
+   006C 26 00               162 	ld	h,#0x00
+   006E 19                  163 	add	hl,de
+   006F 7D                  164 	ld	a,l
+   0070 54                  165 	ld	d,h
+   0071 F8 01               166 	ldhl	sp,#1
+   0073 22                  167 	ld	(hl+),a
+   0074 72                  168 	ld	(hl),d
+   0075 2B                  169 	dec	hl
+   0076 5E                  170 	ld	e,(hl)
+   0077 23                  171 	inc	hl
+   0078 56                  172 	ld	d,(hl)
+   0079 1A                  173 	ld	a,(de)
+   007A 02                  174 	ld	(bc),a
+   007B 18 02               175 	jr	00107$
+   007D                     176 00102$:
+                            177 ;C:/gbdk/ZGB/common/src/OAMManager.c:20: *sprites_pal_ptr = 0; 
+   007D AF                  178 	xor	a, a
+   007E 02                  179 	ld	(bc),a
+   007F                     180 00107$:
+                            181 ;C:/gbdk/ZGB/common/src/OAMManager.c:16: for(i = 0; i != n_tiles; ++i, sprites_pal_ptr ++) {
+   007F F8 00               182 	ldhl	sp,#0
+   0081 34                  183 	inc	(hl)
+   0082 03                  184 	inc	bc
+   0083 C3r40r00            185 	jp	00106$
+   0086                     186 00104$:
+                            187 ;C:/gbdk/ZGB/common/src/OAMManager.c:22: POP_BANK;
+   0086 CDr00r00            188 	call	_PopBank
+                            189 ;C:/gbdk/ZGB/common/src/OAMManager.c:24: return last_sprite_loaded - n_tiles;
+   0089 21r00r00            190 	ld	hl,#_last_sprite_loaded
+   008C 7E                  191 	ld	a,(hl)
+   008D F8 06               192 	ldhl	sp,#6
+   008F 96                  193 	sub	a, (hl)
+   0090 5F                  194 	ld	e,a
+   0091 E8 04               195 	add	sp, #4
+   0093 C9                  196 	ret
+                            197 ;C:/gbdk/ZGB/common/src/OAMManager.c:31: void SwapOAMs() {
+                            198 ;	---------------------------------
+                            199 ; Function SwapOAMs
+                            200 ; ---------------------------------
+   0094                     201 _SwapOAMs::
+                            202 ;C:/gbdk/ZGB/common/src/OAMManager.c:33: UINT8* cached_oam = ((UINT8*)((UINT16)oam & 0xFF00) == (__REG)0xC000) ? oam0 : oam1;
+   0094 21r02r01            203 	ld	hl,#_oam + 1
+   0097 2B                  204 	dec	hl
+   0098 4E                  205 	ld	c,(hl)
+   0099 23                  206 	inc	hl
+   009A 46                  207 	ld	b,(hl)
+   009B 0E 00               208 	ld	c,#0x00
+   009D 79                  209 	ld	a,c
+   009E B7                  210 	or	a, a
+   009F 20 0E               211 	jr	NZ,00109$
+   00A1 78                  212 	ld	a,b
+   00A2 D6 C0               213 	sub	a, #0xc0
+   00A4 20 09               214 	jr	NZ,00109$
+   00A6 21r04r01            215 	ld	hl,#_oam0 + 1
+   00A9 2B                  216 	dec	hl
+   00AA 4E                  217 	ld	c,(hl)
+   00AB 23                  218 	inc	hl
+   00AC 46                  219 	ld	b,(hl)
+   00AD 18 07               220 	jr	00110$
+   00AF                     221 00109$:
+   00AF 21r06r01            222 	ld	hl,#_oam1 + 1
+   00B2 2B                  223 	dec	hl
+   00B3 4E                  224 	ld	c,(hl)
+   00B4 23                  225 	inc	hl
+   00B5 46                  226 	ld	b,(hl)
+   00B6                     227 00110$:
+                            228 ;C:/gbdk/ZGB/common/src/OAMManager.c:34: while(oam < cached_oam) {
+   00B6                     229 00101$:
+   00B6 21r01r01            230 	ld	hl,#_oam
+   00B9 7E                  231 	ld	a, (hl)
+   00BA 91                  232 	sub	a, c
+   00BB 23                  233 	inc	hl
+   00BC 7E                  234 	ld	a, (hl)
+   00BD 98                  235 	sbc	a, b
+   00BE 30 15               236 	jr	NC,00103$
+                            237 ;C:/gbdk/ZGB/common/src/OAMManager.c:35: *oam = 200;
+   00C0 21r02r01            238 	ld	hl,#_oam + 1
+   00C3 2B                  239 	dec	hl
+   00C4 5E                  240 	ld	e,(hl)
+   00C5 23                  241 	inc	hl
+   00C6 56                  242 	ld	d,(hl)
+   00C7 3E C8               243 	ld	a,#0xc8
+   00C9 12                  244 	ld	(de),a
+                            245 ;C:/gbdk/ZGB/common/src/OAMManager.c:36: oam += 4;
+   00CA 2B                  246 	dec	hl
+   00CB 7E                  247 	ld	a,(hl)
+   00CC C6 04               248 	add	a, #0x04
+   00CE 22                  249 	ld	(hl+),a
+   00CF 7E                  250 	ld	a,(hl)
+   00D0 CE 00               251 	adc	a, #0x00
+   00D2 77                  252 	ld	(hl),a
+   00D3 18 E1               253 	jr	00101$
+   00D5                     254 00103$:
+                            255 ;C:/gbdk/ZGB/common/src/OAMManager.c:39: if((0xFF00 & (UINT16)oam) == 0xC000) {
+   00D5 21r02r01            256 	ld	hl,#_oam + 1
+   00D8 2B                  257 	dec	hl
+   00D9 4E                  258 	ld	c,(hl)
+   00DA 23                  259 	inc	hl
+   00DB 46                  260 	ld	b,(hl)
+   00DC 0E 00               261 	ld	c,#0x00
+   00DE 79                  262 	ld	a,c
+   00DF B7                  263 	or	a, a
+   00E0 20 20               264 	jr	NZ,00105$
+   00E2 78                  265 	ld	a,b
+   00E3 D6 C0               266 	sub	a, #0xc0
+   00E5 20 1B               267 	jr	NZ,00105$
+                            268 ;C:/gbdk/ZGB/common/src/OAMManager.c:40: *(__REG)0xFF81 = 0xC0;
+   00E7 21 81 FF            269 	ld	hl,#0xff81
+   00EA 36 C0               270 	ld	(hl),#0xc0
+                            271 ;C:/gbdk/ZGB/common/src/OAMManager.c:41: oam0 = oam;
+   00EC 21r01r01            272 	ld	hl,#_oam
+   00EF 2A                  273 	ld	a,(hl+)
+   00F0 5E                  274 	ld	e, (hl)
+   00F1 21r03r01            275 	ld	hl,#_oam0
+   00F4 22                  276 	ld	(hl+),a
+   00F5 73                  277 	ld	(hl),e
+                            278 ;C:/gbdk/ZGB/common/src/OAMManager.c:42: oam = oam1;
+   00F6 21r05r01            279 	ld	hl,#_oam1
+   00F9 2A                  280 	ld	a,(hl+)
+   00FA 5E                  281 	ld	e, (hl)
+   00FB 21r01r01            282 	ld	hl,#_oam
+   00FE 22                  283 	ld	(hl+),a
+   00FF 73                  284 	ld	(hl),e
+   0100 18 19               285 	jr	00106$
+   0102                     286 00105$:
+                            287 ;C:/gbdk/ZGB/common/src/OAMManager.c:44: *(__REG)0xFF81 = 0xCF;
+   0102 21 81 FF            288 	ld	hl,#0xff81
+   0105 36 CF               289 	ld	(hl),#0xcf
+                            290 ;C:/gbdk/ZGB/common/src/OAMManager.c:45: oam1 = oam;
+   0107 21r01r01            291 	ld	hl,#_oam
+   010A 2A                  292 	ld	a,(hl+)
+   010B 5E                  293 	ld	e, (hl)
+   010C 21r05r01            294 	ld	hl,#_oam1
+   010F 22                  295 	ld	(hl+),a
+   0110 73                  296 	ld	(hl),e
+                            297 ;C:/gbdk/ZGB/common/src/OAMManager.c:46: oam = oam0;
+   0111 21r03r01            298 	ld	hl,#_oam0
+   0114 2A                  299 	ld	a,(hl+)
+   0115 5E                  300 	ld	e, (hl)
+   0116 21r01r01            301 	ld	hl,#_oam
+   0119 22                  302 	ld	(hl+),a
+   011A 73                  303 	ld	(hl),e
+   011B                     304 00106$:
+                            305 ;C:/gbdk/ZGB/common/src/OAMManager.c:48: oam = (UINT8*)((UINT16)oam & 0xFF00);
+   011B 21r02r01            306 	ld	hl,#_oam + 1
+   011E 2B                  307 	dec	hl
+   011F 4E                  308 	ld	c,(hl)
+   0120 23                  309 	inc	hl
+   0121 46                  310 	ld	b,(hl)
+   0122 0E 00               311 	ld	c,#0x00
+   0124 2B                  312 	dec	hl
+   0125 71                  313 	ld	(hl),c
+   0126 23                  314 	inc	hl
+   0127 70                  315 	ld	(hl),b
+   0128 C9                  316 	ret
+                            317 ;C:/gbdk/ZGB/common/src/OAMManager.c:51: void ClearOAMs() {
+                            318 ;	---------------------------------
+                            319 ; Function ClearOAMs
+                            320 ; ---------------------------------
+   0129                     321 _ClearOAMs::
+                            322 ;C:/gbdk/ZGB/common/src/OAMManager.c:53: oam0 = (__REG)0xC000;
+   0129 21r03r01            323 	ld	hl,#_oam0
+   012C 36 00               324 	ld	(hl),#0x00
+   012E 23                  325 	inc	hl
+   012F 36 C0               326 	ld	(hl),#0xc0
+                            327 ;C:/gbdk/ZGB/common/src/OAMManager.c:54: oam1 = (__REG)0xCF00;
+   0131 21r05r01            328 	ld	hl,#_oam1
+   0134 36 00               329 	ld	(hl),#0x00
+   0136 23                  330 	inc	hl
+   0137 36 CF               331 	ld	(hl),#0xcf
+                            332 ;C:/gbdk/ZGB/common/src/OAMManager.c:55: for(i = 0; i < 40; ++i, oam0 += 4, oam1 += 4) {
+   0139 0E 00               333 	ld	c,#0x00
+   013B                     334 00102$:
+                            335 ;C:/gbdk/ZGB/common/src/OAMManager.c:56: *oam0 = 200;
+   013B 21r04r01            336 	ld	hl,#_oam0 + 1
+   013E 2B                  337 	dec	hl
+   013F 5E                  338 	ld	e,(hl)
+   0140 23                  339 	inc	hl
+   0141 56                  340 	ld	d,(hl)
+   0142 3E C8               341 	ld	a,#0xc8
+   0144 12                  342 	ld	(de),a
+                            343 ;C:/gbdk/ZGB/common/src/OAMManager.c:57: *oam1 = 200;
+   0145 21r06r01            344 	ld	hl,#_oam1 + 1
+   0148 2B                  345 	dec	hl
+   0149 5E                  346 	ld	e,(hl)
+   014A 23                  347 	inc	hl
+   014B 56                  348 	ld	d,(hl)
+   014C 3E C8               349 	ld	a,#0xc8
+   014E 12                  350 	ld	(de),a
+                            351 ;C:/gbdk/ZGB/common/src/OAMManager.c:55: for(i = 0; i < 40; ++i, oam0 += 4, oam1 += 4) {
+   014F 0C                  352 	inc	c
+   0150 21r03r01            353 	ld	hl,#_oam0
+   0153 7E                  354 	ld	a,(hl)
+   0154 C6 04               355 	add	a, #0x04
+   0156 22                  356 	ld	(hl+),a
+   0157 7E                  357 	ld	a,(hl)
+   0158 CE 00               358 	adc	a, #0x00
+   015A 77                  359 	ld	(hl),a
+   015B 21r05r01            360 	ld	hl,#_oam1
+   015E 7E                  361 	ld	a,(hl)
+   015F C6 04               362 	add	a, #0x04
+   0161 22                  363 	ld	(hl+),a
+   0162 7E                  364 	ld	a,(hl)
+   0163 CE 00               365 	adc	a, #0x00
+   0165 77                  366 	ld	(hl),a
+   0166 79                  367 	ld	a,c
+   0167 D6 28               368 	sub	a, #0x28
+   0169 DAr3Br01            369 	jp	C,00102$
+   016C C9                  370 	ret
+                            371 ;C:/gbdk/ZGB/common/src/OAMManager.c:61: void DrawOAMSprite(UINT8 y, UINT8 x, UINT8 idx, UINT8 flags) {
+                            372 ;	---------------------------------
+                            373 ; Function DrawOAMSprite
+                            374 ; ---------------------------------
+   016D                     375 _DrawOAMSprite::
+                            376 ;C:/gbdk/ZGB/common/src/OAMManager.c:91: __endasm;
+                            377 ;store	in bc the address stored in oam ptr
+   016D 21r01r01            378 	ld	hl,#_oam
+   0170 4E                  379 	ld	c,(hl)
+   0171 23                  380 	inc	hl
+   0172 46                  381 	ld	b,(hl)
+                            382 ;store	in hl the beginning of data (pointer to first param)
+   0173 F8 02               383 	ldhl	sp,#2
+                            384 ;OAMManager.c:35:	*(oam ++) = y;
+   0175 2A                  385 	ld	a,(hl+)
+   0176 02                  386 	ld	(bc),a
+   0177 0C                  387 	inc	c
+                            388 ;OAMManager.c:36:	*(oam ++) = x;
+   0178 2A                  389 	ld	a,(hl+)
+   0179 02                  390 	ld	(bc),a
+   017A 0C                  391 	inc	c
+                            392 ;OAMManager.c:37:	*(oam ++) = idx;
+   017B 2A                  393 	ld	a,(hl+)
+   017C 02                  394 	ld	(bc),a
+   017D 0C                  395 	inc	c
+                            396 ;OAMManager.c:38:	*(oam ++) = flags;
+   017E 2A                  397 	ld	a,(hl+)
+   017F 02                  398 	ld	(bc),a
+   0180 0C                  399 	inc	c
+                            400 ;refresh	oam value
+   0181 21r01r01            401 	ld	hl,#_oam
+   0184 71                  402 	ld	(hl), c
+   0185 C9                  403 	ret
+                            404 	.area _CODE
+                            405 	.area _CABS (ABS)

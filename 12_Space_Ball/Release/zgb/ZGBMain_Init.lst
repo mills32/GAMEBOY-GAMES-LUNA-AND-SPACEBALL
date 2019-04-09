@@ -1,0 +1,355 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module ZGBMain_Init
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _InitSprites
+                             12 	.globl _Destroy_SPRITE_ROCKET
+                             13 	.globl _Update_SPRITE_ROCKET
+                             14 	.globl _Start_SPRITE_ROCKET
+                             15 	.globl _Destroy_SPRITE_ARROW
+                             16 	.globl _Update_SPRITE_ARROW
+                             17 	.globl _Start_SPRITE_ARROW
+                             18 	.globl _Destroy_SPRITE_UFO
+                             19 	.globl _Update_SPRITE_UFO
+                             20 	.globl _Start_SPRITE_UFO
+                             21 	.globl _Destroy_SPRITE_SHIP
+                             22 	.globl _Update_SPRITE_SHIP
+                             23 	.globl _Start_SPRITE_SHIP
+                             24 	.globl _Destroy_SPRITE_POINTER
+                             25 	.globl _Update_SPRITE_POINTER
+                             26 	.globl _Start_SPRITE_POINTER
+                             27 	.globl _Destroy_SPRITE_PLAYER
+                             28 	.globl _Update_SPRITE_PLAYER
+                             29 	.globl _Start_SPRITE_PLAYER
+                             30 	.globl _InitStates
+                             31 	.globl _Update_STATE_LEVEL1
+                             32 	.globl _Start_STATE_LEVEL1
+                             33 	.globl _Update_STATE_CREDITS
+                             34 	.globl _Start_STATE_CREDITS
+                             35 	.globl _Update_STATE_GAME
+                             36 	.globl _Start_STATE_GAME
+                             37 	.globl _Update_STATE_MENU
+                             38 	.globl _Start_STATE_MENU
+                             39 	.globl _spritePalDatas
+                             40 	.globl _spriteIdxs
+                             41 	.globl _spriteNumFrames
+                             42 	.globl _spriteFrameSizes
+                             43 	.globl _spriteDataBanks
+                             44 	.globl _spriteDatas
+                             45 	.globl _spriteDestroyFuncs
+                             46 	.globl _spriteUpdateFuncs
+                             47 	.globl _spriteStartFuncs
+                             48 	.globl _spriteBanks
+                             49 	.globl _updateFuncs
+                             50 	.globl _startFuncs
+                             51 	.globl _stateBanks
+                             52 ;--------------------------------------------------------
+                             53 ; ram data
+                             54 ;--------------------------------------------------------
+                             55 	.area _DATA
+   0000                      56 _stateBanks::
+   0000                      57 	.ds 4
+   0004                      58 _startFuncs::
+   0004                      59 	.ds 8
+   000C                      60 _updateFuncs::
+   000C                      61 	.ds 8
+   0014                      62 _spriteBanks::
+   0014                      63 	.ds 6
+   001A                      64 _spriteStartFuncs::
+   001A                      65 	.ds 12
+   0026                      66 _spriteUpdateFuncs::
+   0026                      67 	.ds 12
+   0032                      68 _spriteDestroyFuncs::
+   0032                      69 	.ds 12
+   003E                      70 _spriteDatas::
+   003E                      71 	.ds 12
+   004A                      72 _spriteDataBanks::
+   004A                      73 	.ds 6
+   0050                      74 _spriteFrameSizes::
+   0050                      75 	.ds 6
+   0056                      76 _spriteNumFrames::
+   0056                      77 	.ds 6
+   005C                      78 _spriteIdxs::
+   005C                      79 	.ds 6
+   0062                      80 _spritePalDatas::
+   0062                      81 	.ds 12
+                             82 ;--------------------------------------------------------
+                             83 ; absolute external ram data
+                             84 ;--------------------------------------------------------
+                             85 	.area _DABS (ABS)
+                             86 ;--------------------------------------------------------
+                             87 ; global & static initialisations
+                             88 ;--------------------------------------------------------
+                             89 	.area _HOME
+                             90 	.area _GSINIT
+                             91 	.area _GSFINAL
+                             92 	.area _GSINIT
+                             93 ;C:/gbdk/ZGB/common/src/ZGBMain_Init.c:11: Void_Func_Void startFuncs[] = {STATES};
+   0000 21r04r00             94 	ld	hl,#_startFuncs
+   0003 36r00                95 	ld	(hl),#<(_Start_STATE_MENU)
+   0005 23                   96 	inc	hl
+   0006 36s00                97 	ld	(hl),#>(_Start_STATE_MENU)
+   0008 21r06r00             98 	ld	hl,#(_startFuncs + 0x0002)
+   000B 36r00                99 	ld	(hl),#<(_Start_STATE_GAME)
+   000D 23                  100 	inc	hl
+   000E 36s00               101 	ld	(hl),#>(_Start_STATE_GAME)
+   0010 21r08r00            102 	ld	hl,#(_startFuncs + 0x0004)
+   0013 36r00               103 	ld	(hl),#<(_Start_STATE_CREDITS)
+   0015 23                  104 	inc	hl
+   0016 36s00               105 	ld	(hl),#>(_Start_STATE_CREDITS)
+   0018 21r0Ar00            106 	ld	hl,#(_startFuncs + 0x0006)
+   001B 36r00               107 	ld	(hl),#<(_Start_STATE_LEVEL1)
+   001D 23                  108 	inc	hl
+   001E 36s00               109 	ld	(hl),#>(_Start_STATE_LEVEL1)
+                            110 ;C:/gbdk/ZGB/common/src/ZGBMain_Init.c:15: Void_Func_Void updateFuncs[] = {STATES};
+   0020 21r0Cr00            111 	ld	hl,#_updateFuncs
+   0023 36r00               112 	ld	(hl),#<(_Update_STATE_MENU)
+   0025 23                  113 	inc	hl
+   0026 36s00               114 	ld	(hl),#>(_Update_STATE_MENU)
+   0028 21r0Er00            115 	ld	hl,#(_updateFuncs + 0x0002)
+   002B 36r00               116 	ld	(hl),#<(_Update_STATE_GAME)
+   002D 23                  117 	inc	hl
+   002E 36s00               118 	ld	(hl),#>(_Update_STATE_GAME)
+   0030 21r10r00            119 	ld	hl,#(_updateFuncs + 0x0004)
+   0033 36r00               120 	ld	(hl),#<(_Update_STATE_CREDITS)
+   0035 23                  121 	inc	hl
+   0036 36s00               122 	ld	(hl),#>(_Update_STATE_CREDITS)
+   0038 21r12r00            123 	ld	hl,#(_updateFuncs + 0x0006)
+   003B 36r00               124 	ld	(hl),#<(_Update_STATE_LEVEL1)
+   003D 23                  125 	inc	hl
+   003E 36s00               126 	ld	(hl),#>(_Update_STATE_LEVEL1)
+                            127 ;C:/gbdk/ZGB/common/src/ZGBMain_Init.c:40: Void_Func_Void spriteStartFuncs[] = {SPRITES};
+   0040 21r1Ar00            128 	ld	hl,#_spriteStartFuncs
+   0043 36r00               129 	ld	(hl),#<(_Start_SPRITE_PLAYER)
+   0045 23                  130 	inc	hl
+   0046 36s00               131 	ld	(hl),#>(_Start_SPRITE_PLAYER)
+   0048 21r1Cr00            132 	ld	hl,#(_spriteStartFuncs + 0x0002)
+   004B 36r00               133 	ld	(hl),#<(_Start_SPRITE_POINTER)
+   004D 23                  134 	inc	hl
+   004E 36s00               135 	ld	(hl),#>(_Start_SPRITE_POINTER)
+   0050 21r1Er00            136 	ld	hl,#(_spriteStartFuncs + 0x0004)
+   0053 36r00               137 	ld	(hl),#<(_Start_SPRITE_SHIP)
+   0055 23                  138 	inc	hl
+   0056 36s00               139 	ld	(hl),#>(_Start_SPRITE_SHIP)
+   0058 21r20r00            140 	ld	hl,#(_spriteStartFuncs + 0x0006)
+   005B 36r00               141 	ld	(hl),#<(_Start_SPRITE_UFO)
+   005D 23                  142 	inc	hl
+   005E 36s00               143 	ld	(hl),#>(_Start_SPRITE_UFO)
+   0060 21r22r00            144 	ld	hl,#(_spriteStartFuncs + 0x0008)
+   0063 36r00               145 	ld	(hl),#<(_Start_SPRITE_ARROW)
+   0065 23                  146 	inc	hl
+   0066 36s00               147 	ld	(hl),#>(_Start_SPRITE_ARROW)
+   0068 21r24r00            148 	ld	hl,#(_spriteStartFuncs + 0x000a)
+   006B 36r00               149 	ld	(hl),#<(_Start_SPRITE_ROCKET)
+   006D 23                  150 	inc	hl
+   006E 36s00               151 	ld	(hl),#>(_Start_SPRITE_ROCKET)
+                            152 ;C:/gbdk/ZGB/common/src/ZGBMain_Init.c:44: Void_Func_Void spriteUpdateFuncs[] = {SPRITES};
+   0070 21r26r00            153 	ld	hl,#_spriteUpdateFuncs
+   0073 36r00               154 	ld	(hl),#<(_Update_SPRITE_PLAYER)
+   0075 23                  155 	inc	hl
+   0076 36s00               156 	ld	(hl),#>(_Update_SPRITE_PLAYER)
+   0078 21r28r00            157 	ld	hl,#(_spriteUpdateFuncs + 0x0002)
+   007B 36r00               158 	ld	(hl),#<(_Update_SPRITE_POINTER)
+   007D 23                  159 	inc	hl
+   007E 36s00               160 	ld	(hl),#>(_Update_SPRITE_POINTER)
+   0080 21r2Ar00            161 	ld	hl,#(_spriteUpdateFuncs + 0x0004)
+   0083 36r00               162 	ld	(hl),#<(_Update_SPRITE_SHIP)
+   0085 23                  163 	inc	hl
+   0086 36s00               164 	ld	(hl),#>(_Update_SPRITE_SHIP)
+   0088 21r2Cr00            165 	ld	hl,#(_spriteUpdateFuncs + 0x0006)
+   008B 36r00               166 	ld	(hl),#<(_Update_SPRITE_UFO)
+   008D 23                  167 	inc	hl
+   008E 36s00               168 	ld	(hl),#>(_Update_SPRITE_UFO)
+   0090 21r2Er00            169 	ld	hl,#(_spriteUpdateFuncs + 0x0008)
+   0093 36r00               170 	ld	(hl),#<(_Update_SPRITE_ARROW)
+   0095 23                  171 	inc	hl
+   0096 36s00               172 	ld	(hl),#>(_Update_SPRITE_ARROW)
+   0098 21r30r00            173 	ld	hl,#(_spriteUpdateFuncs + 0x000a)
+   009B 36r00               174 	ld	(hl),#<(_Update_SPRITE_ROCKET)
+   009D 23                  175 	inc	hl
+   009E 36s00               176 	ld	(hl),#>(_Update_SPRITE_ROCKET)
+                            177 ;C:/gbdk/ZGB/common/src/ZGBMain_Init.c:48: Void_Func_Void spriteDestroyFuncs[] = {SPRITES};
+   00A0 21r32r00            178 	ld	hl,#_spriteDestroyFuncs
+   00A3 36r00               179 	ld	(hl),#<(_Destroy_SPRITE_PLAYER)
+   00A5 23                  180 	inc	hl
+   00A6 36s00               181 	ld	(hl),#>(_Destroy_SPRITE_PLAYER)
+   00A8 21r34r00            182 	ld	hl,#(_spriteDestroyFuncs + 0x0002)
+   00AB 36r00               183 	ld	(hl),#<(_Destroy_SPRITE_POINTER)
+   00AD 23                  184 	inc	hl
+   00AE 36s00               185 	ld	(hl),#>(_Destroy_SPRITE_POINTER)
+   00B0 21r36r00            186 	ld	hl,#(_spriteDestroyFuncs + 0x0004)
+   00B3 36r00               187 	ld	(hl),#<(_Destroy_SPRITE_SHIP)
+   00B5 23                  188 	inc	hl
+   00B6 36s00               189 	ld	(hl),#>(_Destroy_SPRITE_SHIP)
+   00B8 21r38r00            190 	ld	hl,#(_spriteDestroyFuncs + 0x0006)
+   00BB 36r00               191 	ld	(hl),#<(_Destroy_SPRITE_UFO)
+   00BD 23                  192 	inc	hl
+   00BE 36s00               193 	ld	(hl),#>(_Destroy_SPRITE_UFO)
+   00C0 21r3Ar00            194 	ld	hl,#(_spriteDestroyFuncs + 0x0008)
+   00C3 36r00               195 	ld	(hl),#<(_Destroy_SPRITE_ARROW)
+   00C5 23                  196 	inc	hl
+   00C6 36s00               197 	ld	(hl),#>(_Destroy_SPRITE_ARROW)
+   00C8 21r3Cr00            198 	ld	hl,#(_spriteDestroyFuncs + 0x000a)
+   00CB 36r00               199 	ld	(hl),#<(_Destroy_SPRITE_ROCKET)
+   00CD 23                  200 	inc	hl
+   00CE 36s00               201 	ld	(hl),#>(_Destroy_SPRITE_ROCKET)
+                            202 ;C:/gbdk/ZGB/common/src/ZGBMain_Init.c:52: UINT8* spriteDatas[] = {SPRITES};
+   00D0 21r3Er00            203 	ld	hl,#_spriteDatas
+   00D3 36r00               204 	ld	(hl),#<(_player)
+   00D5 23                  205 	inc	hl
+   00D6 36s00               206 	ld	(hl),#>(_player)
+   00D8 21r40r00            207 	ld	hl,#(_spriteDatas + 0x0002)
+   00DB 36r00               208 	ld	(hl),#<(_pointer)
+   00DD 23                  209 	inc	hl
+   00DE 36s00               210 	ld	(hl),#>(_pointer)
+   00E0 21r42r00            211 	ld	hl,#(_spriteDatas + 0x0004)
+   00E3 36r00               212 	ld	(hl),#<(_spriteship)
+   00E5 23                  213 	inc	hl
+   00E6 36s00               214 	ld	(hl),#>(_spriteship)
+   00E8 21r44r00            215 	ld	hl,#(_spriteDatas + 0x0006)
+   00EB 36r00               216 	ld	(hl),#<(_spriteufo)
+   00ED 23                  217 	inc	hl
+   00EE 36s00               218 	ld	(hl),#>(_spriteufo)
+   00F0 21r46r00            219 	ld	hl,#(_spriteDatas + 0x0008)
+   00F3 36r00               220 	ld	(hl),#<(_spritearrow)
+   00F5 23                  221 	inc	hl
+   00F6 36s00               222 	ld	(hl),#>(_spritearrow)
+   00F8 21r48r00            223 	ld	hl,#(_spriteDatas + 0x000a)
+   00FB 36r00               224 	ld	(hl),#<(_spriterocket)
+   00FD 23                  225 	inc	hl
+   00FE 36s00               226 	ld	(hl),#>(_spriterocket)
+                            227 ;C:/gbdk/ZGB/common/src/ZGBMain_Init.c:56: UINT8 spriteDataBanks[] = {SPRITES};
+   0100 21r4Ar00            228 	ld	hl,#_spriteDataBanks
+   0103 36 03               229 	ld	(hl),#0x03
+   0105 21r4Br00            230 	ld	hl,#(_spriteDataBanks + 0x0001)
+   0108 36 03               231 	ld	(hl),#0x03
+   010A 21r4Cr00            232 	ld	hl,#(_spriteDataBanks + 0x0002)
+   010D 36 03               233 	ld	(hl),#0x03
+   010F 21r4Dr00            234 	ld	hl,#(_spriteDataBanks + 0x0003)
+   0112 36 03               235 	ld	(hl),#0x03
+   0114 21r4Er00            236 	ld	hl,#(_spriteDataBanks + 0x0004)
+   0117 36 03               237 	ld	(hl),#0x03
+   0119 21r4Fr00            238 	ld	hl,#(_spriteDataBanks + 0x0005)
+   011C 36 03               239 	ld	(hl),#0x03
+                            240 ;C:/gbdk/ZGB/common/src/ZGBMain_Init.c:60: FrameSize spriteFrameSizes[] = {SPRITES};
+   011E 21r50r00            241 	ld	hl,#_spriteFrameSizes
+   0121 36 02               242 	ld	(hl),#0x02
+   0123 21r51r00            243 	ld	hl,#(_spriteFrameSizes + 0x0001)
+   0126 36 02               244 	ld	(hl),#0x02
+   0128 21r52r00            245 	ld	hl,#(_spriteFrameSizes + 0x0002)
+   012B 36 02               246 	ld	(hl),#0x02
+   012D 21r53r00            247 	ld	hl,#(_spriteFrameSizes + 0x0003)
+   0130 36 02               248 	ld	(hl),#0x02
+   0132 21r54r00            249 	ld	hl,#(_spriteFrameSizes + 0x0004)
+   0135 36 02               250 	ld	(hl),#0x02
+   0137 21r55r00            251 	ld	hl,#(_spriteFrameSizes + 0x0005)
+   013A 36 04               252 	ld	(hl),#0x04
+                            253 ;C:/gbdk/ZGB/common/src/ZGBMain_Init.c:64: UINT8 spriteNumFrames[] = {SPRITES};
+   013C 21r56r00            254 	ld	hl,#_spriteNumFrames
+   013F 36 0C               255 	ld	(hl),#0x0c
+   0141 21r57r00            256 	ld	hl,#(_spriteNumFrames + 0x0001)
+   0144 36 10               257 	ld	(hl),#0x10
+   0146 21r58r00            258 	ld	hl,#(_spriteNumFrames + 0x0002)
+   0149 36 10               259 	ld	(hl),#0x10
+   014B 21r59r00            260 	ld	hl,#(_spriteNumFrames + 0x0003)
+   014E 36 10               261 	ld	(hl),#0x10
+   0150 21r5Ar00            262 	ld	hl,#(_spriteNumFrames + 0x0004)
+   0153 36 0C               263 	ld	(hl),#0x0c
+   0155 21r5Br00            264 	ld	hl,#(_spriteNumFrames + 0x0005)
+   0158 36 10               265 	ld	(hl),#0x10
+                            266 ;C:/gbdk/ZGB/common/src/ZGBMain_Init.c:70: UINT8* spritePalDatas[] = {SPRITES};
+   015A 21r62r00            267 	ld	hl,#_spritePalDatas
+   015D 36 00               268 	ld	(hl),#0x00
+   015F 23                  269 	inc	hl
+   0160 36 00               270 	ld	(hl),#0x00
+   0162 21r64r00            271 	ld	hl,#(_spritePalDatas + 0x0002)
+   0165 36 00               272 	ld	(hl),#0x00
+   0167 23                  273 	inc	hl
+   0168 36 00               274 	ld	(hl),#0x00
+   016A 21r66r00            275 	ld	hl,#(_spritePalDatas + 0x0004)
+   016D 36 00               276 	ld	(hl),#0x00
+   016F 23                  277 	inc	hl
+   0170 36 00               278 	ld	(hl),#0x00
+   0172 21r68r00            279 	ld	hl,#(_spritePalDatas + 0x0006)
+   0175 36 00               280 	ld	(hl),#0x00
+   0177 23                  281 	inc	hl
+   0178 36 00               282 	ld	(hl),#0x00
+   017A 21r6Ar00            283 	ld	hl,#(_spritePalDatas + 0x0008)
+   017D 36 00               284 	ld	(hl),#0x00
+   017F 23                  285 	inc	hl
+   0180 36 00               286 	ld	(hl),#0x00
+   0182 21r6Cr00            287 	ld	hl,#(_spritePalDatas + 0x000a)
+   0185 36 00               288 	ld	(hl),#0x00
+   0187 23                  289 	inc	hl
+   0188 36 00               290 	ld	(hl),#0x00
+                            291 ;--------------------------------------------------------
+                            292 ; Home
+                            293 ;--------------------------------------------------------
+                            294 	.area _HOME
+                            295 	.area _HOME
+                            296 ;--------------------------------------------------------
+                            297 ; code
+                            298 ;--------------------------------------------------------
+                            299 	.area _CODE_1
+                            300 ;C:/gbdk/ZGB/common/src/ZGBMain_Init.c:19: void InitStates() {
+                            301 ;	---------------------------------
+                            302 ; Function InitStates
+                            303 ; ---------------------------------
+   0000                     304 _InitStates::
+                            305 ;C:/gbdk/ZGB/common/src/ZGBMain_Init.c:20: STATES
+   0000 11r00r00            306 	ld	de,#_stateBanks
+   0003 21r00r00            307 	ld	hl,#_bank_STATE_MENU
+   0006 7E                  308 	ld	a,(hl)
+   0007 12                  309 	ld	(de),a
+   0008 11r01r00            310 	ld	de,#(_stateBanks + 0x0001)
+   000B 21r00r00            311 	ld	hl,#_bank_STATE_GAME
+   000E 7E                  312 	ld	a,(hl)
+   000F 12                  313 	ld	(de),a
+   0010 11r02r00            314 	ld	de,#(_stateBanks + 0x0002)
+   0013 21r00r00            315 	ld	hl,#_bank_STATE_CREDITS
+   0016 7E                  316 	ld	a,(hl)
+   0017 12                  317 	ld	(de),a
+   0018 11r03r00            318 	ld	de,#(_stateBanks + 0x0003)
+   001B 21r00r00            319 	ld	hl,#_bank_STATE_LEVEL1
+   001E 7E                  320 	ld	a,(hl)
+   001F 12                  321 	ld	(de),a
+   0020 C9                  322 	ret
+                            323 ;C:/gbdk/ZGB/common/src/ZGBMain_Init.c:74: void InitSprites() {
+                            324 ;	---------------------------------
+                            325 ; Function InitSprites
+                            326 ; ---------------------------------
+   0021                     327 _InitSprites::
+                            328 ;C:/gbdk/ZGB/common/src/ZGBMain_Init.c:75: SPRITES
+   0021 11r14r00            329 	ld	de,#_spriteBanks
+   0024 21r00r00            330 	ld	hl,#_bank_SPRITE_PLAYER
+   0027 7E                  331 	ld	a,(hl)
+   0028 12                  332 	ld	(de),a
+   0029 11r15r00            333 	ld	de,#(_spriteBanks + 0x0001)
+   002C 21r00r00            334 	ld	hl,#_bank_SPRITE_POINTER
+   002F 7E                  335 	ld	a,(hl)
+   0030 12                  336 	ld	(de),a
+   0031 11r16r00            337 	ld	de,#(_spriteBanks + 0x0002)
+   0034 21r00r00            338 	ld	hl,#_bank_SPRITE_SHIP
+   0037 7E                  339 	ld	a,(hl)
+   0038 12                  340 	ld	(de),a
+   0039 11r17r00            341 	ld	de,#(_spriteBanks + 0x0003)
+   003C 21r00r00            342 	ld	hl,#_bank_SPRITE_UFO
+   003F 7E                  343 	ld	a,(hl)
+   0040 12                  344 	ld	(de),a
+   0041 11r18r00            345 	ld	de,#(_spriteBanks + 0x0004)
+   0044 21r00r00            346 	ld	hl,#_bank_SPRITE_ARROW
+   0047 7E                  347 	ld	a,(hl)
+   0048 12                  348 	ld	(de),a
+   0049 11r19r00            349 	ld	de,#(_spriteBanks + 0x0005)
+   004C 21r00r00            350 	ld	hl,#_bank_SPRITE_ROCKET
+   004F 7E                  351 	ld	a,(hl)
+   0050 12                  352 	ld	(de),a
+   0051 C9                  353 	ret
+                            354 	.area _CODE_1
+                            355 	.area _CABS (ABS)

@@ -1,0 +1,91 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module SpriteRocket
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _Destroy_SPRITE_ROCKET
+                             12 	.globl _Update_SPRITE_ROCKET
+                             13 	.globl _Start_SPRITE_ROCKET
+                             14 	.globl _bank_SPRITE_ROCKET
+                             15 ;--------------------------------------------------------
+                             16 ; ram data
+                             17 ;--------------------------------------------------------
+                             18 	.area _DATA
+   0000                      19 _bank_SPRITE_ROCKET::
+   0000                      20 	.ds 1
+                             21 ;--------------------------------------------------------
+                             22 ; absolute external ram data
+                             23 ;--------------------------------------------------------
+                             24 	.area _DABS (ABS)
+                             25 ;--------------------------------------------------------
+                             26 ; global & static initialisations
+                             27 ;--------------------------------------------------------
+                             28 	.area _HOME
+                             29 	.area _GSINIT
+                             30 	.area _GSFINAL
+                             31 	.area _GSINIT
+                             32 ;SpriteRocket.c:4: UINT8 bank_SPRITE_ROCKET = 2;
+   0000 21r00r00             33 	ld	hl,#_bank_SPRITE_ROCKET
+   0003 36 02                34 	ld	(hl),#0x02
+                             35 ;--------------------------------------------------------
+                             36 ; Home
+                             37 ;--------------------------------------------------------
+                             38 	.area _HOME
+                             39 	.area _HOME
+                             40 ;--------------------------------------------------------
+                             41 ; code
+                             42 ;--------------------------------------------------------
+                             43 	.area _CODE_2
+                             44 ;SpriteRocket.c:9: void Start_SPRITE_ROCKET() {
+                             45 ;	---------------------------------
+                             46 ; Function Start_SPRITE_ROCKET
+                             47 ; ---------------------------------
+   0000                      48 _Start_SPRITE_ROCKET::
+                             49 ;SpriteRocket.c:11: }
+   0000 C9                   50 	ret
+                             51 ;SpriteRocket.c:13: void Update_SPRITE_ROCKET() {
+                             52 ;	---------------------------------
+                             53 ; Function Update_SPRITE_ROCKET
+                             54 ; ---------------------------------
+   0001                      55 _Update_SPRITE_ROCKET::
+   0001 E8 FE                56 	add	sp, #-2
+                             57 ;SpriteRocket.c:14: THIS->x --;
+   0003 21r01r00             58 	ld	hl,#_THIS + 1
+   0006 2B                   59 	dec	hl
+   0007 4E                   60 	ld	c,(hl)
+   0008 23                   61 	inc	hl
+   0009 46                   62 	ld	b,(hl)
+   000A 21 07 00             63 	ld	hl,#0x0007
+   000D 09                   64 	add	hl,bc
+   000E 33                   65 	inc	sp
+   000F 33                   66 	inc	sp
+   0010 E5                   67 	push	hl
+   0011 D1                   68 	pop	de
+   0012 D5                   69 	push	de
+   0013 1A                   70 	ld	a,(de)
+   0014 4F                   71 	ld	c,a
+   0015 13                   72 	inc	de
+   0016 1A                   73 	ld	a,(de)
+   0017 47                   74 	ld	b,a
+   0018 0B                   75 	dec	bc
+   0019 E1                   76 	pop	hl
+   001A E5                   77 	push	hl
+   001B 71                   78 	ld	(hl),c
+   001C 23                   79 	inc	hl
+   001D 70                   80 	ld	(hl),b
+   001E E8 02                81 	add	sp, #2
+   0020 C9                   82 	ret
+                             83 ;SpriteRocket.c:17: void Destroy_SPRITE_ROCKET() {
+                             84 ;	---------------------------------
+                             85 ; Function Destroy_SPRITE_ROCKET
+                             86 ; ---------------------------------
+   0021                      87 _Destroy_SPRITE_ROCKET::
+                             88 ;SpriteRocket.c:18: }
+   0021 C9                   89 	ret
+                             90 	.area _CODE_2
+                             91 	.area _CABS (ABS)

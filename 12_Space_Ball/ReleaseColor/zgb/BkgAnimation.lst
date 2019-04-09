@@ -1,0 +1,1330 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module BkgAnimation
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _PopBank
+                             12 	.globl _PushBank
+                             13 	.globl _set_win_tiles
+                             14 	.globl _set_bkg_tiles
+                             15 	.globl _set_bkg_data
+                             16 	.globl _NULL_TILE
+                             17 	.globl _c3
+                             18 	.globl _c2
+                             19 	.globl _c1
+                             20 	.globl _c0
+                             21 	.globl _LOAD_MAP_ANIM
+                             22 	.globl _MAP_ANIMATE
+                             23 	.globl _LOAD_TILE_ANIM
+                             24 	.globl _TILE_ANIMATE
+                             25 	.globl _BKG_EDIT_TILE
+                             26 	.globl _WIN_EDIT_TILE
+                             27 	.globl _BKG_COLLECT_ITEM
+                             28 ;--------------------------------------------------------
+                             29 ; ram data
+                             30 ;--------------------------------------------------------
+                             31 	.area _DATA
+   0000                      32 _NULL_TILE::
+   0000                      33 	.ds 10
+                             34 ;--------------------------------------------------------
+                             35 ; absolute external ram data
+                             36 ;--------------------------------------------------------
+                             37 	.area _DABS (ABS)
+                             38 ;--------------------------------------------------------
+                             39 ; global & static initialisations
+                             40 ;--------------------------------------------------------
+                             41 	.area _HOME
+                             42 	.area _GSINIT
+                             43 	.area _GSFINAL
+                             44 	.area _GSINIT
+                             45 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:146: const unsigned char * NULL_TILE[] = {
+   0000 21r00r00             46 	ld	hl,#_NULL_TILE
+   0003 36r4F                47 	ld	(hl),#<(_c0)
+   0005 23                   48 	inc	hl
+   0006 36s03                49 	ld	(hl),#>(_c0)
+   0008 21r02r00             50 	ld	hl,#(_NULL_TILE + 0x0002)
+   000B 36rCF                51 	ld	(hl),#<(_c1)
+   000D 23                   52 	inc	hl
+   000E 36s03                53 	ld	(hl),#>(_c1)
+   0010 21r04r00             54 	ld	hl,#(_NULL_TILE + 0x0004)
+   0013 36r4F                55 	ld	(hl),#<(_c2)
+   0015 23                   56 	inc	hl
+   0016 36s04                57 	ld	(hl),#>(_c2)
+   0018 21r06r00             58 	ld	hl,#(_NULL_TILE + 0x0006)
+   001B 36rCF                59 	ld	(hl),#<(_c3)
+   001D 23                   60 	inc	hl
+   001E 36s04                61 	ld	(hl),#>(_c3)
+   0020 21r08r00             62 	ld	hl,#(_NULL_TILE + 0x0008)
+   0023 36 00                63 	ld	(hl),#0x00
+   0025 23                   64 	inc	hl
+   0026 36 00                65 	ld	(hl),#0x00
+                             66 ;--------------------------------------------------------
+                             67 ; Home
+                             68 ;--------------------------------------------------------
+                             69 	.area _HOME
+                             70 	.area _HOME
+                             71 ;--------------------------------------------------------
+                             72 ; code
+                             73 ;--------------------------------------------------------
+                             74 	.area _CODE
+                             75 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:4: void LOAD_MAP_ANIM(MAP_ANIMATION* anim, UINT8 sx, UINT8 sy, UINT8 frames, unsigned char *map, UINT8 bank)
+                             76 ;	---------------------------------
+                             77 ; Function LOAD_MAP_ANIM
+                             78 ; ---------------------------------
+   0000                      79 _LOAD_MAP_ANIM::
+   0000 E8 FE                80 	add	sp, #-2
+                             81 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:6: anim->sx = sx;
+   0002 F8 04                82 	ldhl	sp,#4
+   0004 2A                   83 	ld	a,(hl+)
+   0005 5E                   84 	ld	e, (hl)
+   0006 F8 00                85 	ldhl	sp,#0
+   0008 22                   86 	ld	(hl+),a
+   0009 73                   87 	ld	(hl),e
+   000A C1                   88 	pop	bc
+   000B C5                   89 	push	bc
+   000C 03                   90 	inc	bc
+   000D 03                   91 	inc	bc
+   000E F8 06                92 	ldhl	sp,#6
+   0010 7E                   93 	ld	a,(hl)
+   0011 02                   94 	ld	(bc),a
+                             95 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:7: anim->sy = sy;
+   0012 C1                   96 	pop	bc
+   0013 C5                   97 	push	bc
+   0014 03                   98 	inc	bc
+   0015 03                   99 	inc	bc
+   0016 03                  100 	inc	bc
+   0017 23                  101 	inc	hl
+   0018 7E                  102 	ld	a,(hl)
+   0019 02                  103 	ld	(bc),a
+                            104 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:8: anim->frame = 0;
+   001A D1                  105 	pop	de
+   001B D5                  106 	push	de
+   001C 21 04 00            107 	ld	hl,#0x0004
+   001F 19                  108 	add	hl,de
+   0020 4D                  109 	ld	c,l
+   0021 44                  110 	ld	b,h
+   0022 AF                  111 	xor	a, a
+   0023 02                  112 	ld	(bc),a
+                            113 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:9: anim->frames = frames;
+   0024 D1                  114 	pop	de
+   0025 D5                  115 	push	de
+   0026 21 05 00            116 	ld	hl,#0x0005
+   0029 19                  117 	add	hl,de
+   002A 4D                  118 	ld	c,l
+   002B 44                  119 	ld	b,h
+   002C F8 08               120 	ldhl	sp,#8
+   002E 7E                  121 	ld	a,(hl)
+   002F 02                  122 	ld	(bc),a
+                            123 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:10: anim->timer = 0;
+   0030 D1                  124 	pop	de
+   0031 D5                  125 	push	de
+   0032 21 06 00            126 	ld	hl,#0x0006
+   0035 19                  127 	add	hl,de
+   0036 4D                  128 	ld	c,l
+   0037 44                  129 	ld	b,h
+   0038 3E 00               130 	ld	a,#0x00
+   003A 02                  131 	ld	(bc),a
+   003B 03                  132 	inc	bc
+   003C 3E 00               133 	ld	a,#0x00
+   003E 02                  134 	ld	(bc),a
+                            135 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:11: PUSH_BANK(bank);
+   003F F8 0B               136 	ldhl	sp,#11
+   0041 7E                  137 	ld	a,(hl)
+   0042 F5                  138 	push	af
+   0043 33                  139 	inc	sp
+   0044 CDr00r00            140 	call	_PushBank
+   0047 33                  141 	inc	sp
+                            142 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:12: anim->map = map;
+   0048 D1                  143 	pop	de
+   0049 D5                  144 	push	de
+   004A 21 09 00            145 	ld	hl,#0x0009
+   004D 19                  146 	add	hl,de
+   004E 4D                  147 	ld	c,l
+   004F 44                  148 	ld	b,h
+   0050 F8 09               149 	ldhl	sp,#9
+   0052 7E                  150 	ld	a,(hl)
+   0053 02                  151 	ld	(bc),a
+   0054 03                  152 	inc	bc
+   0055 23                  153 	inc	hl
+   0056 7E                  154 	ld	a,(hl)
+   0057 02                  155 	ld	(bc),a
+                            156 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:13: POP_BANK;
+   0058 CDr00r00            157 	call	_PopBank
+                            158 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:14: anim->bank = bank;
+   005B D1                  159 	pop	de
+   005C D5                  160 	push	de
+   005D 21 0C 00            161 	ld	hl,#0x000c
+   0060 19                  162 	add	hl,de
+   0061 4D                  163 	ld	c,l
+   0062 44                  164 	ld	b,h
+   0063 F8 0B               165 	ldhl	sp,#11
+   0065 7E                  166 	ld	a,(hl)
+   0066 02                  167 	ld	(bc),a
+   0067 E8 02               168 	add	sp, #2
+   0069 C9                  169 	ret
+                            170 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:17: void MAP_ANIMATE(MAP_ANIMATION* anim, UINT8 x, UINT8 y, UINT8 speed) 
+                            171 ;	---------------------------------
+                            172 ; Function MAP_ANIMATE
+                            173 ; ---------------------------------
+   006A                     174 _MAP_ANIMATE::
+   006A E8 F4               175 	add	sp, #-12
+                            176 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:19: if (anim->timer == speed){
+   006C F8 0E               177 	ldhl	sp,#14
+   006E 2A                  178 	ld	a,(hl+)
+   006F 5E                  179 	ld	e, (hl)
+   0070 F8 00               180 	ldhl	sp,#0
+   0072 22                  181 	ld	(hl+),a
+   0073 73                  182 	ld	(hl),e
+   0074 D1                  183 	pop	de
+   0075 D5                  184 	push	de
+   0076 21 06 00            185 	ld	hl,#0x0006
+   0079 19                  186 	add	hl,de
+   007A 7D                  187 	ld	a,l
+   007B 54                  188 	ld	d,h
+   007C F8 08               189 	ldhl	sp,#8
+   007E 22                  190 	ld	(hl+),a
+   007F 72                  191 	ld	(hl),d
+   0080 2B                  192 	dec	hl
+   0081 5E                  193 	ld	e,(hl)
+   0082 23                  194 	inc	hl
+   0083 56                  195 	ld	d,(hl)
+   0084 1A                  196 	ld	a,(de)
+   0085 23                  197 	inc	hl
+   0086 22                  198 	ld	(hl+),a
+   0087 13                  199 	inc	de
+   0088 1A                  200 	ld	a,(de)
+   0089 77                  201 	ld	(hl),a
+   008A F8 12               202 	ldhl	sp,#18
+   008C 4E                  203 	ld	c,(hl)
+   008D 06 00               204 	ld	b,#0x00
+                            205 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:20: anim->pos = anim->frame * anim->sx * anim->sy;
+   008F D1                  206 	pop	de
+   0090 D5                  207 	push	de
+   0091 21 04 00            208 	ld	hl,#0x0004
+   0094 19                  209 	add	hl,de
+   0095 7D                  210 	ld	a,l
+   0096 54                  211 	ld	d,h
+   0097 F8 04               212 	ldhl	sp,#4
+   0099 22                  213 	ld	(hl+),a
+   009A 72                  214 	ld	(hl),d
+                            215 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:19: if (anim->timer == speed){
+   009B F8 0A               216 	ldhl	sp,#10
+   009D 7E                  217 	ld	a,(hl)
+   009E 91                  218 	sub	a, c
+   009F C2r63r01            219 	jp	NZ,00102$
+   00A2 23                  220 	inc	hl
+   00A3 7E                  221 	ld	a,(hl)
+   00A4 90                  222 	sub	a, b
+   00A5 C2r63r01            223 	jp	NZ,00102$
+                            224 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:20: anim->pos = anim->frame * anim->sx * anim->sy;
+   00A8 D1                  225 	pop	de
+   00A9 D5                  226 	push	de
+   00AA 21 0B 00            227 	ld	hl,#0x000b
+   00AD 19                  228 	add	hl,de
+   00AE 7D                  229 	ld	a,l
+   00AF 54                  230 	ld	d,h
+   00B0 F8 0A               231 	ldhl	sp,#10
+   00B2 22                  232 	ld	(hl+),a
+   00B3 72                  233 	ld	(hl),d
+   00B4 F8 04               234 	ldhl	sp,#(5 - 1)
+   00B6 5E                  235 	ld	e,(hl)
+   00B7 23                  236 	inc	hl
+   00B8 56                  237 	ld	d,(hl)
+   00B9 1A                  238 	ld	a,(de)
+   00BA 47                  239 	ld	b,a
+   00BB D1                  240 	pop	de
+   00BC D5                  241 	push	de
+   00BD 21 02 00            242 	ld	hl,#0x0002
+   00C0 19                  243 	add	hl,de
+   00C1 7D                  244 	ld	a,l
+   00C2 54                  245 	ld	d,h
+   00C3 F8 02               246 	ldhl	sp,#2
+   00C5 22                  247 	ld	(hl+),a
+   00C6 72                  248 	ld	(hl),d
+   00C7 2B                  249 	dec	hl
+   00C8 5E                  250 	ld	e,(hl)
+   00C9 23                  251 	inc	hl
+   00CA 56                  252 	ld	d,(hl)
+   00CB 1A                  253 	ld	a,(de)
+   00CC F5                  254 	push	af
+   00CD 33                  255 	inc	sp
+   00CE C5                  256 	push	bc
+   00CF 33                  257 	inc	sp
+   00D0 CDr00r00            258 	call	__muluchar
+   00D3 E8 02               259 	add	sp, #2
+   00D5 43                  260 	ld	b,e
+   00D6 D1                  261 	pop	de
+   00D7 D5                  262 	push	de
+   00D8 21 03 00            263 	ld	hl,#0x0003
+   00DB 19                  264 	add	hl,de
+   00DC 7D                  265 	ld	a,l
+   00DD 54                  266 	ld	d,h
+   00DE F8 06               267 	ldhl	sp,#6
+   00E0 22                  268 	ld	(hl+),a
+   00E1 72                  269 	ld	(hl),d
+   00E2 2B                  270 	dec	hl
+   00E3 5E                  271 	ld	e,(hl)
+   00E4 23                  272 	inc	hl
+   00E5 56                  273 	ld	d,(hl)
+   00E6 1A                  274 	ld	a,(de)
+   00E7 F5                  275 	push	af
+   00E8 33                  276 	inc	sp
+   00E9 C5                  277 	push	bc
+   00EA 33                  278 	inc	sp
+   00EB CDr00r00            279 	call	__muluchar
+   00EE E8 02               280 	add	sp, #2
+   00F0 4B                  281 	ld	c,e
+   00F1 F8 0A               282 	ldhl	sp,#10
+   00F3 2A                  283 	ld	a,(hl+)
+   00F4 66                  284 	ld	h,(hl)
+   00F5 6F                  285 	ld	l,a
+   00F6 71                  286 	ld	(hl),c
+                            287 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:21: PUSH_BANK(anim->bank);
+   00F7 D1                  288 	pop	de
+   00F8 D5                  289 	push	de
+   00F9 21 0C 00            290 	ld	hl,#0x000c
+   00FC 19                  291 	add	hl,de
+   00FD 4D                  292 	ld	c,l
+   00FE 44                  293 	ld	b,h
+   00FF 0A                  294 	ld	a,(bc)
+   0100 47                  295 	ld	b,a
+   0101 C5                  296 	push	bc
+   0102 33                  297 	inc	sp
+   0103 CDr00r00            298 	call	_PushBank
+   0106 33                  299 	inc	sp
+                            300 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:22: set_bkg_tiles(x,y,anim->sx,anim->sy,anim->map+anim->pos);
+   0107 D1                  301 	pop	de
+   0108 D5                  302 	push	de
+   0109 21 09 00            303 	ld	hl,#0x0009
+   010C 19                  304 	add	hl,de
+   010D 4D                  305 	ld	c,l
+   010E 44                  306 	ld	b,h
+   010F 59                  307 	ld	e, c
+   0110 50                  308 	ld	d, b
+   0111 1A                  309 	ld	a,(de)
+   0112 4F                  310 	ld	c,a
+   0113 13                  311 	inc	de
+   0114 1A                  312 	ld	a,(de)
+   0115 47                  313 	ld	b,a
+   0116 F8 0A               314 	ldhl	sp,#(11 - 1)
+   0118 5E                  315 	ld	e,(hl)
+   0119 23                  316 	inc	hl
+   011A 56                  317 	ld	d,(hl)
+   011B 1A                  318 	ld	a,(de)
+   011C 2B                  319 	dec	hl
+   011D 77                  320 	ld	(hl),a
+   011E 6E                  321 	ld	l,(hl)
+   011F 26 00               322 	ld	h,#0x00
+   0121 09                  323 	add	hl,bc
+   0122 4D                  324 	ld	c,l
+   0123 44                  325 	ld	b,h
+   0124 F8 06               326 	ldhl	sp,#(7 - 1)
+   0126 5E                  327 	ld	e,(hl)
+   0127 23                  328 	inc	hl
+   0128 56                  329 	ld	d,(hl)
+   0129 1A                  330 	ld	a,(de)
+   012A F8 02               331 	ldhl	sp,#(3 - 1)
+   012C 5E                  332 	ld	e,(hl)
+   012D 23                  333 	inc	hl
+   012E 56                  334 	ld	d,(hl)
+   012F F5                  335 	push	af
+   0130 1A                  336 	ld	a,(de)
+   0131 F8 08               337 	ldhl	sp,#8
+   0133 77                  338 	ld	(hl),a
+   0134 F1                  339 	pop	af
+   0135 C5                  340 	push	bc
+   0136 F5                  341 	push	af
+   0137 33                  342 	inc	sp
+   0138 7E                  343 	ld	a,(hl)
+   0139 F5                  344 	push	af
+   013A 33                  345 	inc	sp
+   013B F8 15               346 	ldhl	sp,#21
+   013D 7E                  347 	ld	a,(hl)
+   013E F5                  348 	push	af
+   013F 33                  349 	inc	sp
+   0140 2B                  350 	dec	hl
+   0141 7E                  351 	ld	a,(hl)
+   0142 F5                  352 	push	af
+   0143 33                  353 	inc	sp
+   0144 CDr00r00            354 	call	_set_bkg_tiles
+   0147 E8 06               355 	add	sp, #6
+                            356 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:23: POP_BANK;
+   0149 CDr00r00            357 	call	_PopBank
+                            358 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:24: anim->frame++;
+   014C F8 04               359 	ldhl	sp,#(5 - 1)
+   014E 5E                  360 	ld	e,(hl)
+   014F 23                  361 	inc	hl
+   0150 56                  362 	ld	d,(hl)
+   0151 1A                  363 	ld	a,(de)
+   0152 4F                  364 	ld	c,a
+   0153 0C                  365 	inc	c
+   0154 2B                  366 	dec	hl
+   0155 2A                  367 	ld	a,(hl+)
+   0156 66                  368 	ld	h,(hl)
+   0157 6F                  369 	ld	l,a
+   0158 71                  370 	ld	(hl),c
+                            371 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:25: anim->timer = 0;
+   0159 F8 08               372 	ldhl	sp,#8
+   015B 2A                  373 	ld	a,(hl+)
+   015C 66                  374 	ld	h,(hl)
+   015D 6F                  375 	ld	l,a
+   015E 36 00               376 	ld	(hl),#0x00
+   0160 23                  377 	inc	hl
+   0161 36 00               378 	ld	(hl),#0x00
+   0163                     379 00102$:
+                            380 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:27: if (anim->frame == anim->frames) anim->frame = 0;
+   0163 F8 04               381 	ldhl	sp,#(5 - 1)
+   0165 5E                  382 	ld	e,(hl)
+   0166 23                  383 	inc	hl
+   0167 56                  384 	ld	d,(hl)
+   0168 1A                  385 	ld	a,(de)
+   0169 23                  386 	inc	hl
+   016A 77                  387 	ld	(hl),a
+   016B D1                  388 	pop	de
+   016C D5                  389 	push	de
+   016D 21 05 00            390 	ld	hl,#0x0005
+   0170 19                  391 	add	hl,de
+   0171 4D                  392 	ld	c,l
+   0172 44                  393 	ld	b,h
+   0173 0A                  394 	ld	a,(bc)
+   0174 4F                  395 	ld	c,a
+   0175 F8 06               396 	ldhl	sp,#6
+   0177 7E                  397 	ld	a,(hl)
+   0178 91                  398 	sub	a, c
+   0179 20 07               399 	jr	NZ,00104$
+   017B F8 04               400 	ldhl	sp,#4
+   017D 2A                  401 	ld	a,(hl+)
+   017E 66                  402 	ld	h,(hl)
+   017F 6F                  403 	ld	l,a
+   0180 36 00               404 	ld	(hl),#0x00
+   0182                     405 00104$:
+                            406 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:28: anim->timer++;
+   0182 F8 08               407 	ldhl	sp,#(9 - 1)
+   0184 5E                  408 	ld	e,(hl)
+   0185 23                  409 	inc	hl
+   0186 56                  410 	ld	d,(hl)
+   0187 1A                  411 	ld	a,(de)
+   0188 4F                  412 	ld	c,a
+   0189 13                  413 	inc	de
+   018A 1A                  414 	ld	a,(de)
+   018B 47                  415 	ld	b,a
+   018C 03                  416 	inc	bc
+   018D 2B                  417 	dec	hl
+   018E 2A                  418 	ld	a,(hl+)
+   018F 66                  419 	ld	h,(hl)
+   0190 6F                  420 	ld	l,a
+   0191 71                  421 	ld	(hl),c
+   0192 23                  422 	inc	hl
+   0193 70                  423 	ld	(hl),b
+   0194 E8 0C               424 	add	sp, #12
+   0196 C9                  425 	ret
+                            426 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:34: void LOAD_TILE_ANIM(TILE_ANIMATION* anim, UINT8 tiles, UINT8 frames, unsigned char *map, UINT8 bank)
+                            427 ;	---------------------------------
+                            428 ; Function LOAD_TILE_ANIM
+                            429 ; ---------------------------------
+   0197                     430 _LOAD_TILE_ANIM::
+   0197 E8 FE               431 	add	sp, #-2
+                            432 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:37: anim->frame = 0;
+   0199 F8 04               433 	ldhl	sp,#4
+   019B 2A                  434 	ld	a,(hl+)
+   019C 5E                  435 	ld	e, (hl)
+   019D F8 00               436 	ldhl	sp,#0
+   019F 22                  437 	ld	(hl+),a
+   01A0 73                  438 	ld	(hl),e
+   01A1 E1                  439 	pop	hl
+   01A2 E5                  440 	push	hl
+   01A3 36 00               441 	ld	(hl),#0x00
+   01A5 23                  442 	inc	hl
+   01A6 36 00               443 	ld	(hl),#0x00
+                            444 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:38: anim->frames = frames;
+   01A8 C1                  445 	pop	bc
+   01A9 C5                  446 	push	bc
+   01AA 03                  447 	inc	bc
+   01AB 03                  448 	inc	bc
+   01AC F8 07               449 	ldhl	sp,#7
+   01AE 7E                  450 	ld	a,(hl)
+   01AF 02                  451 	ld	(bc),a
+                            452 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:39: anim->timer = 0;
+   01B0 D1                  453 	pop	de
+   01B1 D5                  454 	push	de
+   01B2 21 04 00            455 	ld	hl,#0x0004
+   01B5 19                  456 	add	hl,de
+   01B6 4D                  457 	ld	c,l
+   01B7 44                  458 	ld	b,h
+   01B8 3E 00               459 	ld	a,#0x00
+   01BA 02                  460 	ld	(bc),a
+   01BB 03                  461 	inc	bc
+   01BC 3E 00               462 	ld	a,#0x00
+   01BE 02                  463 	ld	(bc),a
+                            464 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:40: anim->tiles = tiles;
+   01BF C1                  465 	pop	bc
+   01C0 C5                  466 	push	bc
+   01C1 03                  467 	inc	bc
+   01C2 03                  468 	inc	bc
+   01C3 03                  469 	inc	bc
+   01C4 F8 06               470 	ldhl	sp,#6
+   01C6 7E                  471 	ld	a,(hl)
+   01C7 02                  472 	ld	(bc),a
+                            473 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:41: anim->bank = bank;
+   01C8 D1                  474 	pop	de
+   01C9 D5                  475 	push	de
+   01CA 21 09 00            476 	ld	hl,#0x0009
+   01CD 19                  477 	add	hl,de
+   01CE 4D                  478 	ld	c,l
+   01CF 44                  479 	ld	b,h
+   01D0 F8 0A               480 	ldhl	sp,#10
+   01D2 7E                  481 	ld	a,(hl)
+   01D3 02                  482 	ld	(bc),a
+                            483 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:42: PUSH_BANK(bank);
+   01D4 7E                  484 	ld	a,(hl)
+   01D5 F5                  485 	push	af
+   01D6 33                  486 	inc	sp
+   01D7 CDr00r00            487 	call	_PushBank
+   01DA 33                  488 	inc	sp
+                            489 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:43: anim->map = map;
+   01DB D1                  490 	pop	de
+   01DC D5                  491 	push	de
+   01DD 21 07 00            492 	ld	hl,#0x0007
+   01E0 19                  493 	add	hl,de
+   01E1 4D                  494 	ld	c,l
+   01E2 44                  495 	ld	b,h
+   01E3 F8 08               496 	ldhl	sp,#8
+   01E5 7E                  497 	ld	a,(hl)
+   01E6 02                  498 	ld	(bc),a
+   01E7 03                  499 	inc	bc
+   01E8 23                  500 	inc	hl
+   01E9 7E                  501 	ld	a,(hl)
+   01EA 02                  502 	ld	(bc),a
+                            503 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:44: POP_BANK;
+   01EB CDr00r00            504 	call	_PopBank
+   01EE E8 02               505 	add	sp, #2
+   01F0 C9                  506 	ret
+                            507 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:47: void TILE_ANIMATE(TILE_ANIMATION* anim, UINT8 tile, UINT8 speed)
+                            508 ;	---------------------------------
+                            509 ; Function TILE_ANIMATE
+                            510 ; ---------------------------------
+   01F1                     511 _TILE_ANIMATE::
+   01F1 E8 F7               512 	add	sp, #-9
+                            513 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:50: if (anim->timer == speed){
+   01F3 F8 0B               514 	ldhl	sp,#11
+   01F5 2A                  515 	ld	a,(hl+)
+   01F6 5E                  516 	ld	e, (hl)
+   01F7 F8 06               517 	ldhl	sp,#6
+   01F9 22                  518 	ld	(hl+),a
+   01FA 73                  519 	ld	(hl),e
+   01FB 2B                  520 	dec	hl
+   01FC 5E                  521 	ld	e,(hl)
+   01FD 23                  522 	inc	hl
+   01FE 56                  523 	ld	d,(hl)
+   01FF 21 04 00            524 	ld	hl,#0x0004
+   0202 19                  525 	add	hl,de
+   0203 7D                  526 	ld	a,l
+   0204 54                  527 	ld	d,h
+   0205 F8 04               528 	ldhl	sp,#4
+   0207 22                  529 	ld	(hl+),a
+   0208 72                  530 	ld	(hl),d
+   0209 2B                  531 	dec	hl
+   020A 5E                  532 	ld	e,(hl)
+   020B 23                  533 	inc	hl
+   020C 56                  534 	ld	d,(hl)
+   020D 1A                  535 	ld	a,(de)
+   020E 4F                  536 	ld	c,a
+   020F 13                  537 	inc	de
+   0210 1A                  538 	ld	a,(de)
+   0211 47                  539 	ld	b,a
+   0212 F8 0E               540 	ldhl	sp,#14
+   0214 5E                  541 	ld	e,(hl)
+   0215 16 00               542 	ld	d,#0x00
+   0217 79                  543 	ld	a,c
+   0218 93                  544 	sub	a, e
+   0219 C2rB7r02            545 	jp	NZ,00102$
+   021C 78                  546 	ld	a,b
+   021D 92                  547 	sub	a, d
+   021E C2rB7r02            548 	jp	NZ,00102$
+                            549 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:51: PUSH_BANK(anim->bank);
+   0221 F8 06               550 	ldhl	sp,#(7 - 1)
+   0223 5E                  551 	ld	e,(hl)
+   0224 23                  552 	inc	hl
+   0225 56                  553 	ld	d,(hl)
+   0226 21 09 00            554 	ld	hl,#0x0009
+   0229 19                  555 	add	hl,de
+   022A 4D                  556 	ld	c,l
+   022B 44                  557 	ld	b,h
+   022C 0A                  558 	ld	a,(bc)
+   022D 47                  559 	ld	b,a
+   022E C5                  560 	push	bc
+   022F 33                  561 	inc	sp
+   0230 CDr00r00            562 	call	_PushBank
+   0233 33                  563 	inc	sp
+                            564 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:52: set_bkg_data(tile, anim->tiles, ((UINT16 *)anim->map) + (anim->frame<<3*anim->tiles));
+   0234 F8 06               565 	ldhl	sp,#(7 - 1)
+   0236 5E                  566 	ld	e,(hl)
+   0237 23                  567 	inc	hl
+   0238 56                  568 	ld	d,(hl)
+   0239 21 07 00            569 	ld	hl,#0x0007
+   023C 19                  570 	add	hl,de
+   023D 4D                  571 	ld	c,l
+   023E 44                  572 	ld	b,h
+   023F 59                  573 	ld	e, c
+   0240 50                  574 	ld	d, b
+   0241 1A                  575 	ld	a,(de)
+   0242 4F                  576 	ld	c,a
+   0243 13                  577 	inc	de
+   0244 1A                  578 	ld	a,(de)
+   0245 47                  579 	ld	b,a
+   0246 F8 02               580 	ldhl	sp,#2
+   0248 71                  581 	ld	(hl),c
+   0249 23                  582 	inc	hl
+   024A 70                  583 	ld	(hl),b
+   024B F8 06               584 	ldhl	sp,#(7 - 1)
+   024D 5E                  585 	ld	e,(hl)
+   024E 23                  586 	inc	hl
+   024F 56                  587 	ld	d,(hl)
+   0250 1A                  588 	ld	a,(de)
+   0251 F8 00               589 	ldhl	sp,#0
+   0253 22                  590 	ld	(hl+),a
+   0254 13                  591 	inc	de
+   0255 1A                  592 	ld	a,(de)
+   0256 77                  593 	ld	(hl),a
+   0257 F8 06               594 	ldhl	sp,#(7 - 1)
+   0259 4E                  595 	ld	c,(hl)
+   025A 23                  596 	inc	hl
+   025B 46                  597 	ld	b,(hl)
+   025C 03                  598 	inc	bc
+   025D 03                  599 	inc	bc
+   025E 03                  600 	inc	bc
+   025F 0A                  601 	ld	a,(bc)
+   0260 23                  602 	inc	hl
+   0261 77                  603 	ld	(hl),a
+   0262 4E                  604 	ld	c,(hl)
+   0263 06 00               605 	ld	b,#0x00
+   0265 69                  606 	ld	l, c
+   0266 60                  607 	ld	h, b
+   0267 29                  608 	add	hl, hl
+   0268 09                  609 	add	hl, bc
+   0269 4D                  610 	ld	c,l
+   026A 44                  611 	ld	b,h
+   026B 79                  612 	ld	a,c
+   026C F5                  613 	push	af
+   026D F8 02               614 	ldhl	sp,#2
+   026F 4E                  615 	ld	c,(hl)
+   0270 23                  616 	inc	hl
+   0271 46                  617 	ld	b,(hl)
+   0272 F1                  618 	pop	af
+   0273 3C                  619 	inc	a
+   0274 18 04               620 	jr	00118$
+   0276                     621 00117$:
+   0276 CB 21               622 	sla	c
+   0278 CB 10               623 	rl	b
+   027A                     624 00118$:
+   027A 3D                  625 	dec	a
+   027B 20 F9               626 	jr	NZ,00117$
+   027D CB 21               627 	sla	c
+   027F CB 10               628 	rl	b
+   0281 23                  629 	inc	hl
+   0282 2A                  630 	ld	a,(hl+)
+   0283 66                  631 	ld	h,(hl)
+   0284 6F                  632 	ld	l,a
+   0285 09                  633 	add	hl,bc
+   0286 4D                  634 	ld	c,l
+   0287 44                  635 	ld	b,h
+   0288 C5                  636 	push	bc
+   0289 F8 0A               637 	ldhl	sp,#10
+   028B 7E                  638 	ld	a,(hl)
+   028C F5                  639 	push	af
+   028D 33                  640 	inc	sp
+   028E F8 10               641 	ldhl	sp,#16
+   0290 7E                  642 	ld	a,(hl)
+   0291 F5                  643 	push	af
+   0292 33                  644 	inc	sp
+   0293 CDr00r00            645 	call	_set_bkg_data
+   0296 E8 04               646 	add	sp, #4
+                            647 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:53: POP_BANK;
+   0298 CDr00r00            648 	call	_PopBank
+                            649 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:54: anim->frame++; 
+   029B F8 06               650 	ldhl	sp,#(7 - 1)
+   029D 5E                  651 	ld	e,(hl)
+   029E 23                  652 	inc	hl
+   029F 56                  653 	ld	d,(hl)
+   02A0 1A                  654 	ld	a,(de)
+   02A1 4F                  655 	ld	c,a
+   02A2 13                  656 	inc	de
+   02A3 1A                  657 	ld	a,(de)
+   02A4 47                  658 	ld	b,a
+   02A5 03                  659 	inc	bc
+   02A6 2B                  660 	dec	hl
+   02A7 2A                  661 	ld	a,(hl+)
+   02A8 66                  662 	ld	h,(hl)
+   02A9 6F                  663 	ld	l,a
+   02AA 71                  664 	ld	(hl),c
+   02AB 23                  665 	inc	hl
+   02AC 70                  666 	ld	(hl),b
+                            667 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:55: anim->timer = 0;
+   02AD F8 04               668 	ldhl	sp,#4
+   02AF 2A                  669 	ld	a,(hl+)
+   02B0 66                  670 	ld	h,(hl)
+   02B1 6F                  671 	ld	l,a
+   02B2 36 00               672 	ld	(hl),#0x00
+   02B4 23                  673 	inc	hl
+   02B5 36 00               674 	ld	(hl),#0x00
+   02B7                     675 00102$:
+                            676 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:57: if (anim->frame == anim->frames) anim->frame = 0;
+   02B7 F8 06               677 	ldhl	sp,#(7 - 1)
+   02B9 5E                  678 	ld	e,(hl)
+   02BA 23                  679 	inc	hl
+   02BB 56                  680 	ld	d,(hl)
+   02BC 1A                  681 	ld	a,(de)
+   02BD F8 00               682 	ldhl	sp,#0
+   02BF 22                  683 	ld	(hl+),a
+   02C0 13                  684 	inc	de
+   02C1 1A                  685 	ld	a,(de)
+   02C2 77                  686 	ld	(hl),a
+   02C3 F8 06               687 	ldhl	sp,#(7 - 1)
+   02C5 4E                  688 	ld	c,(hl)
+   02C6 23                  689 	inc	hl
+   02C7 46                  690 	ld	b,(hl)
+   02C8 03                  691 	inc	bc
+   02C9 03                  692 	inc	bc
+   02CA 0A                  693 	ld	a,(bc)
+   02CB 4F                  694 	ld	c,a
+   02CC 06 00               695 	ld	b,#0x00
+   02CE F8 00               696 	ldhl	sp,#0
+   02D0 7E                  697 	ld	a,(hl)
+   02D1 91                  698 	sub	a, c
+   02D2 20 0F               699 	jr	NZ,00104$
+   02D4 23                  700 	inc	hl
+   02D5 7E                  701 	ld	a,(hl)
+   02D6 90                  702 	sub	a, b
+   02D7 20 0A               703 	jr	NZ,00104$
+   02D9 F8 06               704 	ldhl	sp,#6
+   02DB 2A                  705 	ld	a,(hl+)
+   02DC 66                  706 	ld	h,(hl)
+   02DD 6F                  707 	ld	l,a
+   02DE 36 00               708 	ld	(hl),#0x00
+   02E0 23                  709 	inc	hl
+   02E1 36 00               710 	ld	(hl),#0x00
+   02E3                     711 00104$:
+                            712 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:58: anim->timer++;
+   02E3 F8 04               713 	ldhl	sp,#(5 - 1)
+   02E5 5E                  714 	ld	e,(hl)
+   02E6 23                  715 	inc	hl
+   02E7 56                  716 	ld	d,(hl)
+   02E8 1A                  717 	ld	a,(de)
+   02E9 4F                  718 	ld	c,a
+   02EA 13                  719 	inc	de
+   02EB 1A                  720 	ld	a,(de)
+   02EC 47                  721 	ld	b,a
+   02ED 03                  722 	inc	bc
+   02EE 2B                  723 	dec	hl
+   02EF 2A                  724 	ld	a,(hl+)
+   02F0 66                  725 	ld	h,(hl)
+   02F1 6F                  726 	ld	l,a
+   02F2 71                  727 	ld	(hl),c
+   02F3 23                  728 	inc	hl
+   02F4 70                  729 	ld	(hl),b
+   02F5 E8 09               730 	add	sp, #9
+   02F7 C9                  731 	ret
+                            732 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:62: void BKG_EDIT_TILE(UINT8 x, UINT8 y, UINT8 number){
+                            733 ;	---------------------------------
+                            734 ; Function BKG_EDIT_TILE
+                            735 ; ---------------------------------
+   02F8                     736 _BKG_EDIT_TILE::
+                            737 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:63: set_bkg_tiles(x,y,1,1,&number);
+   02F8 F8 04               738 	ldhl	sp,#4
+   02FA 4D                  739 	ld	c,l
+   02FB 44                  740 	ld	b,h
+   02FC C5                  741 	push	bc
+   02FD 21 01 01            742 	ld	hl,#0x0101
+   0300 E5                  743 	push	hl
+   0301 F8 07               744 	ldhl	sp,#7
+   0303 7E                  745 	ld	a,(hl)
+   0304 F5                  746 	push	af
+   0305 33                  747 	inc	sp
+   0306 2B                  748 	dec	hl
+   0307 7E                  749 	ld	a,(hl)
+   0308 F5                  750 	push	af
+   0309 33                  751 	inc	sp
+   030A CDr00r00            752 	call	_set_bkg_tiles
+   030D E8 06               753 	add	sp, #6
+   030F C9                  754 	ret
+                            755 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:65: void WIN_EDIT_TILE(UINT8 x, UINT8 y, UINT8 number){
+                            756 ;	---------------------------------
+                            757 ; Function WIN_EDIT_TILE
+                            758 ; ---------------------------------
+   0310                     759 _WIN_EDIT_TILE::
+                            760 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:66: set_win_tiles(x,y,1,1,&number);
+   0310 F8 04               761 	ldhl	sp,#4
+   0312 4D                  762 	ld	c,l
+   0313 44                  763 	ld	b,h
+   0314 C5                  764 	push	bc
+   0315 21 01 01            765 	ld	hl,#0x0101
+   0318 E5                  766 	push	hl
+   0319 F8 07               767 	ldhl	sp,#7
+   031B 7E                  768 	ld	a,(hl)
+   031C F5                  769 	push	af
+   031D 33                  770 	inc	sp
+   031E 2B                  771 	dec	hl
+   031F 7E                  772 	ld	a,(hl)
+   0320 F5                  773 	push	af
+   0321 33                  774 	inc	sp
+   0322 CDr00r00            775 	call	_set_win_tiles
+   0325 E8 06               776 	add	sp, #6
+   0327 C9                  777 	ret
+                            778 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:154: void BKG_COLLECT_ITEM(UINT16 first_tile, UINT8 tiles, UINT8 color){
+                            779 ;	---------------------------------
+                            780 ; Function BKG_COLLECT_ITEM
+                            781 ; ---------------------------------
+   0328                     782 _BKG_COLLECT_ITEM::
+                            783 ;C:/gbdk/ZGB/common/src/BkgAnimation.c:155: set_bkg_data(first_tile, tiles,NULL_TILE[color]);
+   0328 F8 05               784 	ldhl	sp,#5
+   032A 4E                  785 	ld	c,(hl)
+   032B 06 00               786 	ld	b,#0x00
+   032D CB 21               787 	sla	c
+   032F CB 10               788 	rl	b
+   0331 21r00r00            789 	ld	hl,#_NULL_TILE
+   0334 09                  790 	add	hl,bc
+   0335 4D                  791 	ld	c,l
+   0336 44                  792 	ld	b,h
+   0337 59                  793 	ld	e, c
+   0338 50                  794 	ld	d, b
+   0339 1A                  795 	ld	a,(de)
+   033A 4F                  796 	ld	c,a
+   033B 13                  797 	inc	de
+   033C 1A                  798 	ld	a,(de)
+   033D 47                  799 	ld	b,a
+   033E F8 02               800 	ldhl	sp,#2
+   0340 56                  801 	ld	d,(hl)
+   0341 C5                  802 	push	bc
+   0342 23                  803 	inc	hl
+   0343 23                  804 	inc	hl
+   0344 7E                  805 	ld	a,(hl)
+   0345 F5                  806 	push	af
+   0346 33                  807 	inc	sp
+   0347 D5                  808 	push	de
+   0348 33                  809 	inc	sp
+   0349 CDr00r00            810 	call	_set_bkg_data
+   034C E8 04               811 	add	sp, #4
+   034E C9                  812 	ret
+   034F                     813 _c0:
+   034F 00                  814 	.db #0x00	; 0
+   0350 00                  815 	.db #0x00	; 0
+   0351 00                  816 	.db #0x00	; 0
+   0352 00                  817 	.db #0x00	; 0
+   0353 00                  818 	.db #0x00	; 0
+   0354 00                  819 	.db #0x00	; 0
+   0355 00                  820 	.db #0x00	; 0
+   0356 00                  821 	.db #0x00	; 0
+   0357 00                  822 	.db #0x00	; 0
+   0358 00                  823 	.db #0x00	; 0
+   0359 00                  824 	.db #0x00	; 0
+   035A 00                  825 	.db #0x00	; 0
+   035B 00                  826 	.db #0x00	; 0
+   035C 00                  827 	.db #0x00	; 0
+   035D 00                  828 	.db #0x00	; 0
+   035E 00                  829 	.db #0x00	; 0
+   035F 00                  830 	.db #0x00	; 0
+   0360 00                  831 	.db #0x00	; 0
+   0361 00                  832 	.db #0x00	; 0
+   0362 00                  833 	.db #0x00	; 0
+   0363 00                  834 	.db #0x00	; 0
+   0364 00                  835 	.db #0x00	; 0
+   0365 00                  836 	.db #0x00	; 0
+   0366 00                  837 	.db #0x00	; 0
+   0367 00                  838 	.db #0x00	; 0
+   0368 00                  839 	.db #0x00	; 0
+   0369 00                  840 	.db #0x00	; 0
+   036A 00                  841 	.db #0x00	; 0
+   036B 00                  842 	.db #0x00	; 0
+   036C 00                  843 	.db #0x00	; 0
+   036D 00                  844 	.db #0x00	; 0
+   036E 00                  845 	.db #0x00	; 0
+   036F 00                  846 	.db #0x00	; 0
+   0370 00                  847 	.db #0x00	; 0
+   0371 00                  848 	.db #0x00	; 0
+   0372 00                  849 	.db #0x00	; 0
+   0373 00                  850 	.db #0x00	; 0
+   0374 00                  851 	.db #0x00	; 0
+   0375 00                  852 	.db #0x00	; 0
+   0376 00                  853 	.db #0x00	; 0
+   0377 00                  854 	.db #0x00	; 0
+   0378 00                  855 	.db #0x00	; 0
+   0379 00                  856 	.db #0x00	; 0
+   037A 00                  857 	.db #0x00	; 0
+   037B 00                  858 	.db #0x00	; 0
+   037C 00                  859 	.db #0x00	; 0
+   037D 00                  860 	.db #0x00	; 0
+   037E 00                  861 	.db #0x00	; 0
+   037F 00                  862 	.db #0x00	; 0
+   0380 00                  863 	.db #0x00	; 0
+   0381 00                  864 	.db #0x00	; 0
+   0382 00                  865 	.db #0x00	; 0
+   0383 00                  866 	.db #0x00	; 0
+   0384 00                  867 	.db #0x00	; 0
+   0385 00                  868 	.db #0x00	; 0
+   0386 00                  869 	.db #0x00	; 0
+   0387 00                  870 	.db #0x00	; 0
+   0388 00                  871 	.db #0x00	; 0
+   0389 00                  872 	.db #0x00	; 0
+   038A 00                  873 	.db #0x00	; 0
+   038B 00                  874 	.db #0x00	; 0
+   038C 00                  875 	.db #0x00	; 0
+   038D 00                  876 	.db #0x00	; 0
+   038E 00                  877 	.db #0x00	; 0
+   038F 00                  878 	.db #0x00	; 0
+   0390 00                  879 	.db #0x00	; 0
+   0391 00                  880 	.db #0x00	; 0
+   0392 00                  881 	.db #0x00	; 0
+   0393 00                  882 	.db #0x00	; 0
+   0394 00                  883 	.db #0x00	; 0
+   0395 00                  884 	.db #0x00	; 0
+   0396 00                  885 	.db #0x00	; 0
+   0397 00                  886 	.db #0x00	; 0
+   0398 00                  887 	.db #0x00	; 0
+   0399 00                  888 	.db #0x00	; 0
+   039A 00                  889 	.db #0x00	; 0
+   039B 00                  890 	.db #0x00	; 0
+   039C 00                  891 	.db #0x00	; 0
+   039D 00                  892 	.db #0x00	; 0
+   039E 00                  893 	.db #0x00	; 0
+   039F 00                  894 	.db #0x00	; 0
+   03A0 00                  895 	.db #0x00	; 0
+   03A1 00                  896 	.db #0x00	; 0
+   03A2 00                  897 	.db #0x00	; 0
+   03A3 00                  898 	.db #0x00	; 0
+   03A4 00                  899 	.db #0x00	; 0
+   03A5 00                  900 	.db #0x00	; 0
+   03A6 00                  901 	.db #0x00	; 0
+   03A7 00                  902 	.db #0x00	; 0
+   03A8 00                  903 	.db #0x00	; 0
+   03A9 00                  904 	.db #0x00	; 0
+   03AA 00                  905 	.db #0x00	; 0
+   03AB 00                  906 	.db #0x00	; 0
+   03AC 00                  907 	.db #0x00	; 0
+   03AD 00                  908 	.db #0x00	; 0
+   03AE 00                  909 	.db #0x00	; 0
+   03AF 00                  910 	.db #0x00	; 0
+   03B0 00                  911 	.db #0x00	; 0
+   03B1 00                  912 	.db #0x00	; 0
+   03B2 00                  913 	.db #0x00	; 0
+   03B3 00                  914 	.db #0x00	; 0
+   03B4 00                  915 	.db #0x00	; 0
+   03B5 00                  916 	.db #0x00	; 0
+   03B6 00                  917 	.db #0x00	; 0
+   03B7 00                  918 	.db #0x00	; 0
+   03B8 00                  919 	.db #0x00	; 0
+   03B9 00                  920 	.db #0x00	; 0
+   03BA 00                  921 	.db #0x00	; 0
+   03BB 00                  922 	.db #0x00	; 0
+   03BC 00                  923 	.db #0x00	; 0
+   03BD 00                  924 	.db #0x00	; 0
+   03BE 00                  925 	.db #0x00	; 0
+   03BF 00                  926 	.db #0x00	; 0
+   03C0 00                  927 	.db #0x00	; 0
+   03C1 00                  928 	.db #0x00	; 0
+   03C2 00                  929 	.db #0x00	; 0
+   03C3 00                  930 	.db #0x00	; 0
+   03C4 00                  931 	.db #0x00	; 0
+   03C5 00                  932 	.db #0x00	; 0
+   03C6 00                  933 	.db #0x00	; 0
+   03C7 00                  934 	.db #0x00	; 0
+   03C8 00                  935 	.db #0x00	; 0
+   03C9 00                  936 	.db #0x00	; 0
+   03CA 00                  937 	.db #0x00	; 0
+   03CB 00                  938 	.db #0x00	; 0
+   03CC 00                  939 	.db #0x00	; 0
+   03CD 00                  940 	.db #0x00	; 0
+   03CE 00                  941 	.db #0x00	; 0
+   03CF                     942 _c1:
+   03CF FF                  943 	.db #0xff	; 255
+   03D0 00                  944 	.db #0x00	; 0
+   03D1 FF                  945 	.db #0xff	; 255
+   03D2 00                  946 	.db #0x00	; 0
+   03D3 FF                  947 	.db #0xff	; 255
+   03D4 00                  948 	.db #0x00	; 0
+   03D5 FF                  949 	.db #0xff	; 255
+   03D6 00                  950 	.db #0x00	; 0
+   03D7 FF                  951 	.db #0xff	; 255
+   03D8 00                  952 	.db #0x00	; 0
+   03D9 FF                  953 	.db #0xff	; 255
+   03DA 00                  954 	.db #0x00	; 0
+   03DB FF                  955 	.db #0xff	; 255
+   03DC 00                  956 	.db #0x00	; 0
+   03DD FF                  957 	.db #0xff	; 255
+   03DE 00                  958 	.db #0x00	; 0
+   03DF FF                  959 	.db #0xff	; 255
+   03E0 00                  960 	.db #0x00	; 0
+   03E1 FF                  961 	.db #0xff	; 255
+   03E2 00                  962 	.db #0x00	; 0
+   03E3 FF                  963 	.db #0xff	; 255
+   03E4 00                  964 	.db #0x00	; 0
+   03E5 FF                  965 	.db #0xff	; 255
+   03E6 00                  966 	.db #0x00	; 0
+   03E7 FF                  967 	.db #0xff	; 255
+   03E8 00                  968 	.db #0x00	; 0
+   03E9 FF                  969 	.db #0xff	; 255
+   03EA 00                  970 	.db #0x00	; 0
+   03EB FF                  971 	.db #0xff	; 255
+   03EC 00                  972 	.db #0x00	; 0
+   03ED FF                  973 	.db #0xff	; 255
+   03EE 00                  974 	.db #0x00	; 0
+   03EF FF                  975 	.db #0xff	; 255
+   03F0 00                  976 	.db #0x00	; 0
+   03F1 FF                  977 	.db #0xff	; 255
+   03F2 00                  978 	.db #0x00	; 0
+   03F3 FF                  979 	.db #0xff	; 255
+   03F4 00                  980 	.db #0x00	; 0
+   03F5 FF                  981 	.db #0xff	; 255
+   03F6 00                  982 	.db #0x00	; 0
+   03F7 FF                  983 	.db #0xff	; 255
+   03F8 00                  984 	.db #0x00	; 0
+   03F9 FF                  985 	.db #0xff	; 255
+   03FA 00                  986 	.db #0x00	; 0
+   03FB FF                  987 	.db #0xff	; 255
+   03FC 00                  988 	.db #0x00	; 0
+   03FD FF                  989 	.db #0xff	; 255
+   03FE 00                  990 	.db #0x00	; 0
+   03FF FF                  991 	.db #0xff	; 255
+   0400 00                  992 	.db #0x00	; 0
+   0401 FF                  993 	.db #0xff	; 255
+   0402 00                  994 	.db #0x00	; 0
+   0403 FF                  995 	.db #0xff	; 255
+   0404 00                  996 	.db #0x00	; 0
+   0405 FF                  997 	.db #0xff	; 255
+   0406 00                  998 	.db #0x00	; 0
+   0407 FF                  999 	.db #0xff	; 255
+   0408 00                 1000 	.db #0x00	; 0
+   0409 FF                 1001 	.db #0xff	; 255
+   040A 00                 1002 	.db #0x00	; 0
+   040B FF                 1003 	.db #0xff	; 255
+   040C 00                 1004 	.db #0x00	; 0
+   040D FF                 1005 	.db #0xff	; 255
+   040E 00                 1006 	.db #0x00	; 0
+   040F FF                 1007 	.db #0xff	; 255
+   0410 00                 1008 	.db #0x00	; 0
+   0411 FF                 1009 	.db #0xff	; 255
+   0412 00                 1010 	.db #0x00	; 0
+   0413 FF                 1011 	.db #0xff	; 255
+   0414 00                 1012 	.db #0x00	; 0
+   0415 FF                 1013 	.db #0xff	; 255
+   0416 00                 1014 	.db #0x00	; 0
+   0417 FF                 1015 	.db #0xff	; 255
+   0418 00                 1016 	.db #0x00	; 0
+   0419 FF                 1017 	.db #0xff	; 255
+   041A 00                 1018 	.db #0x00	; 0
+   041B FF                 1019 	.db #0xff	; 255
+   041C 00                 1020 	.db #0x00	; 0
+   041D FF                 1021 	.db #0xff	; 255
+   041E 00                 1022 	.db #0x00	; 0
+   041F FF                 1023 	.db #0xff	; 255
+   0420 00                 1024 	.db #0x00	; 0
+   0421 FF                 1025 	.db #0xff	; 255
+   0422 00                 1026 	.db #0x00	; 0
+   0423 FF                 1027 	.db #0xff	; 255
+   0424 00                 1028 	.db #0x00	; 0
+   0425 FF                 1029 	.db #0xff	; 255
+   0426 00                 1030 	.db #0x00	; 0
+   0427 FF                 1031 	.db #0xff	; 255
+   0428 00                 1032 	.db #0x00	; 0
+   0429 FF                 1033 	.db #0xff	; 255
+   042A 00                 1034 	.db #0x00	; 0
+   042B FF                 1035 	.db #0xff	; 255
+   042C 00                 1036 	.db #0x00	; 0
+   042D FF                 1037 	.db #0xff	; 255
+   042E 00                 1038 	.db #0x00	; 0
+   042F FF                 1039 	.db #0xff	; 255
+   0430 00                 1040 	.db #0x00	; 0
+   0431 FF                 1041 	.db #0xff	; 255
+   0432 00                 1042 	.db #0x00	; 0
+   0433 FF                 1043 	.db #0xff	; 255
+   0434 00                 1044 	.db #0x00	; 0
+   0435 FF                 1045 	.db #0xff	; 255
+   0436 00                 1046 	.db #0x00	; 0
+   0437 FF                 1047 	.db #0xff	; 255
+   0438 00                 1048 	.db #0x00	; 0
+   0439 FF                 1049 	.db #0xff	; 255
+   043A 00                 1050 	.db #0x00	; 0
+   043B FF                 1051 	.db #0xff	; 255
+   043C 00                 1052 	.db #0x00	; 0
+   043D FF                 1053 	.db #0xff	; 255
+   043E 00                 1054 	.db #0x00	; 0
+   043F FF                 1055 	.db #0xff	; 255
+   0440 00                 1056 	.db #0x00	; 0
+   0441 FF                 1057 	.db #0xff	; 255
+   0442 00                 1058 	.db #0x00	; 0
+   0443 FF                 1059 	.db #0xff	; 255
+   0444 00                 1060 	.db #0x00	; 0
+   0445 FF                 1061 	.db #0xff	; 255
+   0446 00                 1062 	.db #0x00	; 0
+   0447 FF                 1063 	.db #0xff	; 255
+   0448 00                 1064 	.db #0x00	; 0
+   0449 FF                 1065 	.db #0xff	; 255
+   044A 00                 1066 	.db #0x00	; 0
+   044B FF                 1067 	.db #0xff	; 255
+   044C 00                 1068 	.db #0x00	; 0
+   044D FF                 1069 	.db #0xff	; 255
+   044E 00                 1070 	.db #0x00	; 0
+   044F                    1071 _c2:
+   044F 00                 1072 	.db #0x00	; 0
+   0450 FF                 1073 	.db #0xff	; 255
+   0451 00                 1074 	.db #0x00	; 0
+   0452 FF                 1075 	.db #0xff	; 255
+   0453 00                 1076 	.db #0x00	; 0
+   0454 FF                 1077 	.db #0xff	; 255
+   0455 00                 1078 	.db #0x00	; 0
+   0456 FF                 1079 	.db #0xff	; 255
+   0457 00                 1080 	.db #0x00	; 0
+   0458 FF                 1081 	.db #0xff	; 255
+   0459 00                 1082 	.db #0x00	; 0
+   045A FF                 1083 	.db #0xff	; 255
+   045B 00                 1084 	.db #0x00	; 0
+   045C FF                 1085 	.db #0xff	; 255
+   045D 00                 1086 	.db #0x00	; 0
+   045E FF                 1087 	.db #0xff	; 255
+   045F 00                 1088 	.db #0x00	; 0
+   0460 FF                 1089 	.db #0xff	; 255
+   0461 00                 1090 	.db #0x00	; 0
+   0462 FF                 1091 	.db #0xff	; 255
+   0463 00                 1092 	.db #0x00	; 0
+   0464 FF                 1093 	.db #0xff	; 255
+   0465 00                 1094 	.db #0x00	; 0
+   0466 FF                 1095 	.db #0xff	; 255
+   0467 00                 1096 	.db #0x00	; 0
+   0468 FF                 1097 	.db #0xff	; 255
+   0469 00                 1098 	.db #0x00	; 0
+   046A FF                 1099 	.db #0xff	; 255
+   046B 00                 1100 	.db #0x00	; 0
+   046C FF                 1101 	.db #0xff	; 255
+   046D 00                 1102 	.db #0x00	; 0
+   046E FF                 1103 	.db #0xff	; 255
+   046F 00                 1104 	.db #0x00	; 0
+   0470 FF                 1105 	.db #0xff	; 255
+   0471 00                 1106 	.db #0x00	; 0
+   0472 FF                 1107 	.db #0xff	; 255
+   0473 00                 1108 	.db #0x00	; 0
+   0474 FF                 1109 	.db #0xff	; 255
+   0475 00                 1110 	.db #0x00	; 0
+   0476 FF                 1111 	.db #0xff	; 255
+   0477 00                 1112 	.db #0x00	; 0
+   0478 FF                 1113 	.db #0xff	; 255
+   0479 00                 1114 	.db #0x00	; 0
+   047A FF                 1115 	.db #0xff	; 255
+   047B 00                 1116 	.db #0x00	; 0
+   047C FF                 1117 	.db #0xff	; 255
+   047D 00                 1118 	.db #0x00	; 0
+   047E FF                 1119 	.db #0xff	; 255
+   047F 00                 1120 	.db #0x00	; 0
+   0480 FF                 1121 	.db #0xff	; 255
+   0481 00                 1122 	.db #0x00	; 0
+   0482 FF                 1123 	.db #0xff	; 255
+   0483 00                 1124 	.db #0x00	; 0
+   0484 FF                 1125 	.db #0xff	; 255
+   0485 00                 1126 	.db #0x00	; 0
+   0486 FF                 1127 	.db #0xff	; 255
+   0487 00                 1128 	.db #0x00	; 0
+   0488 FF                 1129 	.db #0xff	; 255
+   0489 00                 1130 	.db #0x00	; 0
+   048A FF                 1131 	.db #0xff	; 255
+   048B 00                 1132 	.db #0x00	; 0
+   048C FF                 1133 	.db #0xff	; 255
+   048D 00                 1134 	.db #0x00	; 0
+   048E FF                 1135 	.db #0xff	; 255
+   048F 00                 1136 	.db #0x00	; 0
+   0490 FF                 1137 	.db #0xff	; 255
+   0491 00                 1138 	.db #0x00	; 0
+   0492 FF                 1139 	.db #0xff	; 255
+   0493 00                 1140 	.db #0x00	; 0
+   0494 FF                 1141 	.db #0xff	; 255
+   0495 00                 1142 	.db #0x00	; 0
+   0496 FF                 1143 	.db #0xff	; 255
+   0497 00                 1144 	.db #0x00	; 0
+   0498 FF                 1145 	.db #0xff	; 255
+   0499 00                 1146 	.db #0x00	; 0
+   049A FF                 1147 	.db #0xff	; 255
+   049B 00                 1148 	.db #0x00	; 0
+   049C FF                 1149 	.db #0xff	; 255
+   049D 00                 1150 	.db #0x00	; 0
+   049E FF                 1151 	.db #0xff	; 255
+   049F 00                 1152 	.db #0x00	; 0
+   04A0 FF                 1153 	.db #0xff	; 255
+   04A1 00                 1154 	.db #0x00	; 0
+   04A2 FF                 1155 	.db #0xff	; 255
+   04A3 00                 1156 	.db #0x00	; 0
+   04A4 FF                 1157 	.db #0xff	; 255
+   04A5 00                 1158 	.db #0x00	; 0
+   04A6 FF                 1159 	.db #0xff	; 255
+   04A7 00                 1160 	.db #0x00	; 0
+   04A8 FF                 1161 	.db #0xff	; 255
+   04A9 00                 1162 	.db #0x00	; 0
+   04AA FF                 1163 	.db #0xff	; 255
+   04AB 00                 1164 	.db #0x00	; 0
+   04AC FF                 1165 	.db #0xff	; 255
+   04AD 00                 1166 	.db #0x00	; 0
+   04AE FF                 1167 	.db #0xff	; 255
+   04AF 00                 1168 	.db #0x00	; 0
+   04B0 FF                 1169 	.db #0xff	; 255
+   04B1 00                 1170 	.db #0x00	; 0
+   04B2 FF                 1171 	.db #0xff	; 255
+   04B3 00                 1172 	.db #0x00	; 0
+   04B4 FF                 1173 	.db #0xff	; 255
+   04B5 00                 1174 	.db #0x00	; 0
+   04B6 FF                 1175 	.db #0xff	; 255
+   04B7 00                 1176 	.db #0x00	; 0
+   04B8 FF                 1177 	.db #0xff	; 255
+   04B9 00                 1178 	.db #0x00	; 0
+   04BA FF                 1179 	.db #0xff	; 255
+   04BB 00                 1180 	.db #0x00	; 0
+   04BC FF                 1181 	.db #0xff	; 255
+   04BD 00                 1182 	.db #0x00	; 0
+   04BE FF                 1183 	.db #0xff	; 255
+   04BF 00                 1184 	.db #0x00	; 0
+   04C0 FF                 1185 	.db #0xff	; 255
+   04C1 00                 1186 	.db #0x00	; 0
+   04C2 FF                 1187 	.db #0xff	; 255
+   04C3 00                 1188 	.db #0x00	; 0
+   04C4 FF                 1189 	.db #0xff	; 255
+   04C5 00                 1190 	.db #0x00	; 0
+   04C6 FF                 1191 	.db #0xff	; 255
+   04C7 00                 1192 	.db #0x00	; 0
+   04C8 FF                 1193 	.db #0xff	; 255
+   04C9 00                 1194 	.db #0x00	; 0
+   04CA FF                 1195 	.db #0xff	; 255
+   04CB 00                 1196 	.db #0x00	; 0
+   04CC FF                 1197 	.db #0xff	; 255
+   04CD 00                 1198 	.db #0x00	; 0
+   04CE FF                 1199 	.db #0xff	; 255
+   04CF                    1200 _c3:
+   04CF FF                 1201 	.db #0xff	; 255
+   04D0 FF                 1202 	.db #0xff	; 255
+   04D1 FF                 1203 	.db #0xff	; 255
+   04D2 FF                 1204 	.db #0xff	; 255
+   04D3 FF                 1205 	.db #0xff	; 255
+   04D4 FF                 1206 	.db #0xff	; 255
+   04D5 FF                 1207 	.db #0xff	; 255
+   04D6 FF                 1208 	.db #0xff	; 255
+   04D7 FF                 1209 	.db #0xff	; 255
+   04D8 FF                 1210 	.db #0xff	; 255
+   04D9 FF                 1211 	.db #0xff	; 255
+   04DA FF                 1212 	.db #0xff	; 255
+   04DB FF                 1213 	.db #0xff	; 255
+   04DC FF                 1214 	.db #0xff	; 255
+   04DD FF                 1215 	.db #0xff	; 255
+   04DE FF                 1216 	.db #0xff	; 255
+   04DF FF                 1217 	.db #0xff	; 255
+   04E0 FF                 1218 	.db #0xff	; 255
+   04E1 FF                 1219 	.db #0xff	; 255
+   04E2 FF                 1220 	.db #0xff	; 255
+   04E3 FF                 1221 	.db #0xff	; 255
+   04E4 FF                 1222 	.db #0xff	; 255
+   04E5 FF                 1223 	.db #0xff	; 255
+   04E6 FF                 1224 	.db #0xff	; 255
+   04E7 FF                 1225 	.db #0xff	; 255
+   04E8 FF                 1226 	.db #0xff	; 255
+   04E9 FF                 1227 	.db #0xff	; 255
+   04EA FF                 1228 	.db #0xff	; 255
+   04EB FF                 1229 	.db #0xff	; 255
+   04EC FF                 1230 	.db #0xff	; 255
+   04ED FF                 1231 	.db #0xff	; 255
+   04EE FF                 1232 	.db #0xff	; 255
+   04EF FF                 1233 	.db #0xff	; 255
+   04F0 FF                 1234 	.db #0xff	; 255
+   04F1 FF                 1235 	.db #0xff	; 255
+   04F2 FF                 1236 	.db #0xff	; 255
+   04F3 FF                 1237 	.db #0xff	; 255
+   04F4 FF                 1238 	.db #0xff	; 255
+   04F5 FF                 1239 	.db #0xff	; 255
+   04F6 FF                 1240 	.db #0xff	; 255
+   04F7 FF                 1241 	.db #0xff	; 255
+   04F8 FF                 1242 	.db #0xff	; 255
+   04F9 FF                 1243 	.db #0xff	; 255
+   04FA FF                 1244 	.db #0xff	; 255
+   04FB FF                 1245 	.db #0xff	; 255
+   04FC FF                 1246 	.db #0xff	; 255
+   04FD FF                 1247 	.db #0xff	; 255
+   04FE FF                 1248 	.db #0xff	; 255
+   04FF FF                 1249 	.db #0xff	; 255
+   0500 FF                 1250 	.db #0xff	; 255
+   0501 FF                 1251 	.db #0xff	; 255
+   0502 FF                 1252 	.db #0xff	; 255
+   0503 FF                 1253 	.db #0xff	; 255
+   0504 FF                 1254 	.db #0xff	; 255
+   0505 FF                 1255 	.db #0xff	; 255
+   0506 FF                 1256 	.db #0xff	; 255
+   0507 FF                 1257 	.db #0xff	; 255
+   0508 FF                 1258 	.db #0xff	; 255
+   0509 FF                 1259 	.db #0xff	; 255
+   050A FF                 1260 	.db #0xff	; 255
+   050B FF                 1261 	.db #0xff	; 255
+   050C FF                 1262 	.db #0xff	; 255
+   050D FF                 1263 	.db #0xff	; 255
+   050E FF                 1264 	.db #0xff	; 255
+   050F FF                 1265 	.db #0xff	; 255
+   0510 FF                 1266 	.db #0xff	; 255
+   0511 FF                 1267 	.db #0xff	; 255
+   0512 FF                 1268 	.db #0xff	; 255
+   0513 FF                 1269 	.db #0xff	; 255
+   0514 FF                 1270 	.db #0xff	; 255
+   0515 FF                 1271 	.db #0xff	; 255
+   0516 FF                 1272 	.db #0xff	; 255
+   0517 FF                 1273 	.db #0xff	; 255
+   0518 FF                 1274 	.db #0xff	; 255
+   0519 FF                 1275 	.db #0xff	; 255
+   051A FF                 1276 	.db #0xff	; 255
+   051B FF                 1277 	.db #0xff	; 255
+   051C FF                 1278 	.db #0xff	; 255
+   051D FF                 1279 	.db #0xff	; 255
+   051E FF                 1280 	.db #0xff	; 255
+   051F FF                 1281 	.db #0xff	; 255
+   0520 FF                 1282 	.db #0xff	; 255
+   0521 FF                 1283 	.db #0xff	; 255
+   0522 FF                 1284 	.db #0xff	; 255
+   0523 FF                 1285 	.db #0xff	; 255
+   0524 FF                 1286 	.db #0xff	; 255
+   0525 FF                 1287 	.db #0xff	; 255
+   0526 FF                 1288 	.db #0xff	; 255
+   0527 FF                 1289 	.db #0xff	; 255
+   0528 FF                 1290 	.db #0xff	; 255
+   0529 FF                 1291 	.db #0xff	; 255
+   052A FF                 1292 	.db #0xff	; 255
+   052B FF                 1293 	.db #0xff	; 255
+   052C FF                 1294 	.db #0xff	; 255
+   052D FF                 1295 	.db #0xff	; 255
+   052E FF                 1296 	.db #0xff	; 255
+   052F FF                 1297 	.db #0xff	; 255
+   0530 FF                 1298 	.db #0xff	; 255
+   0531 FF                 1299 	.db #0xff	; 255
+   0532 FF                 1300 	.db #0xff	; 255
+   0533 FF                 1301 	.db #0xff	; 255
+   0534 FF                 1302 	.db #0xff	; 255
+   0535 FF                 1303 	.db #0xff	; 255
+   0536 FF                 1304 	.db #0xff	; 255
+   0537 FF                 1305 	.db #0xff	; 255
+   0538 FF                 1306 	.db #0xff	; 255
+   0539 FF                 1307 	.db #0xff	; 255
+   053A FF                 1308 	.db #0xff	; 255
+   053B FF                 1309 	.db #0xff	; 255
+   053C FF                 1310 	.db #0xff	; 255
+   053D FF                 1311 	.db #0xff	; 255
+   053E FF                 1312 	.db #0xff	; 255
+   053F FF                 1313 	.db #0xff	; 255
+   0540 FF                 1314 	.db #0xff	; 255
+   0541 FF                 1315 	.db #0xff	; 255
+   0542 FF                 1316 	.db #0xff	; 255
+   0543 FF                 1317 	.db #0xff	; 255
+   0544 FF                 1318 	.db #0xff	; 255
+   0545 FF                 1319 	.db #0xff	; 255
+   0546 FF                 1320 	.db #0xff	; 255
+   0547 FF                 1321 	.db #0xff	; 255
+   0548 FF                 1322 	.db #0xff	; 255
+   0549 FF                 1323 	.db #0xff	; 255
+   054A FF                 1324 	.db #0xff	; 255
+   054B FF                 1325 	.db #0xff	; 255
+   054C FF                 1326 	.db #0xff	; 255
+   054D FF                 1327 	.db #0xff	; 255
+   054E FF                 1328 	.db #0xff	; 255
+                           1329 	.area _CODE
+                           1330 	.area _CABS (ABS)

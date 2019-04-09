@@ -1,0 +1,284 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module SpritePointer
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _Destroy_SPRITE_POINTER
+                             12 	.globl _Update_SPRITE_POINTER
+                             13 	.globl _Start_SPRITE_POINTER
+                             14 	.globl _bank_SPRITE_POINTER
+                             15 	.globl _Point_Dir
+                             16 ;--------------------------------------------------------
+                             17 ; ram data
+                             18 ;--------------------------------------------------------
+                             19 	.area _DATA
+   0000                      20 _bank_SPRITE_POINTER::
+   0000                      21 	.ds 1
+                             22 ;--------------------------------------------------------
+                             23 ; absolute external ram data
+                             24 ;--------------------------------------------------------
+                             25 	.area _DABS (ABS)
+                             26 ;--------------------------------------------------------
+                             27 ; global & static initialisations
+                             28 ;--------------------------------------------------------
+                             29 	.area _HOME
+                             30 	.area _GSINIT
+                             31 	.area _GSFINAL
+                             32 	.area _GSINIT
+                             33 ;SpritePointer.c:4: UINT8 bank_SPRITE_POINTER = 2;
+   0000 21r00r00             34 	ld	hl,#_bank_SPRITE_POINTER
+   0003 36 02                35 	ld	(hl),#0x02
+                             36 ;--------------------------------------------------------
+                             37 ; Home
+                             38 ;--------------------------------------------------------
+                             39 	.area _HOME
+                             40 	.area _HOME
+                             41 ;--------------------------------------------------------
+                             42 ; code
+                             43 ;--------------------------------------------------------
+                             44 	.area _CODE_2
+                             45 ;SpritePointer.c:38: void Start_SPRITE_POINTER() {
+                             46 ;	---------------------------------
+                             47 ; Function Start_SPRITE_POINTER
+                             48 ; ---------------------------------
+   0000                      49 _Start_SPRITE_POINTER::
+   0000 E8 FE                50 	add	sp, #-2
+                             51 ;SpritePointer.c:39: THIS->x = BallPos_x + Point_Dir[HitDir];
+   0002 21r01r00             52 	ld	hl,#_THIS + 1
+   0005 2B                   53 	dec	hl
+   0006 4E                   54 	ld	c,(hl)
+   0007 23                   55 	inc	hl
+   0008 46                   56 	ld	b,(hl)
+   0009 21 07 00             57 	ld	hl,#0x0007
+   000C 09                   58 	add	hl,bc
+   000D 33                   59 	inc	sp
+   000E 33                   60 	inc	sp
+   000F E5                   61 	push	hl
+   0010 3Er63                62 	ld	a,#<(_Point_Dir)
+   0012 21r00r00             63 	ld	hl,#_HitDir
+   0015 86                   64 	add	a, (hl)
+   0016 4F                   65 	ld	c,a
+   0017 3Es00                66 	ld	a,#>(_Point_Dir)
+   0019 CE 00                67 	adc	a, #0x00
+   001B 47                   68 	ld	b,a
+   001C 0A                   69 	ld	a,(bc)
+   001D 4F                   70 	ld	c,a
+   001E 17                   71 	rla
+   001F 9F                   72 	sbc	a, a
+   0020 47                   73 	ld	b,a
+   0021 79                   74 	ld	a,c
+   0022 21r00r00             75 	ld	hl,#_BallPos_x
+   0025 86                   76 	add	a, (hl)
+   0026 4F                   77 	ld	c,a
+   0027 78                   78 	ld	a,b
+   0028 23                   79 	inc	hl
+   0029 8E                   80 	adc	a, (hl)
+   002A 47                   81 	ld	b,a
+   002B E1                   82 	pop	hl
+   002C E5                   83 	push	hl
+   002D 71                   84 	ld	(hl),c
+   002E 23                   85 	inc	hl
+   002F 70                   86 	ld	(hl),b
+                             87 ;SpritePointer.c:40: THIS->y = BallPos_y + Point_Dir[1+HitDir];
+   0030 21r01r00             88 	ld	hl,#_THIS + 1
+   0033 2B                   89 	dec	hl
+   0034 4E                   90 	ld	c,(hl)
+   0035 23                   91 	inc	hl
+   0036 46                   92 	ld	b,(hl)
+   0037 21 09 00             93 	ld	hl,#0x0009
+   003A 09                   94 	add	hl,bc
+   003B 33                   95 	inc	sp
+   003C 33                   96 	inc	sp
+   003D E5                   97 	push	hl
+   003E 21r00r00             98 	ld	hl,#_HitDir
+   0041 4E                   99 	ld	c,(hl)
+   0042 0C                  100 	inc	c
+   0043 3Er63               101 	ld	a,#<(_Point_Dir)
+   0045 81                  102 	add	a, c
+   0046 4F                  103 	ld	c,a
+   0047 3Es00               104 	ld	a,#>(_Point_Dir)
+   0049 CE 00               105 	adc	a, #0x00
+   004B 47                  106 	ld	b,a
+   004C 0A                  107 	ld	a,(bc)
+   004D 4F                  108 	ld	c,a
+   004E 17                  109 	rla
+   004F 9F                  110 	sbc	a, a
+   0050 47                  111 	ld	b,a
+   0051 79                  112 	ld	a,c
+   0052 21r00r00            113 	ld	hl,#_BallPos_y
+   0055 86                  114 	add	a, (hl)
+   0056 4F                  115 	ld	c,a
+   0057 78                  116 	ld	a,b
+   0058 23                  117 	inc	hl
+   0059 8E                  118 	adc	a, (hl)
+   005A 47                  119 	ld	b,a
+   005B E1                  120 	pop	hl
+   005C E5                  121 	push	hl
+   005D 71                  122 	ld	(hl),c
+   005E 23                  123 	inc	hl
+   005F 70                  124 	ld	(hl),b
+   0060 E8 02               125 	add	sp, #2
+   0062 C9                  126 	ret
+   0063                     127 _Point_Dir:
+   0063 05                  128 	.db #0x05	;  5
+   0064 0F                  129 	.db #0x0f	;  15
+   0065 0B                  130 	.db #0x0b	;  11
+   0066 0B                  131 	.db #0x0b	;  11
+   0067 0F                  132 	.db #0x0f	;  15
+   0068 05                  133 	.db #0x05	;  5
+   0069 10                  134 	.db #0x10	;  16
+   006A 00                  135 	.db #0x00	;  0
+   006B 0F                  136 	.db #0x0f	;  15
+   006C FB                  137 	.db #0xfb	; -5
+   006D 0B                  138 	.db #0x0b	;  11
+   006E F5                  139 	.db #0xf5	; -11
+   006F 05                  140 	.db #0x05	;  5
+   0070 F1                  141 	.db #0xf1	; -15
+   0071 00                  142 	.db #0x00	;  0
+   0072 F0                  143 	.db #0xf0	; -16
+   0073 FB                  144 	.db #0xfb	; -5
+   0074 F1                  145 	.db #0xf1	; -15
+   0075 F5                  146 	.db #0xf5	; -11
+   0076 F5                  147 	.db #0xf5	; -11
+   0077 F1                  148 	.db #0xf1	; -15
+   0078 FB                  149 	.db #0xfb	; -5
+   0079 F0                  150 	.db #0xf0	; -16
+   007A 00                  151 	.db #0x00	;  0
+   007B F1                  152 	.db #0xf1	; -15
+   007C 05                  153 	.db #0x05	;  5
+   007D F5                  154 	.db #0xf5	; -11
+   007E 0B                  155 	.db #0x0b	;  11
+   007F FB                  156 	.db #0xfb	; -5
+   0080 0F                  157 	.db #0x0f	;  15
+   0081 00                  158 	.db #0x00	;  0
+   0082 10                  159 	.db #0x10	;  16
+                            160 ;SpritePointer.c:43: void Update_SPRITE_POINTER() {
+                            161 ;	---------------------------------
+                            162 ; Function Update_SPRITE_POINTER
+                            163 ; ---------------------------------
+   0083                     164 _Update_SPRITE_POINTER::
+   0083 E8 FE               165 	add	sp, #-2
+                            166 ;SpritePointer.c:45: THIS->x = BallPos_x + Point_Dir[HitDir];
+   0085 21r01r00            167 	ld	hl,#_THIS + 1
+   0088 2B                  168 	dec	hl
+   0089 4E                  169 	ld	c,(hl)
+   008A 23                  170 	inc	hl
+   008B 46                  171 	ld	b,(hl)
+   008C 21 07 00            172 	ld	hl,#0x0007
+   008F 09                  173 	add	hl,bc
+   0090 33                  174 	inc	sp
+   0091 33                  175 	inc	sp
+   0092 E5                  176 	push	hl
+   0093 3Er63               177 	ld	a,#<(_Point_Dir)
+   0095 21r00r00            178 	ld	hl,#_HitDir
+   0098 86                  179 	add	a, (hl)
+   0099 4F                  180 	ld	c,a
+   009A 3Es00               181 	ld	a,#>(_Point_Dir)
+   009C CE 00               182 	adc	a, #0x00
+   009E 47                  183 	ld	b,a
+   009F 0A                  184 	ld	a,(bc)
+   00A0 4F                  185 	ld	c,a
+   00A1 17                  186 	rla
+   00A2 9F                  187 	sbc	a, a
+   00A3 47                  188 	ld	b,a
+   00A4 79                  189 	ld	a,c
+   00A5 21r00r00            190 	ld	hl,#_BallPos_x
+   00A8 86                  191 	add	a, (hl)
+   00A9 4F                  192 	ld	c,a
+   00AA 78                  193 	ld	a,b
+   00AB 23                  194 	inc	hl
+   00AC 8E                  195 	adc	a, (hl)
+   00AD 47                  196 	ld	b,a
+   00AE E1                  197 	pop	hl
+   00AF E5                  198 	push	hl
+   00B0 71                  199 	ld	(hl),c
+   00B1 23                  200 	inc	hl
+   00B2 70                  201 	ld	(hl),b
+                            202 ;SpritePointer.c:46: THIS->y = BallPos_y + Point_Dir[1+HitDir];
+   00B3 21r01r00            203 	ld	hl,#_THIS + 1
+   00B6 2B                  204 	dec	hl
+   00B7 4E                  205 	ld	c,(hl)
+   00B8 23                  206 	inc	hl
+   00B9 46                  207 	ld	b,(hl)
+   00BA 21 09 00            208 	ld	hl,#0x0009
+   00BD 09                  209 	add	hl,bc
+   00BE 33                  210 	inc	sp
+   00BF 33                  211 	inc	sp
+   00C0 E5                  212 	push	hl
+   00C1 21r00r00            213 	ld	hl,#_HitDir
+   00C4 4E                  214 	ld	c,(hl)
+   00C5 0C                  215 	inc	c
+   00C6 3Er63               216 	ld	a,#<(_Point_Dir)
+   00C8 81                  217 	add	a, c
+   00C9 4F                  218 	ld	c,a
+   00CA 3Es00               219 	ld	a,#>(_Point_Dir)
+   00CC CE 00               220 	adc	a, #0x00
+   00CE 47                  221 	ld	b,a
+   00CF 0A                  222 	ld	a,(bc)
+   00D0 4F                  223 	ld	c,a
+   00D1 17                  224 	rla
+   00D2 9F                  225 	sbc	a, a
+   00D3 47                  226 	ld	b,a
+   00D4 79                  227 	ld	a,c
+   00D5 21r00r00            228 	ld	hl,#_BallPos_y
+   00D8 86                  229 	add	a, (hl)
+   00D9 4F                  230 	ld	c,a
+   00DA 78                  231 	ld	a,b
+   00DB 23                  232 	inc	hl
+   00DC 8E                  233 	adc	a, (hl)
+   00DD 47                  234 	ld	b,a
+   00DE E1                  235 	pop	hl
+   00DF E5                  236 	push	hl
+   00E0 71                  237 	ld	(hl),c
+   00E1 23                  238 	inc	hl
+   00E2 70                  239 	ld	(hl),b
+                            240 ;SpritePointer.c:48: if (Ball_State == 1) {THIS->x = 1000; THIS->y = 1000;}
+   00E3 21r00r00            241 	ld	hl,#_Ball_State
+   00E6 7E                  242 	ld	a,(hl)
+   00E7 3D                  243 	dec	a
+   00E8 20 28               244 	jr	NZ,00103$
+   00EA 21r01r00            245 	ld	hl,#_THIS + 1
+   00ED 2B                  246 	dec	hl
+   00EE 4E                  247 	ld	c,(hl)
+   00EF 23                  248 	inc	hl
+   00F0 46                  249 	ld	b,(hl)
+   00F1 21 07 00            250 	ld	hl,#0x0007
+   00F4 09                  251 	add	hl,bc
+   00F5 4D                  252 	ld	c,l
+   00F6 44                  253 	ld	b,h
+   00F7 3E E8               254 	ld	a,#0xe8
+   00F9 02                  255 	ld	(bc),a
+   00FA 03                  256 	inc	bc
+   00FB 3E 03               257 	ld	a,#0x03
+   00FD 02                  258 	ld	(bc),a
+   00FE 21r01r00            259 	ld	hl,#_THIS + 1
+   0101 2B                  260 	dec	hl
+   0102 4E                  261 	ld	c,(hl)
+   0103 23                  262 	inc	hl
+   0104 46                  263 	ld	b,(hl)
+   0105 21 09 00            264 	ld	hl,#0x0009
+   0108 09                  265 	add	hl,bc
+   0109 4D                  266 	ld	c,l
+   010A 44                  267 	ld	b,h
+   010B 3E E8               268 	ld	a,#0xe8
+   010D 02                  269 	ld	(bc),a
+   010E 03                  270 	inc	bc
+   010F 3E 03               271 	ld	a,#0x03
+   0111 02                  272 	ld	(bc),a
+   0112                     273 00103$:
+   0112 E8 02               274 	add	sp, #2
+   0114 C9                  275 	ret
+                            276 ;SpritePointer.c:51: void Destroy_SPRITE_POINTER() {
+                            277 ;	---------------------------------
+                            278 ; Function Destroy_SPRITE_POINTER
+                            279 ; ---------------------------------
+   0115                     280 _Destroy_SPRITE_POINTER::
+                            281 ;SpritePointer.c:52: }
+   0115 C9                  282 	ret
+                            283 	.area _CODE_2
+                            284 	.area _CABS (ABS)

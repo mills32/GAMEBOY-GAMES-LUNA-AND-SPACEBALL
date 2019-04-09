@@ -1,0 +1,37 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 1.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+    .__.$$$.                                                    =  2710 L
+    .__.ABS.                                                    =  0000 G
+    .__.CPU.                                                    =  0000 L
+    .__.H$L.                                                    =  0000 L
+  0 _ClearOAMs                                                     0129 GR
+  0 _DrawOAMSprite                                                 016D GR
+  0 _LoadSprite                                                    0000 GR
+    _PopBank                                                       **** GX
+    _PushBank                                                      **** GX
+  0 _SwapOAMs                                                      0094 GR
+  1 _last_sprite_loaded                                            0000 GR
+  1 _oam                                                           0101 GR
+  1 _oam0                                                          0103 GR
+  1 _oam1                                                          0105 GR
+    _oam_mirror                                                 =  CF00 G
+    _set_sprite_data                                               **** GX
+  1 _sprites_pal                                                   0001 GR
+
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 2.
+Hexadecimal [16-Bits]
+
+Area Table
+
+   0 _CODE                                      size  186   flags    0
+   1 _DATA                                      size  107   flags    0
+   2 _DABS                                      size    0   flags    8
+   3 _HOME                                      size    0   flags    0
+   4 _GSINIT                                    size   1D   flags    0
+   5 _GSFINAL                                   size    0   flags    0
+   6 _CABS                                      size    0   flags    8
+

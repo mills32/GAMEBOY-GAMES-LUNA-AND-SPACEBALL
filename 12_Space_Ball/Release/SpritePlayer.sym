@@ -1,0 +1,44 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 1.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+    .__.$$$.                                                    =  2710 L
+    .__.ABS.                                                    =  0000 G
+    .__.CPU.                                                    =  0000 L
+    .__.H$L.                                                    =  0000 L
+  1 _BallPos_x                                                     0002 GR
+  1 _BallPos_y                                                     0004 GR
+  1 _Ball_State                                                    0007 GR
+  6 _Destroy_SPRITE_PLAYER                                         02E2 GR
+  6 _Dir                                                           0103 GR
+  1 _HitDir                                                        0006 GR
+  6 _Set_Power_Bar                                                 0000 GR
+  6 _Speed                                                         00BF GR
+    _SpriteManagerAdd                                              **** GX
+  6 _Start_SPRITE_PLAYER                                           0163 GR
+    _THIS                                                          **** GX
+  1 _TIMER                                                         0001 GR
+    _TranslateSprite                                               **** GX
+  6 _Update_SPRITE_PLAYER                                          024D GR
+    _WIN_EDIT_TILE                                                 **** GX
+  6 _anim_idle                                                     00BD GR
+  6 _anim_roll                                                     00B9 GR
+  1 _bank_SPRITE_PLAYER                                            0000 GR
+    _keys                                                          **** GX
+
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 2.
+Hexadecimal [16-Bits]
+
+Area Table
+
+   0 _CODE                                      size    0   flags    0
+   1 _DATA                                      size    8   flags    0
+   2 _DABS                                      size    0   flags    8
+   3 _HOME                                      size    0   flags    0
+   4 _GSINIT                                    size    5   flags    0
+   5 _GSFINAL                                   size    0   flags    0
+   6 _CODE_2                                    size  2E3   flags    0
+   7 _CABS                                      size    0   flags    8
+

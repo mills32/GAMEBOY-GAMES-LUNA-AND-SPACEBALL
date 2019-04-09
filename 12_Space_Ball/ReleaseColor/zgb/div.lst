@@ -1,0 +1,426 @@
+                              1 ;--------------------------------------------------------------------------
+                              2 ;  div.s
+                              3 ;
+                              4 ;  Copyright (C) 2000, Michael Hope
+                              5 ;
+                              6 ;  This library is free software; you can redistribute it and/or modify it
+                              7 ;  under the terms of the GNU General Public License as published by the
+                              8 ;  Free Software Foundation; either version 2, or (at your option) any
+                              9 ;  later version.
+                             10 ;
+                             11 ;  This library is distributed in the hope that it will be useful,
+                             12 ;  but WITHOUT ANY WARRANTY; without even the implied warranty of
+                             13 ;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+                             14 ;  GNU General Public License for more details.
+                             15 ;
+                             16 ;  You should have received a copy of the GNU General Public License 
+                             17 ;  along with this library; see the file COPYING. If not, write to the
+                             18 ;  Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
+                             19 ;   MA 02110-1301, USA.
+                             20 ;
+                             21 ;  As a special exception, if you link this library with other files,
+                             22 ;  some of which are compiled with SDCC, to produce an executable,
+                             23 ;  this library does not by itself cause the resulting executable to
+                             24 ;  be covered by the GNU General Public License. This exception does
+                             25 ;  not however invalidate any other reasons why the executable file
+                             26 ;   might be covered by the GNU General Public License.
+                             27 ;--------------------------------------------------------------------------
+                             28 
+                             29         ;; Originally from GBDK by Pascal Felber.
+                             30         .area   _CODE
+                             31 
+                             32 .globl	__divsuchar
+                             33 .globl	__modsuchar
+                             34 .globl	__divuschar
+                             35 .globl	__moduschar
+                             36 .globl	__divschar
+                             37 .globl	__modschar
+                             38 .globl	__divsint
+                             39 .globl	__modsint
+                             40 .globl	__divuchar
+                             41 .globl	__moduchar
+                             42 .globl	__divuint
+                             43 .globl	__moduint
+                             44 
+   0000                      45 __divsuchar:
+   0000 21 03 00             46         ld      hl,#2+1
+   0003 39                   47         add     hl,sp
+                             48 
+   0004 5E                   49         ld      e,(hl)
+   0005 2B                   50         dec     hl
+   0006 4E                   51         ld      c,(hl)
+   0007 06 00                52         ld      b,#0
+                             53 
+   0009 CDrC1r00             54         call      signexte
+                             55 
+   000C 59                   56 	ld	e,c
+   000D 50                   57 	ld	d,b
+                             58 
+   000E C9                   59 	ret
+                             60 
+   000F                      61 __modsuchar:
+   000F 21 03 00             62         ld      hl,#2+1
+   0012 39                   63         add     hl,sp
+                             64 
+   0013 5E                   65         ld      e,(hl)
+   0014 2B                   66         dec     hl
+   0015 4E                   67         ld      c,(hl)
+   0016 06 00                68         ld      b,#0
+                             69 
+   0018 C3rC1r00             70         jp    signexte
+                             71 
+   001B                      72 __divuschar:
+   001B 21 03 00             73         ld      hl,#2+1
+   001E 54                   74         ld      d, h
+   001F 39                   75         add     hl,sp
+                             76 
+   0020 5E                   77         ld      e,(hl)
+   0021 2B                   78         dec     hl
+   0022 4E                   79         ld      c,(hl)
+                             80 
+   0023 79                   81         ld      a,c             ; Sign extend
+   0024 07                   82         rlca
+   0025 9F                   83         sbc     a
+   0026 47                   84         ld      b,a
+                             85 
+   0027 CDrC5r00             86         call      .div16
+                             87 
+   002A 59                   88 	ld	e,c
+   002B 50                   89 	ld	d,b
+                             90 
+   002C C9                   91 	ret
+                             92 
+   002D                      93 __moduschar:
+   002D 21 03 00             94         ld      hl,#2+1
+   0030 54                   95         ld      d, h
+   0031 39                   96         add     hl,sp
+                             97 
+   0032 5E                   98         ld      e,(hl)
+   0033 2B                   99         dec     hl
+   0034 4E                  100         ld      c,(hl)
+                            101 
+   0035 79                  102         ld      a,c             ; Sign extend
+   0036 07                  103         rlca
+   0037 9F                  104         sbc     a
+   0038 47                  105         ld      b,a
+                            106 
+   0039 CDrC5r00            107         call    .div16
+                            108 
+   003C C9                  109         ret
+                            110 
+   003D                     111 __divschar:
+   003D 21 03 00            112         ld      hl,#2+1
+   0040 39                  113         add     hl,sp
+                            114 
+   0041 5E                  115         ld      e,(hl)
+   0042 2B                  116         dec     hl
+   0043 6E                  117         ld      l,(hl)
+                            118 
+   0044 4D                  119         ld      c,l
+                            120 
+   0045 CDrBDr00            121         call    .div8
+                            122 
+   0048 59                  123         ld      e,c
+   0049 50                  124         ld      d,b
+                            125 
+   004A C9                  126         ret
+                            127 
+   004B                     128 __modschar:
+   004B 21 03 00            129         ld      hl,#2+1
+   004E 39                  130         add     hl,sp
+                            131 
+   004F 5E                  132         ld      e,(hl)
+   0050 2B                  133         dec     hl
+   0051 6E                  134         ld      l,(hl)
+                            135 
+   0052 4D                  136         ld      c,l
+                            137 
+   0053 CDrBDr00            138         call    .div8
+                            139 
+                            140         ;; Already in DE
+                            141 
+   0056 C9                  142         ret
+                            143 
+   0057                     144 __divsint:
+   0057 21 05 00            145         ld      hl,#2+3
+   005A 39                  146         add     hl,sp
+                            147 
+   005B 56                  148         ld      d,(hl)
+   005C 2B                  149         dec     hl
+   005D 5E                  150         ld      e,(hl)
+   005E 2B                  151         dec     hl
+   005F 7E                  152         ld      a,(hl)
+   0060 2B                  153         dec     hl
+   0061 6E                  154         ld      l,(hl)
+   0062 67                  155         ld      h,a
+                            156 
+   0063 44                  157         ld      b,h
+   0064 4D                  158         ld      c,l
+                            159 
+   0065 CDrC5r00            160         call    .div16
+                            161 
+   0068 59                  162         ld      e,c
+   0069 50                  163         ld      d,b
+                            164 
+   006A C9                  165         ret
+                            166 
+   006B                     167 __modsint:
+   006B 21 05 00            168         ld      hl,#2+3
+   006E 39                  169         add     hl,sp
+                            170 
+   006F 56                  171         ld      d,(hl)
+   0070 2B                  172         dec     hl
+   0071 5E                  173         ld      e,(hl)
+   0072 2B                  174         dec     hl
+   0073 7E                  175         ld      a,(hl)
+   0074 2B                  176         dec     hl
+   0075 6E                  177         ld      l,(hl)
+   0076 67                  178         ld      h,a
+                            179 
+   0077 44                  180         ld      b,h
+   0078 4D                  181         ld      c,l
+                            182 
+   0079 CDrC5r00            183         call    .div16
+                            184 
+                            185         ;; Already in DE
+                            186 
+   007C C9                  187         ret
+                            188 
+                            189         ;; Unsigned
+   007D                     190 __divuchar:
+   007D 21 03 00            191         ld      hl,#2+1
+   0080 39                  192         add     hl,sp
+                            193 
+   0081 5E                  194         ld      e,(hl)
+   0082 2B                  195         dec     hl
+   0083 6E                  196         ld      l,(hl)
+                            197 
+   0084 4D                  198         ld      c,l
+   0085 CDrFBr00            199         call    .divu8
+                            200 
+   0088 59                  201         ld      e,c
+   0089 50                  202         ld      d,b
+                            203 
+   008A C9                  204         ret
+                            205 
+   008B                     206 __moduchar:
+   008B 21 03 00            207         ld      hl,#2+1
+   008E 39                  208         add     hl,sp
+                            209 
+   008F 5E                  210         ld      e,(hl)
+   0090 2B                  211         dec     hl
+   0091 6E                  212         ld      l,(hl)
+                            213 
+   0092 4D                  214         ld      c,l
+   0093 CDrFBr00            215         call    .divu8
+                            216 
+                            217         ;; Already in DE
+                            218 
+   0096 C9                  219         ret
+                            220 
+   0097                     221 __divuint:
+   0097 21 05 00            222         ld      hl,#2+3
+   009A 39                  223         add     hl,sp
+                            224 
+   009B 56                  225         ld      d,(hl)
+   009C 2B                  226         dec     hl
+   009D 5E                  227         ld      e,(hl)
+   009E 2B                  228         dec     hl
+   009F 7E                  229         ld      a,(hl)
+   00A0 2B                  230         dec     hl
+   00A1 6E                  231         ld      l,(hl)
+   00A2 67                  232         ld      h,a
+                            233 
+   00A3 44                  234         ld      b,h
+   00A4 4D                  235         ld      c,l
+   00A5 CDrFEr00            236         call    .divu16
+                            237 
+   00A8 59                  238         ld      e,c
+   00A9 50                  239         ld      d,b
+                            240 
+   00AA C9                  241         ret
+                            242 
+   00AB                     243 __moduint:
+   00AB 21 05 00            244         ld      hl,#2+3
+   00AE 39                  245         add     hl,sp
+                            246 
+   00AF 56                  247         ld      d,(hl)
+   00B0 2B                  248         dec     hl
+   00B1 5E                  249         ld      e,(hl)
+   00B2 2B                  250         dec     hl
+   00B3 7E                  251         ld      a,(hl)
+   00B4 2B                  252         dec     hl
+   00B5 6E                  253         ld      l,(hl)
+   00B6 67                  254         ld      h,a
+                            255 
+   00B7 44                  256         ld      b,h
+   00B8 4D                  257         ld      c,l
+                            258 
+   00B9 CDrFEr00            259         call    .divu16
+                            260 
+                            261         ;; Already in DE
+                            262 
+   00BC C9                  263         ret
+                            264 
+   00BD                     265 .div8::
+   00BD                     266 .mod8::
+   00BD 79                  267         ld      a,c             ; Sign extend
+   00BE 07                  268         rlca
+   00BF 9F                  269         sbc     a
+   00C0 47                  270         ld      b,a
+   00C1                     271 signexte:
+   00C1 7B                  272         ld      a,e             ; Sign extend
+   00C2 07                  273         rlca
+   00C3 9F                  274         sbc     a
+   00C4 57                  275         ld      d,a
+                            276 
+                            277         ; Fall through to .div16
+                            278 
+                            279         ;; 16-bit division
+                            280         ;;
+                            281         ;; Entry conditions
+                            282         ;;   BC = dividend
+                            283         ;;   DE = divisor
+                            284         ;;
+                            285         ;; Exit conditions
+                            286         ;;   BC = quotient
+                            287         ;;   DE = remainder
+                            288         ;;   If divisor is non-zero, carry=0
+                            289         ;;   If divisor is 0, carry=1 and both quotient and remainder are 0
+                            290         ;;
+                            291         ;; Register used: AF,BC,DE,HL
+   00C5                     292 .div16::
+   00C5                     293 .mod16::
+                            294         ;; Determine sign of quotient by xor-ing high bytes of dividend
+                            295         ;;  and divisor. Quotient is positive if signs are the same, negative
+                            296         ;;  if signs are different
+                            297         ;; Remainder has same sign as dividend
+   00C5 78                  298         ld      a,b             ; Get high byte of dividend
+   00C6 F5                  299         push    af              ; Save as sign of remainder
+   00C7 AA                  300         xor     d               ; Xor with high byte of divisor
+   00C8 F5                  301         push    af              ; Save sign of quotient
+                            302 
+                            303         ;; Take absolute value of divisor
+   00C9 CB 7A               304         bit     7,d
+   00CB 28 06               305         jr      Z,.chkde        ; Jump if divisor is positive
+   00CD 97                  306         sub     a               ; Substract divisor from 0
+   00CE 93                  307         sub     e
+   00CF 5F                  308         ld      e,a
+   00D0 9F                  309         sbc     a               ; Propagate borrow (A=0xFF if borrow)
+   00D1 92                  310         sub     d
+   00D2 57                  311         ld      d,a
+                            312         ;; Take absolute value of dividend
+   00D3                     313 .chkde:
+   00D3 CB 78               314         bit     7,b
+   00D5 28 06               315         jr      Z,.dodiv        ; Jump if dividend is positive
+   00D7 97                  316         sub     a               ; Substract dividend from 0
+   00D8 91                  317         sub     c
+   00D9 4F                  318         ld      c,a
+   00DA 9F                  319         sbc     a               ; Propagate borrow (A=0xFF if borrow)
+   00DB 90                  320         sub     b
+   00DC 47                  321         ld      b,a
+                            322         ;; Divide absolute values
+   00DD                     323 .dodiv:
+   00DD CDrFEr00            324         call    .divu16
+   00E0 38 16               325         jr      C,.exit         ; Exit if divide by zero
+                            326         ;; Negate quotient if it is negative
+   00E2 F1                  327         pop     af              ; recover sign of quotient
+   00E3 E6 80               328         and     #0x80
+   00E5 28 06               329         jr      Z,.dorem        ; Jump if quotient is positive
+   00E7 97                  330         sub     a               ; Substract quotient from 0
+   00E8 91                  331         sub     c
+   00E9 4F                  332         ld      c,a
+   00EA 9F                  333         sbc     a               ; Propagate borrow (A=0xFF if borrow)
+   00EB 90                  334         sub     b
+   00EC 47                  335         ld      b,a
+   00ED                     336 .dorem:
+                            337         ;; Negate remainder if it is negative
+   00ED F1                  338         pop     af              ; recover sign of remainder
+   00EE E6 80               339         and     #0x80
+   00F0 C8                  340         ret     Z               ; Return if remainder is positive
+   00F1 97                  341         sub     a               ; Substract remainder from 0
+   00F2 93                  342         sub     e
+   00F3 5F                  343         ld      e,a
+   00F4 9F                  344         sbc     a               ; Propagate remainder (A=0xFF if borrow)
+   00F5 92                  345         sub     d
+   00F6 57                  346         ld      d,a
+   00F7 C9                  347         ret
+   00F8                     348 .exit:
+   00F8 F1                  349         pop     af
+   00F9 F1                  350         pop     af
+   00FA C9                  351         ret
+                            352 
+   00FB                     353 .divu8::
+   00FB                     354 .modu8::
+   00FB 06 00               355         ld      b,#0x00
+   00FD 50                  356         ld      d,b
+                            357         ; Fall through to divu16
+                            358 
+   00FE                     359 .divu16::
+   00FE                     360 .modu16::
+                            361         ;; Check for division by zero
+   00FE 7B                  362         ld      a,e
+   00FF B2                  363         or      d
+   0100 20 07               364         jr      NZ,.divide      ; Branch if divisor is non-zero
+   0102 01 00 00            365         ld      bc,#0x00        ; Divide by zero error
+   0105 50                  366         ld      d,b
+   0106 59                  367         ld      e,c
+   0107 37                  368         scf                     ; Set carry, invalid result
+   0108 C9                  369         ret
+   0109                     370 .divide:
+   0109 69                  371         ld      l,c             ; L = low byte of dividend/quotient
+   010A 60                  372         ld      h,b             ; H = high byte of dividend/quotient
+   010B 01 00 00            373         ld      bc,#0x00        ; BC = remainder
+   010E B7                  374         or      a               ; Clear carry to start
+   010F 3E 10               375         ld      a,#16           ; 16 bits in dividend
+   0111                     376 .dvloop:
+                            377         ;; Shift next bit of quotient into bit 0 of dividend
+                            378         ;; Shift next MSB of dividend into LSB of remainder
+                            379         ;; BC holds both dividend and quotient. While we shift a bit from
+                            380         ;;  MSB of dividend, we shift next bit of quotient in from carry
+                            381         ;; HL holds remainder
+                            382         ;; Do a 32-bit left shift, shifting carry to L, L to H,
+                            383         ;;  H to C, C to B
+   0111 F5                  384         push    af              ; save number of bits remaining
+   0112 CB 15               385         rl      l               ; Carry (next bit of quotient) to bit 0
+   0114 CB 14               386         rl      h               ; Shift remaining bytes
+   0116 CB 11               387         rl      c
+   0118 CB 10               388         rl      b               ; Clears carry since BC was 0
+                            389         ;; If remainder is >= divisor, next bit of quotient is 1. This
+                            390         ;;  bit goes to carry
+   011A C5                  391         push    bc              ; Save current remainder
+   011B 79                  392         ld      a,c             ; Substract divisor from remainder
+   011C 9B                  393         sbc     e
+   011D 4F                  394         ld      c,a
+   011E 78                  395         ld      a,b
+   011F 9A                  396         sbc     d
+   0120 47                  397         ld      b,a
+   0121 3F                  398         ccf                     ; Complement borrow so 1 indicates a
+                            399                                 ;  successful substraction (this is the
+                            400                                 ;  next bit of quotient)
+   0122 38 08               401         jr      C,.drop         ; Jump if remainder is >= dividend
+   0124 C1                  402         pop     bc              ; Otherwise, restore remainder
+   0125 F1                  403         pop     af              ; recover # bits remaining, carry flag destroyed
+   0126 3D                  404         dec     a
+   0127 B7                  405         or      a               ; restore (clear) the carry flag
+   0128 20 E7               406         jr      NZ,.dvloop
+   012A 18 09               407         jr      .nodrop
+   012C                     408 .drop:
+   012C 33                  409         inc     sp
+   012D 33                  410         inc     sp
+   012E F1                  411         pop     af              ; recover # bits remaining, carry flag destroyed
+   012F 3D                  412         dec     a
+   0130 37                  413         scf                     ; restore (set) the carry flag
+   0131 20 DE               414         jr      NZ,.dvloop
+   0133 18 00               415         jr      .nodrop
+   0135                     416 .nodrop:
+                            417         ;; Shift last carry bit into quotient
+   0135 50                  418         ld      d,b             ; DE = remainder
+   0136 59                  419         ld      e,c
+   0137 CB 15               420         rl      l               ; Carry to L
+   0139 4D                  421         ld      c,l             ; C = low byte of quotient
+   013A CB 14               422         rl      h
+   013C 44                  423         ld      b,h             ; B = high byte of quotient
+   013D B7                  424         or      a               ; Clear carry, valid result
+   013E C9                  425         ret
+                            426 

@@ -1,0 +1,24 @@
+XL2
+H 7 areas 3 global symbols
+M Keys
+O -mgbz80
+S .__.ABS. Def0000
+A _CODE size 0 flags 0 addr 0
+A _DATA size 2 flags 0 addr 0
+S _keys Def0001
+S _previous_KEYS Def0000
+A _DABS size 0 flags 8 addr 0
+A _HOME size 0 flags 0 addr 0
+A _GSINIT size A flags 0 addr 0
+A _GSFINAL size 0 flags 0 addr 0
+A _CABS size 0 flags 8 addr 0
+T 00 00
+R 00 00 01 00
+T 00 00
+R 00 00 01 00
+T 01 00
+R 00 00 01 00
+T 01 00
+R 00 00 01 00
+T 00 00 21 00 00 36 00 21 01 00 36 00
+R 00 00 04 00 00 03 01 00 00 08 01 00

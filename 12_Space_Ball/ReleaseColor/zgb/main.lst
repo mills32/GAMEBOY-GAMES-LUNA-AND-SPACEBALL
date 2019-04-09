@@ -1,0 +1,799 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module main
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _main
+                             12 	.globl _MusicUpdate
+                             13 	.globl _InitSprites
+                             14 	.globl _InitStates
+                             15 	.globl _vbl_update
+                             16 	.globl _CP_Reset_Chan
+                             17 	.globl _CP_Mute_Chan
+                             18 	.globl _CP_UpdateMusic
+                             19 	.globl _DMA_TRANSFER
+                             20 	.globl _FadeOut
+                             21 	.globl _FadeIn
+                             22 	.globl _PopBank
+                             23 	.globl _PushBank
+                             24 	.globl _SpriteManagerUpdate
+                             25 	.globl _SpriteManagerReset
+                             26 	.globl _display_off
+                             27 	.globl _wait_vbl_done
+                             28 	.globl _set_interrupts
+                             29 	.globl _disable_interrupts
+                             30 	.globl _enable_interrupts
+                             31 	.globl _joypad
+                             32 	.globl _add_TIM
+                             33 	.globl _add_VBL
+                             34 	.globl _cpu_fast
+                             35 	.globl _set_sprite_palette
+                             36 	.globl _set_bkg_palette
+                             37 	.globl _default_palette
+                             38 	.globl _music_mute_frames
+                             39 	.globl _old_scroll_y
+                             40 	.globl _old_scroll_x
+                             41 	.globl _vbl_count
+                             42 	.globl _last_music
+                             43 	.globl _state_running
+                             44 	.globl _current_state
+                             45 	.globl _delta_time
+                             46 	.globl _CP_Muted_Chan
+                             47 	.globl _SetState
+                             48 	.globl _SetPalette
+                             49 ;--------------------------------------------------------
+                             50 ; ram data
+                             51 ;--------------------------------------------------------
+                             52 	.area _DATA
+   0000                      53 _CP_Muted_Chan::
+   0000                      54 	.ds 1
+   0001                      55 _delta_time::
+   0001                      56 	.ds 1
+   0002                      57 _current_state::
+   0002                      58 	.ds 1
+   0003                      59 _state_running::
+   0003                      60 	.ds 1
+   0004                      61 _last_music::
+   0004                      62 	.ds 2
+   0006                      63 _vbl_count::
+   0006                      64 	.ds 1
+   0007                      65 _old_scroll_x::
+   0007                      66 	.ds 2
+   0009                      67 _old_scroll_y::
+   0009                      68 	.ds 2
+   000B                      69 _music_mute_frames::
+   000B                      70 	.ds 1
+   000C                      71 _default_palette::
+   000C                      72 	.ds 8
+                             73 ;--------------------------------------------------------
+                             74 ; absolute external ram data
+                             75 ;--------------------------------------------------------
+                             76 	.area _DABS (ABS)
+                             77 ;--------------------------------------------------------
+                             78 ; global & static initialisations
+                             79 ;--------------------------------------------------------
+                             80 	.area _HOME
+                             81 	.area _GSINIT
+                             82 	.area _GSFINAL
+                             83 	.area _GSINIT
+                             84 ;C:/gbdk/ZGB/common/src/main.c:30: UINT8 state_running = 0;
+   0000 21r03r00             85 	ld	hl,#_state_running
+   0003 36 00                86 	ld	(hl),#0x00
+                             87 ;C:/gbdk/ZGB/common/src/main.c:37: void* last_music = 0;
+   0005 21r04r00             88 	ld	hl,#_last_music
+   0008 36 00                89 	ld	(hl),#0x00
+   000A 23                   90 	inc	hl
+   000B 36 00                91 	ld	(hl),#0x00
+                             92 ;C:/gbdk/ZGB/common/src/main.c:42: UINT8 music_mute_frames = 0;
+   000D 21r0Br00             93 	ld	hl,#_music_mute_frames
+   0010 36 00                94 	ld	(hl),#0x00
+                             95 ;C:/gbdk/ZGB/common/src/main.c:103: UINT16 default_palette[] = {RGB(31, 31, 31), RGB(20, 20, 20), RGB(10, 10, 10), RGB(0, 0, 0)};
+   0012 21r0Cr00             96 	ld	hl,#_default_palette
+   0015 36 FF                97 	ld	(hl),#0xff
+   0017 23                   98 	inc	hl
+   0018 36 7F                99 	ld	(hl),#0x7f
+   001A 21r0Er00            100 	ld	hl,#(_default_palette + 0x0002)
+   001D 36 94               101 	ld	(hl),#0x94
+   001F 23                  102 	inc	hl
+   0020 36 52               103 	ld	(hl),#0x52
+   0022 21r10r00            104 	ld	hl,#(_default_palette + 0x0004)
+   0025 36 4A               105 	ld	(hl),#0x4a
+   0027 23                  106 	inc	hl
+   0028 36 29               107 	ld	(hl),#0x29
+   002A 21r12r00            108 	ld	hl,#(_default_palette + 0x0006)
+   002D 36 00               109 	ld	(hl),#0x00
+   002F 23                  110 	inc	hl
+   0030 36 00               111 	ld	(hl),#0x00
+                            112 ;--------------------------------------------------------
+                            113 ; Home
+                            114 ;--------------------------------------------------------
+                            115 	.area _HOME
+                            116 	.area _HOME
+                            117 ;--------------------------------------------------------
+                            118 ; code
+                            119 ;--------------------------------------------------------
+                            120 	.area _CODE
+                            121 ;C:/gbdk/ZGB/common/src/main.c:32: void SetState(UINT8 state) {
+                            122 ;	---------------------------------
+                            123 ; Function SetState
+                            124 ; ---------------------------------
+   0000                     125 _SetState::
+                            126 ;C:/gbdk/ZGB/common/src/main.c:33: state_running = 0;
+   0000 21r03r00            127 	ld	hl,#_state_running
+   0003 36 00               128 	ld	(hl),#0x00
+                            129 ;C:/gbdk/ZGB/common/src/main.c:34: next_state = state;
+   0005 E5                  130 	push	hl
+   0006 F8 04               131 	ldhl	sp,#4
+   0008 7E                  132 	ld	a,(hl)
+   0009 21r00r00            133 	ld	hl,#_next_state
+   000C 77                  134 	ld	(hl),a
+   000D E1                  135 	pop	hl
+   000E C9                  136 	ret
+                            137 ;C:/gbdk/ZGB/common/src/main.c:43: void vbl_update() {
+                            138 ;	---------------------------------
+                            139 ; Function vbl_update
+                            140 ; ---------------------------------
+   000F                     141 _vbl_update::
+                            142 ;C:/gbdk/ZGB/common/src/main.c:44: vbl_count ++;
+   000F 21r06r00            143 	ld	hl,#_vbl_count
+   0012 34                  144 	inc	(hl)
+                            145 ;C:/gbdk/ZGB/common/src/main.c:46: if (ZGB_Parallax == 1){
+   0013 21r00r00            146 	ld	hl,#_ZGB_Parallax
+   0016 7E                  147 	ld	a,(hl)
+   0017 3D                  148 	dec	a
+   0018 20 0C               149 	jr	NZ,00102$
+                            150 ;C:/gbdk/ZGB/common/src/main.c:47: DMA_TRANSFER((UINT16*)0xD000,(UINT16*)0x8800);//tile 128
+   001A 21 00 88            151 	ld	hl,#0x8800
+   001D E5                  152 	push	hl
+   001E 26 D0               153 	ld	h, #0xd0
+   0020 E5                  154 	push	hl
+   0021 CDr00r00            155 	call	_DMA_TRANSFER
+   0024 E8 04               156 	add	sp, #4
+   0026                     157 00102$:
+                            158 ;C:/gbdk/ZGB/common/src/main.c:52: if(old_scroll_x < scroll_x)
+   0026 21r07r00            159 	ld	hl,#_old_scroll_x
+   0029 54                  160 	ld	d, h
+   002A 5D                  161 	ld	e, l
+   002B 21r00r00            162 	ld	hl,#_scroll_x
+   002E 1A                  163 	ld	a, (de)
+   002F 96                  164 	sub	a, (hl)
+   0030 23                  165 	inc	hl
+   0031 13                  166 	inc	de
+   0032 1A                  167 	ld	a, (de)
+   0033 9E                  168 	sbc	a, (hl)
+   0034 1A                  169 	ld	a, (de)
+   0035 57                  170 	ld	d, a
+   0036 5E                  171 	ld	e, (hl)
+   0037 CB 7B               172 	bit	7, e
+   0039 28 07               173 	jr	Z,00137$
+   003B CB 7A               174 	bit	7, d
+   003D 20 08               175 	jr	NZ,00138$
+   003F BF                  176 	cp	a, a
+   0040 18 05               177 	jr	00138$
+   0042                     178 00137$:
+   0042 CB 7A               179 	bit	7, d
+   0044 28 01               180 	jr	Z,00138$
+   0046 37                  181 	scf
+   0047                     182 00138$:
+   0047 30 21               183 	jr	NC,00106$
+                            184 ;C:/gbdk/ZGB/common/src/main.c:53: old_scroll_x += (scroll_x - old_scroll_x + 1) >> 1;
+   0049 21r00r00            185 	ld	hl,#_scroll_x
+   004C 7E                  186 	ld	a,(hl)
+   004D 21r07r00            187 	ld	hl,#_old_scroll_x
+   0050 96                  188 	sub	a, (hl)
+   0051 4F                  189 	ld	c,a
+   0052 21r01r00            190 	ld	hl,#_scroll_x + 1
+   0055 7E                  191 	ld	a,(hl)
+   0056 21r08r00            192 	ld	hl,#_old_scroll_x + 1
+   0059 9E                  193 	sbc	a, (hl)
+   005A 47                  194 	ld	b,a
+   005B 03                  195 	inc	bc
+   005C CB 28               196 	sra	b
+   005E CB 19               197 	rr	c
+   0060 2B                  198 	dec	hl
+   0061 7E                  199 	ld	a,(hl)
+   0062 81                  200 	add	a, c
+   0063 22                  201 	ld	(hl+),a
+   0064 7E                  202 	ld	a,(hl)
+   0065 88                  203 	adc	a, b
+   0066 77                  204 	ld	(hl),a
+   0067 C3rADr00            205 	jp	00107$
+   006A                     206 00106$:
+                            207 ;C:/gbdk/ZGB/common/src/main.c:54: else if(old_scroll_x > scroll_x)
+   006A 21r00r00            208 	ld	hl,#_scroll_x
+   006D 54                  209 	ld	d, h
+   006E 5D                  210 	ld	e, l
+   006F 21r07r00            211 	ld	hl,#_old_scroll_x
+   0072 1A                  212 	ld	a, (de)
+   0073 96                  213 	sub	a, (hl)
+   0074 23                  214 	inc	hl
+   0075 13                  215 	inc	de
+   0076 1A                  216 	ld	a, (de)
+   0077 9E                  217 	sbc	a, (hl)
+   0078 1A                  218 	ld	a, (de)
+   0079 57                  219 	ld	d, a
+   007A 5E                  220 	ld	e, (hl)
+   007B CB 7B               221 	bit	7, e
+   007D 28 07               222 	jr	Z,00139$
+   007F CB 7A               223 	bit	7, d
+   0081 20 08               224 	jr	NZ,00140$
+   0083 BF                  225 	cp	a, a
+   0084 18 05               226 	jr	00140$
+   0086                     227 00139$:
+   0086 CB 7A               228 	bit	7, d
+   0088 28 01               229 	jr	Z,00140$
+   008A 37                  230 	scf
+   008B                     231 00140$:
+   008B 30 20               232 	jr	NC,00107$
+                            233 ;C:/gbdk/ZGB/common/src/main.c:55: old_scroll_x -= (old_scroll_x - scroll_x + 1) >> 1;
+   008D 21r07r00            234 	ld	hl,#_old_scroll_x
+   0090 7E                  235 	ld	a,(hl)
+   0091 21r00r00            236 	ld	hl,#_scroll_x
+   0094 96                  237 	sub	a, (hl)
+   0095 4F                  238 	ld	c,a
+   0096 21r08r00            239 	ld	hl,#_old_scroll_x + 1
+   0099 7E                  240 	ld	a,(hl)
+   009A 21r01r00            241 	ld	hl,#_scroll_x + 1
+   009D 9E                  242 	sbc	a, (hl)
+   009E 47                  243 	ld	b,a
+   009F 03                  244 	inc	bc
+   00A0 CB 28               245 	sra	b
+   00A2 CB 19               246 	rr	c
+   00A4 21r07r00            247 	ld	hl,#_old_scroll_x
+   00A7 7E                  248 	ld	a,(hl)
+   00A8 91                  249 	sub	a, c
+   00A9 22                  250 	ld	(hl+),a
+   00AA 7E                  251 	ld	a,(hl)
+   00AB 98                  252 	sbc	a, b
+   00AC 77                  253 	ld	(hl),a
+   00AD                     254 00107$:
+                            255 ;C:/gbdk/ZGB/common/src/main.c:56: SCX_REG = old_scroll_x + (scroll_offset_x << 3);
+   00AD 21r07r00            256 	ld	hl,#_old_scroll_x
+   00B0 4E                  257 	ld	c,(hl)
+   00B1 21r00r00            258 	ld	hl,#_scroll_offset_x
+   00B4 7E                  259 	ld	a,(hl)
+   00B5 CB 37               260 	swap	a
+   00B7 0F                  261 	rrca
+   00B8 E6 F8               262 	and	a,#0xf8
+   00BA 47                  263 	ld	b, a
+   00BB 81                  264 	add	a,c
+   00BC 11 43 FF            265 	ld	de,#0xff43
+   00BF 12                  266 	ld	(de),a
+                            267 ;C:/gbdk/ZGB/common/src/main.c:58: if(old_scroll_y < scroll_y)
+   00C0 21r09r00            268 	ld	hl,#_old_scroll_y
+   00C3 54                  269 	ld	d, h
+   00C4 5D                  270 	ld	e, l
+   00C5 21r00r00            271 	ld	hl,#_scroll_y
+   00C8 1A                  272 	ld	a, (de)
+   00C9 96                  273 	sub	a, (hl)
+   00CA 23                  274 	inc	hl
+   00CB 13                  275 	inc	de
+   00CC 1A                  276 	ld	a, (de)
+   00CD 9E                  277 	sbc	a, (hl)
+   00CE 1A                  278 	ld	a, (de)
+   00CF 57                  279 	ld	d, a
+   00D0 5E                  280 	ld	e, (hl)
+   00D1 CB 7B               281 	bit	7, e
+   00D3 28 07               282 	jr	Z,00141$
+   00D5 CB 7A               283 	bit	7, d
+   00D7 20 08               284 	jr	NZ,00142$
+   00D9 BF                  285 	cp	a, a
+   00DA 18 05               286 	jr	00142$
+   00DC                     287 00141$:
+   00DC CB 7A               288 	bit	7, d
+   00DE 28 01               289 	jr	Z,00142$
+   00E0 37                  290 	scf
+   00E1                     291 00142$:
+   00E1 30 21               292 	jr	NC,00111$
+                            293 ;C:/gbdk/ZGB/common/src/main.c:59: old_scroll_y += (scroll_y - old_scroll_y + 1) >> 1;
+   00E3 21r00r00            294 	ld	hl,#_scroll_y
+   00E6 7E                  295 	ld	a,(hl)
+   00E7 21r09r00            296 	ld	hl,#_old_scroll_y
+   00EA 96                  297 	sub	a, (hl)
+   00EB 4F                  298 	ld	c,a
+   00EC 21r01r00            299 	ld	hl,#_scroll_y + 1
+   00EF 7E                  300 	ld	a,(hl)
+   00F0 21r0Ar00            301 	ld	hl,#_old_scroll_y + 1
+   00F3 9E                  302 	sbc	a, (hl)
+   00F4 47                  303 	ld	b,a
+   00F5 03                  304 	inc	bc
+   00F6 CB 28               305 	sra	b
+   00F8 CB 19               306 	rr	c
+   00FA 2B                  307 	dec	hl
+   00FB 7E                  308 	ld	a,(hl)
+   00FC 81                  309 	add	a, c
+   00FD 22                  310 	ld	(hl+),a
+   00FE 7E                  311 	ld	a,(hl)
+   00FF 88                  312 	adc	a, b
+   0100 77                  313 	ld	(hl),a
+   0101 C3r47r01            314 	jp	00112$
+   0104                     315 00111$:
+                            316 ;C:/gbdk/ZGB/common/src/main.c:60: else if(old_scroll_y > scroll_y)
+   0104 21r00r00            317 	ld	hl,#_scroll_y
+   0107 54                  318 	ld	d, h
+   0108 5D                  319 	ld	e, l
+   0109 21r09r00            320 	ld	hl,#_old_scroll_y
+   010C 1A                  321 	ld	a, (de)
+   010D 96                  322 	sub	a, (hl)
+   010E 23                  323 	inc	hl
+   010F 13                  324 	inc	de
+   0110 1A                  325 	ld	a, (de)
+   0111 9E                  326 	sbc	a, (hl)
+   0112 1A                  327 	ld	a, (de)
+   0113 57                  328 	ld	d, a
+   0114 5E                  329 	ld	e, (hl)
+   0115 CB 7B               330 	bit	7, e
+   0117 28 07               331 	jr	Z,00143$
+   0119 CB 7A               332 	bit	7, d
+   011B 20 08               333 	jr	NZ,00144$
+   011D BF                  334 	cp	a, a
+   011E 18 05               335 	jr	00144$
+   0120                     336 00143$:
+   0120 CB 7A               337 	bit	7, d
+   0122 28 01               338 	jr	Z,00144$
+   0124 37                  339 	scf
+   0125                     340 00144$:
+   0125 30 20               341 	jr	NC,00112$
+                            342 ;C:/gbdk/ZGB/common/src/main.c:61: old_scroll_y -= (old_scroll_y - scroll_y + 1) >> 1;
+   0127 21r09r00            343 	ld	hl,#_old_scroll_y
+   012A 7E                  344 	ld	a,(hl)
+   012B 21r00r00            345 	ld	hl,#_scroll_y
+   012E 96                  346 	sub	a, (hl)
+   012F 4F                  347 	ld	c,a
+   0130 21r0Ar00            348 	ld	hl,#_old_scroll_y + 1
+   0133 7E                  349 	ld	a,(hl)
+   0134 21r01r00            350 	ld	hl,#_scroll_y + 1
+   0137 9E                  351 	sbc	a, (hl)
+   0138 47                  352 	ld	b,a
+   0139 03                  353 	inc	bc
+   013A CB 28               354 	sra	b
+   013C CB 19               355 	rr	c
+   013E 21r09r00            356 	ld	hl,#_old_scroll_y
+   0141 7E                  357 	ld	a,(hl)
+   0142 91                  358 	sub	a, c
+   0143 22                  359 	ld	(hl+),a
+   0144 7E                  360 	ld	a,(hl)
+   0145 98                  361 	sbc	a, b
+   0146 77                  362 	ld	(hl),a
+   0147                     363 00112$:
+                            364 ;C:/gbdk/ZGB/common/src/main.c:62: SCY_REG = old_scroll_y + (scroll_offset_y << 3);
+   0147 21r09r00            365 	ld	hl,#_old_scroll_y
+   014A 4E                  366 	ld	c,(hl)
+   014B 21r00r00            367 	ld	hl,#_scroll_offset_y
+   014E 7E                  368 	ld	a,(hl)
+   014F CB 37               369 	swap	a
+   0151 0F                  370 	rrca
+   0152 E6 F8               371 	and	a,#0xf8
+   0154 47                  372 	ld	b, a
+   0155 81                  373 	add	a,c
+   0156 11 42 FF            374 	ld	de,#0xff42
+   0159 12                  375 	ld	(de),a
+   015A C9                  376 	ret
+                            377 ;C:/gbdk/ZGB/common/src/main.c:69: void MusicUpdate() {
+                            378 ;	---------------------------------
+                            379 ; Function MusicUpdate
+                            380 ; ---------------------------------
+   015B                     381 _MusicUpdate::
+                            382 ;C:/gbdk/ZGB/common/src/main.c:70: if (ZGB_CP_ON == 1) {
+   015B 21r00r00            383 	ld	hl,#_ZGB_CP_ON
+   015E 7E                  384 	ld	a,(hl)
+   015F 3D                  385 	dec	a
+   0160 20 03               386 	jr	NZ,00102$
+                            387 ;C:/gbdk/ZGB/common/src/main.c:71: CP_UpdateMusic();
+   0162 CDr00r00            388 	call	_CP_UpdateMusic
+   0165                     389 00102$:
+                            390 ;C:/gbdk/ZGB/common/src/main.c:73: if(music_mute_frames != 0){
+   0165 21r0Br00            391 	ld	hl,#_music_mute_frames
+   0168 7E                  392 	ld	a,(hl)
+   0169 B7                  393 	or	a, a
+   016A 28 2A               394 	jr	Z,00106$
+                            395 ;C:/gbdk/ZGB/common/src/main.c:74: PUSH_BANK(1);
+   016C 3E 01               396 	ld	a,#0x01
+   016E F5                  397 	push	af
+   016F 33                  398 	inc	sp
+   0170 CDr00r00            399 	call	_PushBank
+   0173 33                  400 	inc	sp
+                            401 ;C:/gbdk/ZGB/common/src/main.c:75: CP_Mute_Chan(CP_Muted_Chan);
+   0174 21r00r00            402 	ld	hl,#_CP_Muted_Chan
+   0177 7E                  403 	ld	a,(hl)
+   0178 F5                  404 	push	af
+   0179 33                  405 	inc	sp
+   017A CDr00r00            406 	call	_CP_Mute_Chan
+   017D 33                  407 	inc	sp
+                            408 ;C:/gbdk/ZGB/common/src/main.c:76: if(music_mute_frames == 1){
+   017E 21r0Br00            409 	ld	hl,#_music_mute_frames
+   0181 7E                  410 	ld	a,(hl)
+   0182 3D                  411 	dec	a
+   0183 20 0A               412 	jr	NZ,00104$
+                            413 ;C:/gbdk/ZGB/common/src/main.c:77: CP_Reset_Chan(CP_Muted_Chan);
+   0185 21r00r00            414 	ld	hl,#_CP_Muted_Chan
+   0188 7E                  415 	ld	a,(hl)
+   0189 F5                  416 	push	af
+   018A 33                  417 	inc	sp
+   018B CDr00r00            418 	call	_CP_Reset_Chan
+   018E 33                  419 	inc	sp
+   018F                     420 00104$:
+                            421 ;C:/gbdk/ZGB/common/src/main.c:79: POP_BANK;
+   018F CDr00r00            422 	call	_PopBank
+                            423 ;C:/gbdk/ZGB/common/src/main.c:81: music_mute_frames --;
+   0192 21r0Br00            424 	ld	hl,#_music_mute_frames
+   0195 35                  425 	dec	(hl)
+   0196                     426 00106$:
+                            427 ;C:/gbdk/ZGB/common/src/main.c:83: REFRESH_BANK;
+   0196 11r00r00            428 	ld	de, #_bank_stack + 0
+   0199 1A                  429 	ld	a,(de)
+   019A C6r00               430 	add	a,#<(_bank_stack)
+   019C 4F                  431 	ld	c,a
+   019D 3Es00               432 	ld	a,#>(_bank_stack)
+   019F CE 00               433 	adc	a, #0x00
+   01A1 47                  434 	ld	b,a
+   01A2 0A                  435 	ld	a,(bc)
+   01A3 11 00 20            436 	ld	de,#0x2000
+   01A6 12                  437 	ld	(de),a
+   01A7 C9                  438 	ret
+                            439 ;C:/gbdk/ZGB/common/src/main.c:89: void SetPalette(UWORD *bpal, UWORD *spal, UINT8 bbank){
+                            440 ;	---------------------------------
+                            441 ; Function SetPalette
+                            442 ; ---------------------------------
+   01A8                     443 _SetPalette::
+   01A8 E8 FD               444 	add	sp, #-3
+                            445 ;C:/gbdk/ZGB/common/src/main.c:93: PUSH_BANK(bbank);	
+   01AA F8 09               446 	ldhl	sp,#9
+   01AC 7E                  447 	ld	a,(hl)
+   01AD F5                  448 	push	af
+   01AE 33                  449 	inc	sp
+   01AF CDr00r00            450 	call	_PushBank
+   01B2 33                  451 	inc	sp
+                            452 ;C:/gbdk/ZGB/common/src/main.c:94: for(i = 0; i != 32; ++i) ZGB_Fading_BPal[i] = bpal[i];
+   01B3 F8 00               453 	ldhl	sp,#0
+   01B5 36 00               454 	ld	(hl),#0x00
+   01B7                     455 00103$:
+   01B7 F8 00               456 	ldhl	sp,#0
+   01B9 4E                  457 	ld	c,(hl)
+   01BA 06 00               458 	ld	b,#0x00
+   01BC CB 21               459 	sla	c
+   01BE CB 10               460 	rl	b
+   01C0 21r00r00            461 	ld	hl,#_ZGB_Fading_BPal
+   01C3 09                  462 	add	hl,bc
+   01C4 7D                  463 	ld	a,l
+   01C5 54                  464 	ld	d,h
+   01C6 F8 01               465 	ldhl	sp,#1
+   01C8 22                  466 	ld	(hl+),a
+   01C9 72                  467 	ld	(hl),d
+   01CA F8 05               468 	ldhl	sp,#5
+   01CC 2A                  469 	ld	a,(hl+)
+   01CD 66                  470 	ld	h,(hl)
+   01CE 6F                  471 	ld	l,a
+   01CF 09                  472 	add	hl,bc
+   01D0 4D                  473 	ld	c,l
+   01D1 44                  474 	ld	b,h
+   01D2 59                  475 	ld	e, c
+   01D3 50                  476 	ld	d, b
+   01D4 1A                  477 	ld	a,(de)
+   01D5 4F                  478 	ld	c,a
+   01D6 13                  479 	inc	de
+   01D7 1A                  480 	ld	a,(de)
+   01D8 47                  481 	ld	b,a
+   01D9 F8 01               482 	ldhl	sp,#1
+   01DB 2A                  483 	ld	a,(hl+)
+   01DC 66                  484 	ld	h,(hl)
+   01DD 6F                  485 	ld	l,a
+   01DE 71                  486 	ld	(hl),c
+   01DF 23                  487 	inc	hl
+   01E0 70                  488 	ld	(hl),b
+   01E1 F8 00               489 	ldhl	sp,#0
+   01E3 34                  490 	inc	(hl)
+   01E4 7E                  491 	ld	a,(hl)
+   01E5 D6 20               492 	sub	a, #0x20
+   01E7 C2rB7r01            493 	jp	NZ,00103$
+                            494 ;C:/gbdk/ZGB/common/src/main.c:95: for(i = 0; i != 32; ++i) ZGB_Fading_SPal[i] = spal[i];
+   01EA F8 00               495 	ldhl	sp,#0
+   01EC 36 00               496 	ld	(hl),#0x00
+   01EE                     497 00105$:
+   01EE F8 00               498 	ldhl	sp,#0
+   01F0 4E                  499 	ld	c,(hl)
+   01F1 06 00               500 	ld	b,#0x00
+   01F3 CB 21               501 	sla	c
+   01F5 CB 10               502 	rl	b
+   01F7 21r00r00            503 	ld	hl,#_ZGB_Fading_SPal
+   01FA 09                  504 	add	hl,bc
+   01FB 7D                  505 	ld	a,l
+   01FC 54                  506 	ld	d,h
+   01FD F8 01               507 	ldhl	sp,#1
+   01FF 22                  508 	ld	(hl+),a
+   0200 72                  509 	ld	(hl),d
+   0201 F8 07               510 	ldhl	sp,#7
+   0203 2A                  511 	ld	a,(hl+)
+   0204 66                  512 	ld	h,(hl)
+   0205 6F                  513 	ld	l,a
+   0206 09                  514 	add	hl,bc
+   0207 4D                  515 	ld	c,l
+   0208 44                  516 	ld	b,h
+   0209 59                  517 	ld	e, c
+   020A 50                  518 	ld	d, b
+   020B 1A                  519 	ld	a,(de)
+   020C 4F                  520 	ld	c,a
+   020D 13                  521 	inc	de
+   020E 1A                  522 	ld	a,(de)
+   020F 47                  523 	ld	b,a
+   0210 F8 01               524 	ldhl	sp,#1
+   0212 2A                  525 	ld	a,(hl+)
+   0213 66                  526 	ld	h,(hl)
+   0214 6F                  527 	ld	l,a
+   0215 71                  528 	ld	(hl),c
+   0216 23                  529 	inc	hl
+   0217 70                  530 	ld	(hl),b
+   0218 F8 00               531 	ldhl	sp,#0
+   021A 34                  532 	inc	(hl)
+   021B 7E                  533 	ld	a,(hl)
+   021C D6 20               534 	sub	a, #0x20
+   021E C2rEEr01            535 	jp	NZ,00105$
+                            536 ;C:/gbdk/ZGB/common/src/main.c:96: POP_BANK;
+   0221 CDr00r00            537 	call	_PopBank
+                            538 ;C:/gbdk/ZGB/common/src/main.c:98: set_bkg_palette(0, 8, bpal);
+   0224 F8 05               539 	ldhl	sp,#5
+   0226 2A                  540 	ld	a,(hl+)
+   0227 66                  541 	ld	h,(hl)
+   0228 6F                  542 	ld	l,a
+   0229 E5                  543 	push	hl
+   022A 21 00 08            544 	ld	hl,#0x0800
+   022D E5                  545 	push	hl
+   022E CDr00r00            546 	call	_set_bkg_palette
+   0231 E8 04               547 	add	sp, #4
+                            548 ;C:/gbdk/ZGB/common/src/main.c:99: set_sprite_palette(0, 8, spal);	
+   0233 F8 07               549 	ldhl	sp,#7
+   0235 2A                  550 	ld	a,(hl+)
+   0236 66                  551 	ld	h,(hl)
+   0237 6F                  552 	ld	l,a
+   0238 E5                  553 	push	hl
+   0239 21 00 08            554 	ld	hl,#0x0800
+   023C E5                  555 	push	hl
+   023D CDr00r00            556 	call	_set_sprite_palette
+   0240 E8 04               557 	add	sp, #4
+   0242 E8 03               558 	add	sp, #3
+   0244 C9                  559 	ret
+                            560 ;C:/gbdk/ZGB/common/src/main.c:104: void main() {
+                            561 ;	---------------------------------
+                            562 ; Function main
+                            563 ; ---------------------------------
+   0245                     564 _main::
+                            565 ;C:/gbdk/ZGB/common/src/main.c:106: cpu_fast();
+   0245 CDr00r00            566 	call	_cpu_fast
+                            567 ;C:/gbdk/ZGB/common/src/main.c:109: PUSH_BANK(1);
+   0248 3E 01               568 	ld	a,#0x01
+   024A F5                  569 	push	af
+   024B 33                  570 	inc	sp
+   024C CDr00r00            571 	call	_PushBank
+   024F 33                  572 	inc	sp
+                            573 ;C:/gbdk/ZGB/common/src/main.c:110: InitStates();
+   0250 CDr00r00            574 	call	_InitStates
+                            575 ;C:/gbdk/ZGB/common/src/main.c:111: InitSprites();
+   0253 CDr00r00            576 	call	_InitSprites
+                            577 ;C:/gbdk/ZGB/common/src/main.c:112: POP_BANK;
+   0256 CDr00r00            578 	call	_PopBank
+                            579 ;C:/gbdk/ZGB/common/src/main.c:114: disable_interrupts();
+   0259 CDr00r00            580 	call	_disable_interrupts
+                            581 ;C:/gbdk/ZGB/common/src/main.c:115: add_VBL(vbl_update);
+   025C 21r0Fr00            582 	ld	hl,#_vbl_update
+   025F E5                  583 	push	hl
+   0260 CDr00r00            584 	call	_add_VBL
+   0263 E8 02               585 	add	sp, #2
+                            586 ;C:/gbdk/ZGB/common/src/main.c:116: add_TIM(MusicUpdate);
+   0265 21r5Br01            587 	ld	hl,#_MusicUpdate
+   0268 E5                  588 	push	hl
+   0269 CDr00r00            589 	call	_add_TIM
+   026C E8 02               590 	add	sp, #2
+                            591 ;C:/gbdk/ZGB/common/src/main.c:118: TMA_REG = _cpu == CGB_TYPE ? 120U : 0xBCU;
+   026E 21r00r00            592 	ld	hl,#__cpu
+   0271 7E                  593 	ld	a,(hl)
+   0272 D6 11               594 	sub	a, #0x11
+   0274 20 05               595 	jr	NZ,00113$
+   0276 01 78 00            596 	ld	bc,#0x0078
+   0279 18 03               597 	jr	00114$
+   027B                     598 00113$:
+   027B 01 BC 00            599 	ld	bc,#0x00bc
+   027E                     600 00114$:
+   027E 21 06 FF            601 	ld	hl,#0xff06
+   0281 71                  602 	ld	(hl),c
+                            603 ;C:/gbdk/ZGB/common/src/main.c:122: TAC_REG = 0x04U;
+   0282 2E 07               604 	ld	l, #0x07
+   0284 36 04               605 	ld	(hl),#0x04
+                            606 ;C:/gbdk/ZGB/common/src/main.c:124: set_interrupts(VBL_IFLAG | TIM_IFLAG);
+   0286 3E 05               607 	ld	a,#0x05
+   0288 F5                  608 	push	af
+   0289 33                  609 	inc	sp
+   028A CDr00r00            610 	call	_set_interrupts
+   028D 33                  611 	inc	sp
+                            612 ;C:/gbdk/ZGB/common/src/main.c:125: enable_interrupts();
+   028E CDr00r00            613 	call	_enable_interrupts
+                            614 ;C:/gbdk/ZGB/common/src/main.c:128: while (state_running) {
+   0291                     615 00103$:
+   0291 21r03r00            616 	ld	hl,#_state_running
+   0294 7E                  617 	ld	a,(hl)
+   0295 B7                  618 	or	a, a
+   0296 CAr05r03            619 	jp	Z,00105$
+                            620 ;C:/gbdk/ZGB/common/src/main.c:129: if(!vbl_count)
+   0299 21r06r00            621 	ld	hl,#_vbl_count
+   029C 7E                  622 	ld	a,(hl)
+   029D B7                  623 	or	a, a
+   029E 20 03               624 	jr	NZ,00102$
+                            625 ;C:/gbdk/ZGB/common/src/main.c:130: wait_vbl_done();
+   02A0 CDr00r00            626 	call	_wait_vbl_done
+   02A3                     627 00102$:
+                            628 ;C:/gbdk/ZGB/common/src/main.c:131: delta_time = vbl_count == 1u ? 0u : 1u;
+   02A3 21r06r00            629 	ld	hl,#_vbl_count
+   02A6 7E                  630 	ld	a,(hl)
+   02A7 3D                  631 	dec	a
+   02A8 20 05               632 	jr	NZ,00115$
+   02AA 01 00 00            633 	ld	bc,#0x0000
+   02AD 18 03               634 	jr	00116$
+   02AF                     635 00115$:
+   02AF 01 01 00            636 	ld	bc,#0x0001
+   02B2                     637 00116$:
+   02B2 21r01r00            638 	ld	hl,#_delta_time
+   02B5 71                  639 	ld	(hl),c
+                            640 ;C:/gbdk/ZGB/common/src/main.c:132: vbl_count = 0;
+   02B6 21r06r00            641 	ld	hl,#_vbl_count
+   02B9 36 00               642 	ld	(hl),#0x00
+                            643 ;C:/gbdk/ZGB/common/src/main.c:133: UPDATE_KEYS();
+   02BB E5                  644 	push	hl
+   02BC 21r00r00            645 	ld	hl,#_keys
+   02BF 7E                  646 	ld	a,(hl)
+   02C0 21r00r00            647 	ld	hl,#_previous_keys
+   02C3 77                  648 	ld	(hl),a
+   02C4 E1                  649 	pop	hl
+   02C5 CDr00r00            650 	call	_joypad
+   02C8 21r00r00            651 	ld	hl,#_keys
+   02CB 73                  652 	ld	(hl),e
+                            653 ;C:/gbdk/ZGB/common/src/main.c:134: PUSH_BANK(stateBanks[current_state]);
+   02CC 3Er00               654 	ld	a,#<(_stateBanks)
+   02CE 21r02r00            655 	ld	hl,#_current_state
+   02D1 86                  656 	add	a, (hl)
+   02D2 4F                  657 	ld	c,a
+   02D3 3Es00               658 	ld	a,#>(_stateBanks)
+   02D5 CE 00               659 	adc	a, #0x00
+   02D7 47                  660 	ld	b,a
+   02D8 0A                  661 	ld	a,(bc)
+   02D9 47                  662 	ld	b,a
+   02DA C5                  663 	push	bc
+   02DB 33                  664 	inc	sp
+   02DC CDr00r00            665 	call	_PushBank
+   02DF 33                  666 	inc	sp
+                            667 ;C:/gbdk/ZGB/common/src/main.c:135: updateFuncs[current_state]();
+   02E0 21r02r00            668 	ld	hl,#_current_state
+   02E3 4E                  669 	ld	c,(hl)
+   02E4 06 00               670 	ld	b,#0x00
+   02E6 CB 21               671 	sla	c
+   02E8 CB 10               672 	rl	b
+   02EA 21r00r00            673 	ld	hl,#_updateFuncs
+   02ED 09                  674 	add	hl,bc
+   02EE 4D                  675 	ld	c,l
+   02EF 44                  676 	ld	b,h
+   02F0 59                  677 	ld	e, c
+   02F1 50                  678 	ld	d, b
+   02F2 1A                  679 	ld	a,(de)
+   02F3 4F                  680 	ld	c,a
+   02F4 13                  681 	inc	de
+   02F5 1A                  682 	ld	a,(de)
+   02F6 47                  683 	ld	b,a
+   02F7 69                  684 	ld	l, c
+   02F8 60                  685 	ld	h, b
+   02F9 CDr00r00            686 	call	___sdcc_call_hl
+                            687 ;C:/gbdk/ZGB/common/src/main.c:136: POP_BANK;
+   02FC CDr00r00            688 	call	_PopBank
+                            689 ;C:/gbdk/ZGB/common/src/main.c:137: SpriteManagerUpdate();
+   02FF CDr00r00            690 	call	_SpriteManagerUpdate
+   0302 C3r91r02            691 	jp	00103$
+   0305                     692 00105$:
+                            693 ;C:/gbdk/ZGB/common/src/main.c:140: FadeIn();
+   0305 CDr00r00            694 	call	_FadeIn
+                            695 ;C:/gbdk/ZGB/common/src/main.c:141: DISPLAY_OFF
+   0308 CDr00r00            696 	call	_display_off
+                            697 ;C:/gbdk/ZGB/common/src/main.c:143: last_music = 0;
+   030B 21r04r00            698 	ld	hl,#_last_music
+   030E 36 00               699 	ld	(hl),#0x00
+   0310 23                  700 	inc	hl
+   0311 36 00               701 	ld	(hl),#0x00
+                            702 ;C:/gbdk/ZGB/common/src/main.c:145: last_sprite_loaded = 0;
+   0313 21r00r00            703 	ld	hl,#_last_sprite_loaded
+   0316 36 00               704 	ld	(hl),#0x00
+                            705 ;C:/gbdk/ZGB/common/src/main.c:146: SpriteManagerReset();
+   0318 CDr00r00            706 	call	_SpriteManagerReset
+                            707 ;C:/gbdk/ZGB/common/src/main.c:147: state_running = 1;
+   031B 21r03r00            708 	ld	hl,#_state_running
+   031E 36 01               709 	ld	(hl),#0x01
+                            710 ;C:/gbdk/ZGB/common/src/main.c:148: current_state = next_state;
+   0320 E5                  711 	push	hl
+   0321 21r00r00            712 	ld	hl,#_next_state
+   0324 7E                  713 	ld	a,(hl)
+   0325 21r02r00            714 	ld	hl,#_current_state
+   0328 77                  715 	ld	(hl),a
+   0329 E1                  716 	pop	hl
+                            717 ;C:/gbdk/ZGB/common/src/main.c:149: scroll_target = 0;
+   032A 21r00r00            718 	ld	hl,#_scroll_target
+   032D 36 00               719 	ld	(hl),#0x00
+   032F 23                  720 	inc	hl
+   0330 36 00               721 	ld	(hl),#0x00
+                            722 ;C:/gbdk/ZGB/common/src/main.c:157: BGP_REG = OBP0_REG = OBP1_REG = PAL_DEF(0, 1, 2, 3);
+   0332 21 49 FF            723 	ld	hl,#0xff49
+   0335 36 E4               724 	ld	(hl),#0xe4
+   0337 2E 48               725 	ld	l, #0x48
+   0339 36 E4               726 	ld	(hl),#0xe4
+   033B 2E 47               727 	ld	l, #0x47
+   033D 36 E4               728 	ld	(hl),#0xe4
+                            729 ;C:/gbdk/ZGB/common/src/main.c:159: PUSH_BANK(stateBanks[current_state]);
+   033F 3Er00               730 	ld	a,#<(_stateBanks)
+   0341 21r02r00            731 	ld	hl,#_current_state
+   0344 86                  732 	add	a, (hl)
+   0345 4F                  733 	ld	c,a
+   0346 3Es00               734 	ld	a,#>(_stateBanks)
+   0348 CE 00               735 	adc	a, #0x00
+   034A 47                  736 	ld	b,a
+   034B 0A                  737 	ld	a,(bc)
+   034C 47                  738 	ld	b,a
+   034D C5                  739 	push	bc
+   034E 33                  740 	inc	sp
+   034F CDr00r00            741 	call	_PushBank
+   0352 33                  742 	inc	sp
+                            743 ;C:/gbdk/ZGB/common/src/main.c:160: (startFuncs[current_state])();
+   0353 21r02r00            744 	ld	hl,#_current_state
+   0356 4E                  745 	ld	c,(hl)
+   0357 06 00               746 	ld	b,#0x00
+   0359 CB 21               747 	sla	c
+   035B CB 10               748 	rl	b
+   035D 21r00r00            749 	ld	hl,#_startFuncs
+   0360 09                  750 	add	hl,bc
+   0361 4D                  751 	ld	c,l
+   0362 44                  752 	ld	b,h
+   0363 59                  753 	ld	e, c
+   0364 50                  754 	ld	d, b
+   0365 1A                  755 	ld	a,(de)
+   0366 4F                  756 	ld	c,a
+   0367 13                  757 	inc	de
+   0368 1A                  758 	ld	a,(de)
+   0369 47                  759 	ld	b,a
+   036A 69                  760 	ld	l, c
+   036B 60                  761 	ld	h, b
+   036C CDr00r00            762 	call	___sdcc_call_hl
+                            763 ;C:/gbdk/ZGB/common/src/main.c:161: POP_BANK;
+   036F CDr00r00            764 	call	_PopBank
+                            765 ;C:/gbdk/ZGB/common/src/main.c:162: old_scroll_x = scroll_x;
+   0372 21r00r00            766 	ld	hl,#_scroll_x
+   0375 2A                  767 	ld	a,(hl+)
+   0376 5E                  768 	ld	e, (hl)
+   0377 21r07r00            769 	ld	hl,#_old_scroll_x
+   037A 22                  770 	ld	(hl+),a
+   037B 73                  771 	ld	(hl),e
+                            772 ;C:/gbdk/ZGB/common/src/main.c:163: old_scroll_y = scroll_y;
+   037C 21r00r00            773 	ld	hl,#_scroll_y
+   037F 2A                  774 	ld	a,(hl+)
+   0380 5E                  775 	ld	e, (hl)
+   0381 21r09r00            776 	ld	hl,#_old_scroll_y
+   0384 22                  777 	ld	(hl+),a
+   0385 73                  778 	ld	(hl),e
+                            779 ;C:/gbdk/ZGB/common/src/main.c:165: if(state_running) {
+   0386 21r03r00            780 	ld	hl,#_state_running
+   0389 7E                  781 	ld	a,(hl)
+   038A B7                  782 	or	a, a
+   038B CAr91r02            783 	jp	Z,00103$
+                            784 ;C:/gbdk/ZGB/common/src/main.c:166: DISPLAY_ON;
+   038E 11 40 FF            785 	ld	de,#0xff40
+   0391 1A                  786 	ld	a,(de)
+   0392 4F                  787 	ld	c,a
+   0393 06 00               788 	ld	b,#0x00
+   0395 79                  789 	ld	a,c
+   0396 CB FF               790 	set	7, a
+   0398 4F                  791 	ld	c,a
+   0399 21 40 FF            792 	ld	hl,#0xff40
+   039C 71                  793 	ld	(hl),c
+                            794 ;C:/gbdk/ZGB/common/src/main.c:167: FadeOut();
+   039D CDr00r00            795 	call	_FadeOut
+   03A0 C3r91r02            796 	jp	00103$
+   03A3 C9                  797 	ret
+                            798 	.area _CODE
+                            799 	.area _CABS (ABS)

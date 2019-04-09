@@ -1,0 +1,40 @@
+XL2
+H 8 areas 6 global symbols
+M SpriteRocket
+O -mgbz80
+S _THIS Ref0000
+S .__.ABS. Def0000
+A _CODE size 0 flags 0 addr 0
+A _DATA size 1 flags 0 addr 0
+S _bank_SPRITE_ROCKET Def0000
+A _DABS size 0 flags 8 addr 0
+A _HOME size 0 flags 0 addr 0
+A _GSINIT size 5 flags 0 addr 0
+A _GSFINAL size 0 flags 0 addr 0
+A _CODE_2 size 22 flags 0 addr 0
+S _Start_SPRITE_ROCKET Def0000
+S _Update_SPRITE_ROCKET Def0001
+S _Destroy_SPRITE_ROCKET Def0021
+A _CABS size 0 flags 8 addr 0
+T 00 00
+R 00 00 01 00
+T 00 00
+R 00 00 01 00
+T 00 00 21 00 00 36 02
+R 00 00 04 00 00 03 01 00
+T 00 00
+R 00 00 06 00
+T 00 00 C9
+R 00 00 06 00
+T 01 00
+R 00 00 06 00
+T 01 00 E8 FE 21 01 00 2B 4E 23 46 21 07 00 09 33
+R 00 00 06 00 02 05 00 00
+T 0F 00 33 E5 D1 D5 1A 4F 13 1A 47 0B E1 E5 71 23
+R 00 00 06 00
+T 1D 00 70 E8 02 C9
+R 00 00 06 00
+T 21 00
+R 00 00 06 00
+T 21 00 C9
+R 00 00 06 00

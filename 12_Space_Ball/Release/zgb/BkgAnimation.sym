@@ -1,0 +1,43 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 1.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+    .__.$$$.                                                    =  2710 L
+    .__.ABS.                                                    =  0000 G
+    .__.CPU.                                                    =  0000 L
+    .__.H$L.                                                    =  0000 L
+  0 _BKG_COLLECT_ITEM                                              037A GR
+  0 _BKG_EDIT_TILE                                                 034A GR
+  0 _BKG_SET_DATA                                                  0201 GR
+  0 _LOAD_MAP_ANIM                                                 0000 GR
+  0 _LOAD_TILE_ANIM                                                01A7 GR
+  0 _MAP_ANIMATE                                                   006A GR
+  1 _NULL_TILE                                                     0000 GR
+    _PopBank                                                       **** GX
+    _PushBank                                                      **** GX
+  0 _TILE_ANIMATE                                                  023E GR
+  0 _WIN_EDIT_TILE                                                 0362 GR
+    __mulint                                                       **** GX
+    __muluchar                                                     **** GX
+  0 _c0                                                            03A1 GR
+  0 _c1                                                            0421 GR
+  0 _c2                                                            04A1 GR
+  0 _c3                                                            0521 GR
+    _set_bkg_data                                                  **** GX
+    _set_bkg_tiles                                                 **** GX
+    _set_win_tiles                                                 **** GX
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 2.
+Hexadecimal [16-Bits]
+
+Area Table
+
+   0 _CODE                                      size  5A1   flags    0
+   1 _DATA                                      size    A   flags    0
+   2 _DABS                                      size    0   flags    8
+   3 _HOME                                      size    0   flags    0
+   4 _GSINIT                                    size   28   flags    0
+   5 _GSFINAL                                   size    0   flags    0
+   6 _CABS                                      size    0   flags    8
+

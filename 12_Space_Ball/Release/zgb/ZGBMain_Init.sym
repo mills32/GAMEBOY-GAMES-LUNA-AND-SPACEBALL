@@ -1,0 +1,87 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 1.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+    .__.$$$.                                                    =  2710 L
+    .__.ABS.                                                    =  0000 G
+    .__.CPU.                                                    =  0000 L
+    .__.H$L.                                                    =  0000 L
+    _Destroy_SPRITE_ARROW                                          **** GX
+    _Destroy_SPRITE_PLAYER                                         **** GX
+    _Destroy_SPRITE_POINTER                                        **** GX
+    _Destroy_SPRITE_ROCKET                                         **** GX
+    _Destroy_SPRITE_SHIP                                           **** GX
+    _Destroy_SPRITE_UFO                                            **** GX
+  6 _InitSprites                                                   0021 GR
+  6 _InitStates                                                    0000 GR
+    _Start_SPRITE_ARROW                                            **** GX
+    _Start_SPRITE_PLAYER                                           **** GX
+    _Start_SPRITE_POINTER                                          **** GX
+    _Start_SPRITE_ROCKET                                           **** GX
+    _Start_SPRITE_SHIP                                             **** GX
+    _Start_SPRITE_UFO                                              **** GX
+    _Start_STATE_CREDITS                                           **** GX
+    _Start_STATE_GAME                                              **** GX
+    _Start_STATE_LEVEL1                                            **** GX
+    _Start_STATE_MENU                                              **** GX
+    _Update_SPRITE_ARROW                                           **** GX
+    _Update_SPRITE_PLAYER                                          **** GX
+    _Update_SPRITE_POINTER                                         **** GX
+    _Update_SPRITE_ROCKET                                          **** GX
+    _Update_SPRITE_SHIP                                            **** GX
+    _Update_SPRITE_UFO                                             **** GX
+    _Update_STATE_CREDITS                                          **** GX
+    _Update_STATE_GAME                                             **** GX
+    _Update_STATE_LEVEL1                                           **** GX
+    _Update_STATE_MENU                                             **** GX
+    _bank_SPRITE_ARROW                                             **** GX
+    _bank_SPRITE_PLAYER                                            **** GX
+    _bank_SPRITE_POINTER                                           **** GX
+    _bank_SPRITE_ROCKET                                            **** GX
+    _bank_SPRITE_SHIP                                              **** GX
+    _bank_SPRITE_UFO                                               **** GX
+    _bank_STATE_CREDITS                                            **** GX
+    _bank_STATE_GAME                                               **** GX
+    _bank_STATE_LEVEL1                                             **** GX
+    _bank_STATE_MENU                                               **** GX
+    _player                                                        **** GX
+    _pointer                                                       **** GX
+  1 _spriteBanks                                                   0014 GR
+  1 _spriteDataBanks                                               004A GR
+  1 _spriteDatas                                                   003E GR
+  1 _spriteDestroyFuncs                                            0032 GR
+  1 _spriteFrameSizes                                              0050 GR
+  1 _spriteIdxs                                                    005C GR
+  1 _spriteNumFrames                                               0056 GR
+  1 _spritePalDatas                                                0062 GR
+  1 _spriteStartFuncs                                              001A GR
+  1 _spriteUpdateFuncs                                             0026 GR
+    _spritearrow                                                   **** GX
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 2.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+    _spriterocket                                                  **** GX
+    _spriteship                                                    **** GX
+    _spriteufo                                                     **** GX
+  1 _startFuncs                                                    0004 GR
+  1 _stateBanks                                                    0000 GR
+  1 _updateFuncs                                                   000C GR
+
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 3.
+Hexadecimal [16-Bits]
+
+Area Table
+
+   0 _CODE                                      size    0   flags    0
+   1 _DATA                                      size   6E   flags    0
+   2 _DABS                                      size    0   flags    8
+   3 _HOME                                      size    0   flags    0
+   4 _GSINIT                                    size  18A   flags    0
+   5 _GSFINAL                                   size    0   flags    0
+   6 _CODE_1                                    size   52   flags    0
+   7 _CABS                                      size    0   flags    8
+

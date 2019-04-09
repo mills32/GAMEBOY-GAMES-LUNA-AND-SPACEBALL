@@ -1,0 +1,50 @@
+XL2
+H 7 areas 5 global symbols
+M ZGBMain
+O -mgbz80
+S .__.ABS. Def0000
+S _current_state Ref0000
+A _CODE size 47 flags 0 addr 0
+S _GetTileReplacement Def0000
+A _DATA size 2 flags 0 addr 0
+S _SCENE Def0001
+S _next_state Def0000
+A _DABS size 0 flags 8 addr 0
+A _HOME size 0 flags 0 addr 0
+A _GSINIT size A flags 0 addr 0
+A _GSFINAL size 0 flags 0 addr 0
+A _CABS size 0 flags 8 addr 0
+T 00 00
+R 00 00 01 00
+T 00 00
+R 00 00 01 00
+T 01 00
+R 00 00 01 00
+T 01 00
+R 00 00 01 00
+T 00 00 21 00 00 36 00 21 01 00 36 01
+R 00 00 04 00 00 03 01 00 00 08 01 00
+T 00 00
+R 00 00 00 00
+T 00 00 E8 FD 21 00 00 7E D6 03 C2 42 00 F8 05 4E
+R 00 00 00 00 02 05 01 00 00 0B 00 00
+T 0E 00 23 46 0A F8 02 77 3A 2B 22 36 00 11 F9 00
+R 00 00 00 00
+T 1C 00 E1 E5 7B 95 5F 7A 9C F8 01 32 73 F8 07 5E
+R 00 00 00 00
+T 2A 00 23 56 F8 01 CB 7E 28 0C AF 12 0A 4F 06 00
+R 00 00 00 00
+T 38 00 3E FF 91 5F 18 06
+R 00 00 00 00
+T 3E 00
+R 00 00 00 00
+T 3E 00 F8 02 7E 12
+R 00 00 00 00
+T 42 00
+R 00 00 00 00
+T 42 00 1E FF
+R 00 00 00 00
+T 44 00
+R 00 00 00 00
+T 44 00 E8 03 C9
+R 00 00 00 00

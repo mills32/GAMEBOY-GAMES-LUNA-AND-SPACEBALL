@@ -1,0 +1,192 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module Sound
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _CP_Reset_Chan
+                             12 	.globl _CP_Mute_Chan
+                             13 	.globl _PopBank
+                             14 	.globl _PushBank
+                             15 	.globl _FX_ADDRESS
+                             16 	.globl _FX_REG_SIZES
+                             17 	.globl _PlayFx
+                             18 ;--------------------------------------------------------
+                             19 ; ram data
+                             20 ;--------------------------------------------------------
+                             21 	.area _DATA
+                             22 ;--------------------------------------------------------
+                             23 ; absolute external ram data
+                             24 ;--------------------------------------------------------
+                             25 	.area _DABS (ABS)
+                             26 ;--------------------------------------------------------
+                             27 ; global & static initialisations
+                             28 ;--------------------------------------------------------
+                             29 	.area _HOME
+                             30 	.area _GSINIT
+                             31 	.area _GSFINAL
+                             32 	.area _GSINIT
+                             33 ;--------------------------------------------------------
+                             34 ; Home
+                             35 ;--------------------------------------------------------
+                             36 	.area _HOME
+                             37 	.area _HOME
+                             38 ;--------------------------------------------------------
+                             39 ; code
+                             40 ;--------------------------------------------------------
+                             41 	.area _CODE
+                             42 ;C:/gbdk/ZGB/common/src/Sound.c:17: void PlayFx(SOUND_CHANNEL channel, UINT8 mute_frames, ...) {
+                             43 ;	---------------------------------
+                             44 ; Function PlayFx
+                             45 ; ---------------------------------
+   0000                      46 _PlayFx::
+   0000 E8 F7                47 	add	sp, #-9
+                             48 ;C:/gbdk/ZGB/common/src/Sound.c:19: UINT8* reg = (UINT8*)FX_ADDRESS[channel];
+   0002 F8 0B                49 	ldhl	sp,#11
+   0004 4E                   50 	ld	c,(hl)
+   0005 06 00                51 	ld	b,#0x00
+   0007 CB 21                52 	sla	c
+   0009 CB 10                53 	rl	b
+   000B 21rA8r00             54 	ld	hl,#_FX_ADDRESS
+   000E 09                   55 	add	hl,bc
+   000F 4D                   56 	ld	c,l
+   0010 44                   57 	ld	b,h
+   0011 59                   58 	ld	e, c
+   0012 50                   59 	ld	d, b
+   0013 1A                   60 	ld	a,(de)
+   0014 4F                   61 	ld	c,a
+   0015 13                   62 	inc	de
+   0016 1A                   63 	ld	a,(de)
+   0017 47                   64 	ld	b,a
+   0018 F8 02                65 	ldhl	sp,#2
+   001A 71                   66 	ld	(hl),c
+   001B 23                   67 	inc	hl
+   001C 70                   68 	ld	(hl),b
+                             69 ;C:/gbdk/ZGB/common/src/Sound.c:22: CP_Muted_Chan = channel;
+   001D E5                   70 	push	hl
+   001E F8 0D                71 	ldhl	sp,#13
+   0020 7E                   72 	ld	a,(hl)
+   0021 21r00r00             73 	ld	hl,#_CP_Muted_Chan
+   0024 77                   74 	ld	(hl),a
+   0025 E1                   75 	pop	hl
+                             76 ;C:/gbdk/ZGB/common/src/Sound.c:23: PUSH_BANK(1);
+   0026 3E 01                77 	ld	a,#0x01
+   0028 F5                   78 	push	af
+   0029 33                   79 	inc	sp
+   002A CDr00r00             80 	call	_PushBank
+   002D 33                   81 	inc	sp
+                             82 ;C:/gbdk/ZGB/common/src/Sound.c:24: CP_Mute_Chan(CP_Muted_Chan);
+   002E 21r00r00             83 	ld	hl,#_CP_Muted_Chan
+   0031 7E                   84 	ld	a,(hl)
+   0032 F5                   85 	push	af
+   0033 33                   86 	inc	sp
+   0034 CDr00r00             87 	call	_CP_Mute_Chan
+   0037 33                   88 	inc	sp
+                             89 ;C:/gbdk/ZGB/common/src/Sound.c:25: CP_Reset_Chan(CP_Muted_Chan);
+   0038 21r00r00             90 	ld	hl,#_CP_Muted_Chan
+   003B 7E                   91 	ld	a,(hl)
+   003C F5                   92 	push	af
+   003D 33                   93 	inc	sp
+   003E CDr00r00             94 	call	_CP_Reset_Chan
+   0041 33                   95 	inc	sp
+                             96 ;C:/gbdk/ZGB/common/src/Sound.c:26: POP_BANK;	
+   0042 CDr00r00             97 	call	_PopBank
+                             98 ;C:/gbdk/ZGB/common/src/Sound.c:28: va_start(list, mute_frames);
+   0045 F8 0C                99 	ldhl	sp,#12
+   0047 4D                  100 	ld	c,l
+   0048 44                  101 	ld	b,h
+   0049 03                  102 	inc	bc
+   004A 33                  103 	inc	sp
+   004B 33                  104 	inc	sp
+   004C C5                  105 	push	bc
+                            106 ;C:/gbdk/ZGB/common/src/Sound.c:29: for(i = 0; i < FX_REG_SIZES[channel]; ++i, ++reg) {
+   004D 11rA3r00            107 	ld	de,#_FX_REG_SIZES
+   0050 F8 0B               108 	ldhl	sp,#11
+   0052 6E                  109 	ld	l,(hl)
+   0053 26 00               110 	ld	h,#0x00
+   0055 19                  111 	add	hl,de
+   0056 7D                  112 	ld	a,l
+   0057 54                  113 	ld	d,h
+   0058 F8 07               114 	ldhl	sp,#7
+   005A 22                  115 	ld	(hl+),a
+   005B 72                  116 	ld	(hl),d
+   005C F8 04               117 	ldhl	sp,#4
+   005E 36 00               118 	ld	(hl),#0x00
+   0060 2B                  119 	dec	hl
+   0061 2B                  120 	dec	hl
+   0062 2A                  121 	ld	a,(hl+)
+   0063 5E                  122 	ld	e, (hl)
+   0064 23                  123 	inc	hl
+   0065 23                  124 	inc	hl
+   0066 22                  125 	ld	(hl+),a
+   0067 73                  126 	ld	(hl),e
+   0068                     127 00103$:
+   0068 F8 07               128 	ldhl	sp,#(8 - 1)
+   006A 5E                  129 	ld	e,(hl)
+   006B 23                  130 	inc	hl
+   006C 56                  131 	ld	d,(hl)
+   006D 1A                  132 	ld	a,(de)
+   006E 4F                  133 	ld	c,a
+   006F F8 04               134 	ldhl	sp,#4
+   0071 7E                  135 	ld	a,(hl)
+   0072 91                  136 	sub	a, c
+   0073 30 22               137 	jr	NC,00101$
+                            138 ;C:/gbdk/ZGB/common/src/Sound.c:30: *reg = va_arg(list, INT16);
+   0075 C1                  139 	pop	bc
+   0076 C5                  140 	push	bc
+   0077 03                  141 	inc	bc
+   0078 03                  142 	inc	bc
+   0079 33                  143 	inc	sp
+   007A 33                  144 	inc	sp
+   007B C5                  145 	push	bc
+   007C 0B                  146 	dec	bc
+   007D 0B                  147 	dec	bc
+   007E 59                  148 	ld	e, c
+   007F 50                  149 	ld	d, b
+   0080 1A                  150 	ld	a,(de)
+   0081 4F                  151 	ld	c,a
+   0082 13                  152 	inc	de
+   0083 1A                  153 	ld	a,(de)
+   0084 47                  154 	ld	b,a
+   0085 23                  155 	inc	hl
+   0086 2A                  156 	ld	a,(hl+)
+   0087 66                  157 	ld	h,(hl)
+   0088 6F                  158 	ld	l,a
+   0089 71                  159 	ld	(hl),c
+                            160 ;C:/gbdk/ZGB/common/src/Sound.c:29: for(i = 0; i < FX_REG_SIZES[channel]; ++i, ++reg) {
+   008A F8 04               161 	ldhl	sp,#4
+   008C 34                  162 	inc	(hl)
+   008D 23                  163 	inc	hl
+   008E 34                  164 	inc	(hl)
+   008F C2r68r00            165 	jp	NZ,00103$
+   0092 23                  166 	inc	hl
+   0093 34                  167 	inc	(hl)
+   0094 C3r68r00            168 	jp	00103$
+   0097                     169 00101$:
+                            170 ;C:/gbdk/ZGB/common/src/Sound.c:35: music_mute_frames = mute_frames;
+   0097 E5                  171 	push	hl
+   0098 F8 0E               172 	ldhl	sp,#14
+   009A 7E                  173 	ld	a,(hl)
+   009B 21r00r00            174 	ld	hl,#_music_mute_frames
+   009E 77                  175 	ld	(hl),a
+   009F E1                  176 	pop	hl
+   00A0 E8 09               177 	add	sp, #9
+   00A2 C9                  178 	ret
+   00A3                     179 _FX_REG_SIZES:
+   00A3 05                  180 	.db #0x05	; 5
+   00A4 04                  181 	.db #0x04	; 4
+   00A5 05                  182 	.db #0x05	; 5
+   00A6 04                  183 	.db #0x04	; 4
+   00A7 03                  184 	.db #0x03	; 3
+   00A8                     185 _FX_ADDRESS:
+   00A8 10 FF               186 	.dw #0xff10
+   00AA 16 FF               187 	.dw #0xff16
+   00AC 1A FF               188 	.dw #0xff1a
+   00AE 20 FF               189 	.dw #0xff20
+   00B0 24 FF               190 	.dw #0xff24
+                            191 	.area _CODE
+                            192 	.area _CABS (ABS)

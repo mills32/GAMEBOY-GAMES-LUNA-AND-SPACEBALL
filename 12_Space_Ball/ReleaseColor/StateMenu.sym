@@ -1,0 +1,64 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 1.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+    .__.$$$.                                                    =  2710 L
+    .__.ABS.                                                    =  0000 G
+    .__.CPU.                                                    =  0000 L
+    .__.H$L.                                                    =  0000 L
+  1 _Activate_Parallax                                             0002 GR
+  1 _Bkg_items                                                     0003 GR
+    _CP_LoadMusic                                                  **** GX
+    _InitScroll                                                    **** GX
+    _LOAD_MAP_ANIM                                                 **** GX
+    _LOAD_TILE_ANIM                                                **** GX
+  1 _M                                                             0031 GR
+    _MAP_ANIMATE                                                   **** GX
+  1 _Menu_Mode                                                     0001 GR
+    _MoveScroll                                                    **** GX
+    _SetPalette                                                    **** GX
+  1 _Settings_Op                                                   0033 GR
+    _SpriteManagerAdd                                              **** GX
+    _SpriteManagerLoad                                             **** GX
+  6 _Start_STATE_MENU                                              00B9 GR
+    _TILE_ANIMATE                                                  **** GX
+  1 _Tile_items                                                    001D GR
+  6 _Update_STATE_MENU                                             0206 GR
+    _ZGB_Parallax                                                  **** GX
+    _ZInitScrollTilesColor                                         **** GX
+  1 _bank_STATE_MENU                                               0000 GR
+  6 _change_menu_settings                                          0000 GR
+    _keys                                                          **** GX
+    _map_flogoPLN0                                                 **** GX
+    _map_flogoPLN1                                                 **** GX
+    _map_menuPLN0                                                  **** GX
+    _map_menuPLN1                                                  **** GX
+    _map_menu_anim_asteroid                                        **** GX
+    _map_menu_anim_ball                                            **** GX
+    _map_menu_anim_settings                                        **** GX
+    _map_plogoPLN0                                                 **** GX
+    _map_plogoPLN1                                                 **** GX
+    _previous_keys                                                 **** GX
+    _set_bkg_tiles                                                 **** GX
+  6 _shipsPAL                                                      0079 GR
+    _tile_menu_anim_star                                           **** GX
+    _tile_menu_anim_star2                                          **** GX
+    _tiles_menu                                                    **** GX
+  6 _tiles_menuPAL                                                 0039 GR
+
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 2.
+Hexadecimal [16-Bits]
+
+Area Table
+
+   0 _CODE                                      size    0   flags    0
+   1 _DATA                                      size   34   flags    0
+   2 _DABS                                      size    0   flags    8
+   3 _HOME                                      size    0   flags    0
+   4 _GSINIT                                    size    F   flags    0
+   5 _GSFINAL                                   size    0   flags    0
+   6 _CODE_2                                    size  4FC   flags    0
+   7 _CABS                                      size    0   flags    8
+

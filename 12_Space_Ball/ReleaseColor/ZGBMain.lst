@@ -1,0 +1,115 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module ZGBMain
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _GetTileReplacement
+                             12 	.globl _SCENE
+                             13 	.globl _next_state
+                             14 ;--------------------------------------------------------
+                             15 ; ram data
+                             16 ;--------------------------------------------------------
+                             17 	.area _DATA
+   0000                      18 _next_state::
+   0000                      19 	.ds 1
+   0001                      20 _SCENE::
+   0001                      21 	.ds 1
+                             22 ;--------------------------------------------------------
+                             23 ; absolute external ram data
+                             24 ;--------------------------------------------------------
+                             25 	.area _DABS (ABS)
+                             26 ;--------------------------------------------------------
+                             27 ; global & static initialisations
+                             28 ;--------------------------------------------------------
+                             29 	.area _HOME
+                             30 	.area _GSINIT
+                             31 	.area _GSFINAL
+                             32 	.area _GSINIT
+                             33 ;ZGBMain.c:4: UINT8 next_state = STATE_MENU;
+   0000 21r00r00             34 	ld	hl,#_next_state
+   0003 36 00                35 	ld	(hl),#0x00
+                             36 ;ZGBMain.c:6: UINT8 SCENE = 1; 
+   0005 21r01r00             37 	ld	hl,#_SCENE
+   0008 36 01                38 	ld	(hl),#0x01
+                             39 ;--------------------------------------------------------
+                             40 ; Home
+                             41 ;--------------------------------------------------------
+                             42 	.area _HOME
+                             43 	.area _HOME
+                             44 ;--------------------------------------------------------
+                             45 ; code
+                             46 ;--------------------------------------------------------
+                             47 	.area _CODE
+                             48 ;ZGBMain.c:9: UINT8 GetTileReplacement(UINT8* tile_ptr, UINT8* tile) {
+                             49 ;	---------------------------------
+                             50 ; Function GetTileReplacement
+                             51 ; ---------------------------------
+   0000                      52 _GetTileReplacement::
+   0000 E8 FD                53 	add	sp, #-3
+                             54 ;ZGBMain.c:10: if(current_state == STATE_LEVEL1) {
+   0002 21r00r00             55 	ld	hl,#_current_state
+   0005 7E                   56 	ld	a,(hl)
+   0006 D6 03                57 	sub	a, #0x03
+   0008 C2r43r00             58 	jp	NZ,00104$
+                             59 ;ZGBMain.c:11: if(U_LESS_THAN(255 - (UINT16)*tile_ptr, N_SPRITE_TYPES)) {
+   000B F8 05                60 	ldhl	sp,#(6 - 1)
+   000D 4E                   61 	ld	c,(hl)
+   000E 23                   62 	inc	hl
+   000F 46                   63 	ld	b,(hl)
+   0010 0A                   64 	ld	a,(bc)
+   0011 F8 00                65 	ldhl	sp,#0
+   0013 77                   66 	ld	(hl),a
+   0014 2A                   67 	ld	a,(hl+)
+   0015 22                   68 	ld	(hl+),a
+   0016 36 00                69 	ld	(hl),#0x00
+   0018 11 F9 00             70 	ld	de,#0x00f9
+   001B 2B                   71 	dec	hl
+   001C 2A                   72 	ld	a,(hl+)
+   001D 66                   73 	ld	h,(hl)
+   001E 6F                   74 	ld	l,a
+   001F 7B                   75 	ld	a,e
+   0020 95                   76 	sub	a,l
+   0021 5F                   77 	ld	e,a
+   0022 7A                   78 	ld	a,d
+   0023 9C                   79 	sbc	a,h
+   0024 F8 02                80 	ldhl	sp,#2
+   0026 32                   81 	ld	(hl-),a
+   0027 73                   82 	ld	(hl),e
+                             83 ;ZGBMain.c:12: *tile = 0;
+   0028 F8 07                84 	ldhl	sp,#(8 - 1)
+   002A 5E                   85 	ld	e,(hl)
+   002B 23                   86 	inc	hl
+   002C 56                   87 	ld	d,(hl)
+                             88 ;ZGBMain.c:11: if(U_LESS_THAN(255 - (UINT16)*tile_ptr, N_SPRITE_TYPES)) {
+   002D F8 02                89 	ldhl	sp,#2
+   002F CB 7E                90 	bit	7, (hl)
+   0031 28 0C                91 	jr	Z,00102$
+                             92 ;ZGBMain.c:12: *tile = 0;
+   0033 AF                   93 	xor	a, a
+   0034 12                   94 	ld	(de),a
+                             95 ;ZGBMain.c:13: return 255 - (UINT16)*tile_ptr;
+   0035 0A                   96 	ld	a,(bc)
+   0036 4F                   97 	ld	c,a
+   0037 06 00                98 	ld	b,#0x00
+   0039 3E FF                99 	ld	a,#0xff
+   003B 91                  100 	sub	a, c
+   003C 5F                  101 	ld	e,a
+   003D 18 06               102 	jr	00105$
+   003F                     103 00102$:
+                            104 ;ZGBMain.c:15: *tile = *tile_ptr;
+   003F F8 00               105 	ldhl	sp,#0
+   0041 7E                  106 	ld	a,(hl)
+   0042 12                  107 	ld	(de),a
+   0043                     108 00104$:
+                            109 ;ZGBMain.c:17: return 255u;
+   0043 1E FF               110 	ld	e,#0xff
+   0045                     111 00105$:
+   0045 E8 03               112 	add	sp, #3
+   0047 C9                  113 	ret
+                            114 	.area _CODE
+                            115 	.area _CABS (ABS)

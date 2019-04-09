@@ -1,0 +1,41 @@
+XL2
+H 8 areas 3 global symbols
+M level_anim_hconv_b3
+O -mgbz80
+S .__.ABS. Def0000
+A _CODE size 0 flags 0 addr 0
+A _DATA size 0 flags 0 addr 0
+A _DABS size 0 flags 8 addr 0
+A _HOME size 0 flags 0 addr 0
+A _GSINIT size 0 flags 0 addr 0
+A _GSFINAL size 0 flags 0 addr 0
+A _CODE_3 size 88 flags 0 addr 0
+S _level_anim_hconvCGB Def0000
+S _level_anim_hconv Def0008
+A _CABS size 0 flags 8 addr 0
+T 00 00
+R 00 00 06 00
+T 00 00 00 00 00 00 00 00 00 00
+R 00 00 06 00
+T 08 00
+R 00 00 06 00
+T 08 00 1C E0 0E 70 07 38 83 1C 83 1C 07 38 0E 70
+R 00 00 06 00
+T 16 00 1C E0 0E 70 07 38 83 1C C1 0E C1 0E 83 1C
+R 00 00 06 00
+T 24 00 07 38 0E 70 07 38 83 1C C1 0E E0 07 E0 07
+R 00 00 06 00
+T 32 00 C1 0E 83 1C 07 38 83 1C C1 0E E0 07 70 83
+R 00 00 06 00
+T 40 00 70 83 E0 07 C1 0E 83 1C C1 0E E0 07 70 83
+R 00 00 06 00
+T 4E 00 38 C1 38 C1 70 83 E0 07 C1 0E E0 07 70 83
+R 00 00 06 00
+T 5C 00 38 C1 1C E0 1C E0 38 C1 70 83 E0 07 70 83
+R 00 00 06 00
+T 6A 00 38 C1 1C E0 0E 70 0E 70 1C E0 38 C1 70 83
+R 00 00 06 00
+T 78 00 38 C1 1C E0 0E 70 07 38 07 38 0E 70 1C E0
+R 00 00 06 00
+T 86 00 38 C1
+R 00 00 06 00

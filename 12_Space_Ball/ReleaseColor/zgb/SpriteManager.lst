@@ -1,0 +1,1026 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module SpriteManager
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _PopBank
+                             12 	.globl _PushBank
+                             13 	.globl _RefreshScroll
+                             14 	.globl _DrawSprite
+                             15 	.globl _InitSprite
+                             16 	.globl _ClearOAMs
+                             17 	.globl _SwapOAMs
+                             18 	.globl _LoadSprite
+                             19 	.globl _StackPop
+                             20 	.globl _StackPush
+                             21 	.globl _VectorRemovePos
+                             22 	.globl _VectorAdd
+                             23 	.globl _THIS
+                             24 	.globl _THIS_IDX
+                             25 	.globl _cachedSprite
+                             26 	.globl _sprite_manager_removal_check
+                             27 	.globl _sprite_manager_updatables
+                             28 	.globl _sprite_manager_sprites_pool
+                             29 	.globl _sprite_manager_sprites
+                             30 	.globl _sprite_manager_sprites_mem
+                             31 	.globl _SpriteManagerReset
+                             32 	.globl _SpriteManagerLoad
+                             33 	.globl _SpriteManagerAdd
+                             34 	.globl _SpriteManagerRemove
+                             35 	.globl _SpriteManagerRemoveSprite
+                             36 	.globl _SpriteManagerFlushRemove
+                             37 	.globl _SpriteManagerUpdate
+                             38 ;--------------------------------------------------------
+                             39 ; ram data
+                             40 ;--------------------------------------------------------
+                             41 	.area _DATA
+                     CFA1    42 _sprite_manager_sprites_mem	=	0xcfa1
+   0000                      43 _sprite_manager_sprites::
+   0000                      44 	.ds 80
+   0050                      45 _sprite_manager_sprites_pool::
+   0050                      46 	.ds 41
+   0079                      47 _sprite_manager_updatables::
+   0079                      48 	.ds 41
+   00A2                      49 _sprite_manager_removal_check::
+   00A2                      50 	.ds 1
+   00A3                      51 _cachedSprite::
+   00A3                      52 	.ds 2
+   00A5                      53 _THIS_IDX::
+   00A5                      54 	.ds 1
+   00A6                      55 _THIS::
+   00A6                      56 	.ds 2
+                             57 ;--------------------------------------------------------
+                             58 ; absolute external ram data
+                             59 ;--------------------------------------------------------
+                             60 	.area _DABS (ABS)
+                             61 ;--------------------------------------------------------
+                             62 ; global & static initialisations
+                             63 ;--------------------------------------------------------
+                             64 	.area _HOME
+                             65 	.area _GSINIT
+                             66 	.area _GSFINAL
+                             67 	.area _GSINIT
+                             68 ;C:/gbdk/ZGB/common/src/SpriteManager.c:11: DECLARE_STACK(sprite_manager_sprites_pool, N_SPRITE_MANAGER_SPRITES);
+   0000 21r50r00             69 	ld	hl,#_sprite_manager_sprites_pool
+   0003 36 00                70 	ld	(hl),#0x00
+                             71 ;C:/gbdk/ZGB/common/src/SpriteManager.c:14: DECLARE_VECTOR(sprite_manager_updatables, N_SPRITE_MANAGER_SPRITES);
+   0005 21r79r00             72 	ld	hl,#_sprite_manager_updatables
+   0008 36 00                73 	ld	(hl),#0x00
+                             74 ;--------------------------------------------------------
+                             75 ; Home
+                             76 ;--------------------------------------------------------
+                             77 	.area _HOME
+                             78 	.area _HOME
+                             79 ;--------------------------------------------------------
+                             80 ; code
+                             81 ;--------------------------------------------------------
+                             82 	.area _CODE
+                             83 ;C:/gbdk/ZGB/common/src/SpriteManager.c:18: void SpriteManagerReset() {
+                             84 ;	---------------------------------
+                             85 ; Function SpriteManagerReset
+                             86 ; ---------------------------------
+   0000                      87 _SpriteManagerReset::
+   0000 E8 FC                88 	add	sp, #-4
+                             89 ;C:/gbdk/ZGB/common/src/SpriteManager.c:22: for(i = 0u; i != sprite_manager_updatables[0]; ++ i) {
+   0002 0E 00                90 	ld	c,#0x00
+   0004                      91 00104$:
+   0004 11r79r00             92 	ld	de, #_sprite_manager_updatables + 0
+   0007 1A                   93 	ld	a,(de)
+   0008 47                   94 	ld	b,a
+                             95 ;C:/gbdk/ZGB/common/src/SpriteManager.c:23: THIS = sprite_manager_sprites[sprite_manager_updatables[i + 1]];
+   0009 79                   96 	ld	a,c
+   000A B8                   97 	cp	a,b
+   000B CAr7Dr00             98 	jp	Z,00101$
+   000E 3C                   99 	inc	a
+   000F F8 01               100 	ldhl	sp,#1
+   0011 77                  101 	ld	(hl),a
+   0012 11r79r00            102 	ld	de,#_sprite_manager_updatables
+   0015 6E                  103 	ld	l,(hl)
+   0016 26 00               104 	ld	h,#0x00
+   0018 19                  105 	add	hl,de
+   0019 4D                  106 	ld	c,l
+   001A 44                  107 	ld	b,h
+   001B 0A                  108 	ld	a,(bc)
+   001C 4F                  109 	ld	c,a
+   001D 06 00               110 	ld	b,#0x00
+   001F CB 21               111 	sla	c
+   0021 CB 10               112 	rl	b
+   0023 21r00r00            113 	ld	hl,#_sprite_manager_sprites
+   0026 09                  114 	add	hl,bc
+   0027 4D                  115 	ld	c,l
+   0028 44                  116 	ld	b,h
+   0029 59                  117 	ld	e, c
+   002A 50                  118 	ld	d, b
+   002B 1A                  119 	ld	a,(de)
+   002C 21rA6r00            120 	ld	hl,#_THIS
+   002F 22                  121 	ld	(hl+),a
+   0030 13                  122 	inc	de
+   0031 1A                  123 	ld	a,(de)
+                            124 ;C:/gbdk/ZGB/common/src/SpriteManager.c:24: PUSH_BANK(spriteBanks[THIS->type]);
+   0032 32                  125 	ld	(hl-),a
+   0033 4E                  126 	ld	c,(hl)
+   0034 23                  127 	inc	hl
+   0035 46                  128 	ld	b,(hl)
+   0036 21 10 00            129 	ld	hl,#0x0010
+   0039 09                  130 	add	hl,bc
+   003A 4D                  131 	ld	c,l
+   003B 44                  132 	ld	b,h
+   003C 0A                  133 	ld	a,(bc)
+   003D C6r00               134 	add	a,#<(_spriteBanks)
+   003F 4F                  135 	ld	c,a
+   0040 3Es00               136 	ld	a,#>(_spriteBanks)
+   0042 CE 00               137 	adc	a, #0x00
+   0044 47                  138 	ld	b,a
+   0045 0A                  139 	ld	a,(bc)
+   0046 47                  140 	ld	b,a
+   0047 C5                  141 	push	bc
+   0048 33                  142 	inc	sp
+   0049 CDr00r00            143 	call	_PushBank
+   004C 33                  144 	inc	sp
+                            145 ;C:/gbdk/ZGB/common/src/SpriteManager.c:25: spriteDestroyFuncs[THIS->type]();
+   004D 21rA7r00            146 	ld	hl,#_THIS + 1
+   0050 2B                  147 	dec	hl
+   0051 4E                  148 	ld	c,(hl)
+   0052 23                  149 	inc	hl
+   0053 46                  150 	ld	b,(hl)
+   0054 21 10 00            151 	ld	hl,#0x0010
+   0057 09                  152 	add	hl,bc
+   0058 4D                  153 	ld	c,l
+   0059 44                  154 	ld	b,h
+   005A 0A                  155 	ld	a,(bc)
+   005B 4F                  156 	ld	c,a
+   005C 06 00               157 	ld	b,#0x00
+   005E CB 21               158 	sla	c
+   0060 CB 10               159 	rl	b
+   0062 21r00r00            160 	ld	hl,#_spriteDestroyFuncs
+   0065 09                  161 	add	hl,bc
+   0066 4D                  162 	ld	c,l
+   0067 44                  163 	ld	b,h
+   0068 59                  164 	ld	e, c
+   0069 50                  165 	ld	d, b
+   006A 1A                  166 	ld	a,(de)
+   006B 4F                  167 	ld	c,a
+   006C 13                  168 	inc	de
+   006D 1A                  169 	ld	a,(de)
+   006E 47                  170 	ld	b,a
+   006F 69                  171 	ld	l, c
+   0070 60                  172 	ld	h, b
+   0071 CDr00r00            173 	call	___sdcc_call_hl
+                            174 ;C:/gbdk/ZGB/common/src/SpriteManager.c:26: POP_BANK;
+   0074 CDr00r00            175 	call	_PopBank
+                            176 ;C:/gbdk/ZGB/common/src/SpriteManager.c:22: for(i = 0u; i != sprite_manager_updatables[0]; ++ i) {
+   0077 F8 01               177 	ldhl	sp,#1
+   0079 4E                  178 	ld	c,(hl)
+   007A C3r04r00            179 	jp	00104$
+   007D                     180 00101$:
+                            181 ;C:/gbdk/ZGB/common/src/SpriteManager.c:30: sprite_manager_sprites_pool[0] = 0;
+   007D 21r50r00            182 	ld	hl,#_sprite_manager_sprites_pool
+   0080 36 00               183 	ld	(hl),#0x00
+                            184 ;C:/gbdk/ZGB/common/src/SpriteManager.c:31: for(i = 0; i != N_SPRITE_MANAGER_SPRITES; ++i) {
+   0082 F8 00               185 	ldhl	sp,#0
+   0084 36 00               186 	ld	(hl),#0x00
+   0086                     187 00106$:
+                            188 ;C:/gbdk/ZGB/common/src/SpriteManager.c:32: sprite_manager_sprites[i] = (struct Sprite*)&sprite_manager_sprites_mem[sizeof(struct Sprite) * (UINT16)i];
+   0086 F8 00               189 	ldhl	sp,#0
+   0088 4E                  190 	ld	c,(hl)
+   0089 06 00               191 	ld	b,#0x00
+   008B CB 21               192 	sla	c
+   008D CB 10               193 	rl	b
+   008F 21r00r00            194 	ld	hl,#_sprite_manager_sprites
+   0092 09                  195 	add	hl,bc
+   0093 7D                  196 	ld	a,l
+   0094 54                  197 	ld	d,h
+   0095 F8 02               198 	ldhl	sp,#2
+   0097 22                  199 	ld	(hl+),a
+   0098 72                  200 	ld	(hl),d
+   0099 F8 00               201 	ldhl	sp,#0
+   009B 4E                  202 	ld	c,(hl)
+   009C 06 00               203 	ld	b,#0x00
+   009E CB 21               204 	sla	c
+   00A0 CB 10               205 	rl	b
+   00A2 CB 21               206 	sla	c
+   00A4 CB 10               207 	rl	b
+   00A6 CB 21               208 	sla	c
+   00A8 CB 10               209 	rl	b
+   00AA CB 21               210 	sla	c
+   00AC CB 10               211 	rl	b
+   00AE CB 21               212 	sla	c
+   00B0 CB 10               213 	rl	b
+   00B2 21 A1 CF            214 	ld	hl,#_sprite_manager_sprites_mem
+   00B5 09                  215 	add	hl,bc
+   00B6 4D                  216 	ld	c,l
+   00B7 44                  217 	ld	b,h
+   00B8 F8 02               218 	ldhl	sp,#2
+   00BA 2A                  219 	ld	a,(hl+)
+   00BB 66                  220 	ld	h,(hl)
+   00BC 6F                  221 	ld	l,a
+   00BD 71                  222 	ld	(hl),c
+   00BE 23                  223 	inc	hl
+   00BF 70                  224 	ld	(hl),b
+                            225 ;C:/gbdk/ZGB/common/src/SpriteManager.c:33: StackPush(sprite_manager_sprites_pool, i);		
+   00C0 F8 00               226 	ldhl	sp,#0
+   00C2 7E                  227 	ld	a,(hl)
+   00C3 F5                  228 	push	af
+   00C4 33                  229 	inc	sp
+   00C5 21r50r00            230 	ld	hl,#_sprite_manager_sprites_pool
+   00C8 E5                  231 	push	hl
+   00C9 CDr00r00            232 	call	_StackPush
+   00CC E8 03               233 	add	sp, #3
+                            234 ;C:/gbdk/ZGB/common/src/SpriteManager.c:31: for(i = 0; i != N_SPRITE_MANAGER_SPRITES; ++i) {
+   00CE F8 00               235 	ldhl	sp,#0
+   00D0 34                  236 	inc	(hl)
+   00D1 7E                  237 	ld	a,(hl)
+   00D2 D6 28               238 	sub	a, #0x28
+   00D4 C2r86r00            239 	jp	NZ,00106$
+                            240 ;C:/gbdk/ZGB/common/src/SpriteManager.c:35: ClearOAMs();
+   00D7 CDr00r00            241 	call	_ClearOAMs
+                            242 ;C:/gbdk/ZGB/common/src/SpriteManager.c:38: sprite_manager_updatables[0] = 0;
+   00DA 21r79r00            243 	ld	hl,#_sprite_manager_updatables
+   00DD 36 00               244 	ld	(hl),#0x00
+                            245 ;C:/gbdk/ZGB/common/src/SpriteManager.c:39: sprite_manager_removal_check = 0;
+   00DF 21rA2r00            246 	ld	hl,#_sprite_manager_removal_check
+   00E2 36 00               247 	ld	(hl),#0x00
+   00E4 E8 04               248 	add	sp, #4
+   00E6 C9                  249 	ret
+                            250 ;C:/gbdk/ZGB/common/src/SpriteManager.c:42: void SpriteManagerLoad(UINT8 sprite_type) {
+                            251 ;	---------------------------------
+                            252 ; Function SpriteManagerLoad
+                            253 ; ---------------------------------
+   00E7                     254 _SpriteManagerLoad::
+   00E7 E8 F8               255 	add	sp, #-8
+                            256 ;C:/gbdk/ZGB/common/src/SpriteManager.c:43: spriteIdxs[sprite_type] = LoadSprite(spriteNumFrames[sprite_type], spriteDatas[sprite_type], spriteDataBanks[sprite_type], spriteFrameSizes[sprite_type], spritePalDatas[sprite_type]);
+   00E9 11r00r00            257 	ld	de,#_spriteIdxs
+   00EC F8 0A               258 	ldhl	sp,#10
+   00EE 6E                  259 	ld	l,(hl)
+   00EF 26 00               260 	ld	h,#0x00
+   00F1 19                  261 	add	hl,de
+   00F2 7D                  262 	ld	a,l
+   00F3 54                  263 	ld	d,h
+   00F4 F8 04               264 	ldhl	sp,#4
+   00F6 22                  265 	ld	(hl+),a
+   00F7 72                  266 	ld	(hl),d
+   00F8 F8 0A               267 	ldhl	sp,#10
+   00FA 4E                  268 	ld	c,(hl)
+   00FB 06 00               269 	ld	b,#0x00
+   00FD CB 21               270 	sla	c
+   00FF CB 10               271 	rl	b
+   0101 F8 06               272 	ldhl	sp,#6
+   0103 71                  273 	ld	(hl),c
+   0104 23                  274 	inc	hl
+   0105 70                  275 	ld	(hl),b
+   0106 11r00r00            276 	ld	de,#_spritePalDatas
+   0109 2B                  277 	dec	hl
+   010A 2A                  278 	ld	a,(hl+)
+   010B 66                  279 	ld	h,(hl)
+   010C 6F                  280 	ld	l,a
+   010D 19                  281 	add	hl,de
+   010E 4D                  282 	ld	c,l
+   010F 44                  283 	ld	b,h
+   0110 59                  284 	ld	e, c
+   0111 50                  285 	ld	d, b
+   0112 1A                  286 	ld	a,(de)
+   0113 F8 02               287 	ldhl	sp,#2
+   0115 22                  288 	ld	(hl+),a
+   0116 13                  289 	inc	de
+   0117 1A                  290 	ld	a,(de)
+   0118 77                  291 	ld	(hl),a
+   0119 11r00r00            292 	ld	de,#_spriteFrameSizes
+   011C F8 0A               293 	ldhl	sp,#10
+   011E 6E                  294 	ld	l,(hl)
+   011F 26 00               295 	ld	h,#0x00
+   0121 19                  296 	add	hl,de
+   0122 4D                  297 	ld	c,l
+   0123 44                  298 	ld	b,h
+   0124 0A                  299 	ld	a,(bc)
+   0125 F8 01               300 	ldhl	sp,#1
+   0127 77                  301 	ld	(hl),a
+   0128 11r00r00            302 	ld	de,#_spriteDataBanks
+   012B F8 0A               303 	ldhl	sp,#10
+   012D 6E                  304 	ld	l,(hl)
+   012E 26 00               305 	ld	h,#0x00
+   0130 19                  306 	add	hl,de
+   0131 4D                  307 	ld	c,l
+   0132 44                  308 	ld	b,h
+   0133 0A                  309 	ld	a,(bc)
+   0134 F8 00               310 	ldhl	sp,#0
+   0136 77                  311 	ld	(hl),a
+   0137 11r00r00            312 	ld	de,#_spriteDatas
+   013A F8 06               313 	ldhl	sp,#6
+   013C 2A                  314 	ld	a,(hl+)
+   013D 66                  315 	ld	h,(hl)
+   013E 6F                  316 	ld	l,a
+   013F 19                  317 	add	hl,de
+   0140 4D                  318 	ld	c,l
+   0141 44                  319 	ld	b,h
+   0142 59                  320 	ld	e, c
+   0143 50                  321 	ld	d, b
+   0144 1A                  322 	ld	a,(de)
+   0145 F8 06               323 	ldhl	sp,#6
+   0147 22                  324 	ld	(hl+),a
+   0148 13                  325 	inc	de
+   0149 1A                  326 	ld	a,(de)
+   014A 77                  327 	ld	(hl),a
+   014B 11r00r00            328 	ld	de,#_spriteNumFrames
+   014E F8 0A               329 	ldhl	sp,#10
+   0150 6E                  330 	ld	l,(hl)
+   0151 26 00               331 	ld	h,#0x00
+   0153 19                  332 	add	hl,de
+   0154 4D                  333 	ld	c,l
+   0155 44                  334 	ld	b,h
+   0156 0A                  335 	ld	a,(bc)
+   0157 47                  336 	ld	b,a
+   0158 D1                  337 	pop	de
+   0159 E1                  338 	pop	hl
+   015A E5                  339 	push	hl
+   015B D5                  340 	push	de
+   015C E5                  341 	push	hl
+   015D F8 03               342 	ldhl	sp,#3
+   015F 7E                  343 	ld	a,(hl)
+   0160 F5                  344 	push	af
+   0161 33                  345 	inc	sp
+   0162 2B                  346 	dec	hl
+   0163 7E                  347 	ld	a,(hl)
+   0164 F5                  348 	push	af
+   0165 33                  349 	inc	sp
+   0166 F8 0A               350 	ldhl	sp,#10
+   0168 2A                  351 	ld	a,(hl+)
+   0169 66                  352 	ld	h,(hl)
+   016A 6F                  353 	ld	l,a
+   016B E5                  354 	push	hl
+   016C C5                  355 	push	bc
+   016D 33                  356 	inc	sp
+   016E CDr00r00            357 	call	_LoadSprite
+   0171 E8 07               358 	add	sp, #7
+   0173 4B                  359 	ld	c,e
+   0174 F8 04               360 	ldhl	sp,#4
+   0176 2A                  361 	ld	a,(hl+)
+   0177 66                  362 	ld	h,(hl)
+   0178 6F                  363 	ld	l,a
+   0179 71                  364 	ld	(hl),c
+   017A E8 08               365 	add	sp, #8
+   017C C9                  366 	ret
+                            367 ;C:/gbdk/ZGB/common/src/SpriteManager.c:47: struct Sprite* SpriteManagerAdd(UINT8 sprite_type, UINT16 x, UINT16 y) {
+                            368 ;	---------------------------------
+                            369 ; Function SpriteManagerAdd
+                            370 ; ---------------------------------
+   017D                     371 _SpriteManagerAdd::
+   017D E8 F8               372 	add	sp, #-8
+                            373 ;C:/gbdk/ZGB/common/src/SpriteManager.c:52: sprite_idx = StackPop(sprite_manager_sprites_pool);
+   017F 21r50r00            374 	ld	hl,#_sprite_manager_sprites_pool
+   0182 E5                  375 	push	hl
+   0183 CDr00r00            376 	call	_StackPop
+   0186 E8 02               377 	add	sp, #2
+   0188 F8 00               378 	ldhl	sp,#0
+   018A 73                  379 	ld	(hl),e
+                            380 ;C:/gbdk/ZGB/common/src/SpriteManager.c:53: sprite = sprite_manager_sprites[sprite_idx];
+   018B 4E                  381 	ld	c,(hl)
+   018C 06 00               382 	ld	b,#0x00
+   018E CB 21               383 	sla	c
+   0190 CB 10               384 	rl	b
+   0192 21r00r00            385 	ld	hl,#_sprite_manager_sprites
+   0195 09                  386 	add	hl,bc
+   0196 4D                  387 	ld	c,l
+   0197 44                  388 	ld	b,h
+   0198 59                  389 	ld	e, c
+   0199 50                  390 	ld	d, b
+   019A 1A                  391 	ld	a,(de)
+   019B F8 01               392 	ldhl	sp,#1
+   019D 22                  393 	ld	(hl+),a
+   019E 13                  394 	inc	de
+   019F 1A                  395 	ld	a,(de)
+                            396 ;C:/gbdk/ZGB/common/src/SpriteManager.c:54: sprite->type = sprite_type;
+   01A0 32                  397 	ld	(hl-),a
+   01A1 5E                  398 	ld	e,(hl)
+   01A2 23                  399 	inc	hl
+   01A3 56                  400 	ld	d,(hl)
+   01A4 21 10 00            401 	ld	hl,#0x0010
+   01A7 19                  402 	add	hl,de
+   01A8 7D                  403 	ld	a,l
+   01A9 54                  404 	ld	d,h
+   01AA F8 06               405 	ldhl	sp,#6
+   01AC 22                  406 	ld	(hl+),a
+   01AD 72                  407 	ld	(hl),d
+   01AE 2B                  408 	dec	hl
+   01AF 5E                  409 	ld	e,(hl)
+   01B0 23                  410 	inc	hl
+   01B1 56                  411 	ld	d,(hl)
+   01B2 F8 0A               412 	ldhl	sp,#10
+   01B4 7E                  413 	ld	a,(hl)
+   01B5 12                  414 	ld	(de),a
+                            415 ;C:/gbdk/ZGB/common/src/SpriteManager.c:55: sprite->marked_for_removal = 0;
+   01B6 F8 01               416 	ldhl	sp,#(2 - 1)
+   01B8 5E                  417 	ld	e,(hl)
+   01B9 23                  418 	inc	hl
+   01BA 56                  419 	ld	d,(hl)
+   01BB 21 11 00            420 	ld	hl,#0x0011
+   01BE 19                  421 	add	hl,de
+   01BF 4D                  422 	ld	c,l
+   01C0 44                  423 	ld	b,h
+   01C1 AF                  424 	xor	a, a
+   01C2 02                  425 	ld	(bc),a
+                            426 ;C:/gbdk/ZGB/common/src/SpriteManager.c:56: sprite->lim_x = 32u;
+   01C3 F8 01               427 	ldhl	sp,#(2 - 1)
+   01C5 5E                  428 	ld	e,(hl)
+   01C6 23                  429 	inc	hl
+   01C7 56                  430 	ld	d,(hl)
+   01C8 21 12 00            431 	ld	hl,#0x0012
+   01CB 19                  432 	add	hl,de
+   01CC 4D                  433 	ld	c,l
+   01CD 44                  434 	ld	b,h
+   01CE 3E 20               435 	ld	a,#0x20
+   01D0 02                  436 	ld	(bc),a
+   01D1 03                  437 	inc	bc
+   01D2 3E 00               438 	ld	a,#0x00
+   01D4 02                  439 	ld	(bc),a
+                            440 ;C:/gbdk/ZGB/common/src/SpriteManager.c:57: sprite->lim_y = 32u;
+   01D5 F8 01               441 	ldhl	sp,#(2 - 1)
+   01D7 5E                  442 	ld	e,(hl)
+   01D8 23                  443 	inc	hl
+   01D9 56                  444 	ld	d,(hl)
+   01DA 21 14 00            445 	ld	hl,#0x0014
+   01DD 19                  446 	add	hl,de
+   01DE 4D                  447 	ld	c,l
+   01DF 44                  448 	ld	b,h
+   01E0 3E 20               449 	ld	a,#0x20
+   01E2 02                  450 	ld	(bc),a
+   01E3 03                  451 	inc	bc
+   01E4 3E 00               452 	ld	a,#0x00
+   01E6 02                  453 	ld	(bc),a
+                            454 ;C:/gbdk/ZGB/common/src/SpriteManager.c:58: sprite->flags = 0;
+   01E7 F8 01               455 	ldhl	sp,#(2 - 1)
+   01E9 5E                  456 	ld	e,(hl)
+   01EA 23                  457 	inc	hl
+   01EB 56                  458 	ld	d,(hl)
+   01EC 21 0B 00            459 	ld	hl,#0x000b
+   01EF 19                  460 	add	hl,de
+   01F0 4D                  461 	ld	c,l
+   01F1 44                  462 	ld	b,h
+   01F2 AF                  463 	xor	a, a
+   01F3 02                  464 	ld	(bc),a
+                            465 ;C:/gbdk/ZGB/common/src/SpriteManager.c:60: VectorAdd(sprite_manager_updatables, sprite_idx);
+   01F4 F8 00               466 	ldhl	sp,#0
+   01F6 7E                  467 	ld	a,(hl)
+   01F7 F5                  468 	push	af
+   01F8 33                  469 	inc	sp
+   01F9 21r79r00            470 	ld	hl,#_sprite_manager_updatables
+   01FC E5                  471 	push	hl
+   01FD CDr00r00            472 	call	_VectorAdd
+   0200 E8 03               473 	add	sp, #3
+                            474 ;C:/gbdk/ZGB/common/src/SpriteManager.c:62: InitSprite(sprite, spriteFrameSizes[sprite_type], spriteIdxs[sprite_type]);
+   0202 11r00r00            475 	ld	de,#_spriteIdxs
+   0205 F8 0A               476 	ldhl	sp,#10
+   0207 6E                  477 	ld	l,(hl)
+   0208 26 00               478 	ld	h,#0x00
+   020A 19                  479 	add	hl,de
+   020B 4D                  480 	ld	c,l
+   020C 44                  481 	ld	b,h
+   020D 0A                  482 	ld	a,(bc)
+   020E F8 05               483 	ldhl	sp,#5
+   0210 77                  484 	ld	(hl),a
+   0211 11r00r00            485 	ld	de,#_spriteFrameSizes
+   0214 F8 0A               486 	ldhl	sp,#10
+   0216 6E                  487 	ld	l,(hl)
+   0217 26 00               488 	ld	h,#0x00
+   0219 19                  489 	add	hl,de
+   021A 4D                  490 	ld	c,l
+   021B 44                  491 	ld	b,h
+   021C 0A                  492 	ld	a,(bc)
+   021D 47                  493 	ld	b,a
+   021E F8 05               494 	ldhl	sp,#5
+   0220 7E                  495 	ld	a,(hl)
+   0221 F5                  496 	push	af
+   0222 33                  497 	inc	sp
+   0223 C5                  498 	push	bc
+   0224 33                  499 	inc	sp
+   0225 F8 03               500 	ldhl	sp,#3
+   0227 2A                  501 	ld	a,(hl+)
+   0228 66                  502 	ld	h,(hl)
+   0229 6F                  503 	ld	l,a
+   022A E5                  504 	push	hl
+   022B CDr00r00            505 	call	_InitSprite
+   022E E8 04               506 	add	sp, #4
+                            507 ;C:/gbdk/ZGB/common/src/SpriteManager.c:63: sprite->x = x;
+   0230 F8 01               508 	ldhl	sp,#(2 - 1)
+   0232 5E                  509 	ld	e,(hl)
+   0233 23                  510 	inc	hl
+   0234 56                  511 	ld	d,(hl)
+   0235 21 07 00            512 	ld	hl,#0x0007
+   0238 19                  513 	add	hl,de
+   0239 4D                  514 	ld	c,l
+   023A 44                  515 	ld	b,h
+   023B F8 0B               516 	ldhl	sp,#11
+   023D 7E                  517 	ld	a,(hl)
+   023E 02                  518 	ld	(bc),a
+   023F 03                  519 	inc	bc
+   0240 23                  520 	inc	hl
+   0241 7E                  521 	ld	a,(hl)
+   0242 02                  522 	ld	(bc),a
+                            523 ;C:/gbdk/ZGB/common/src/SpriteManager.c:64: sprite->y = y;
+   0243 F8 01               524 	ldhl	sp,#(2 - 1)
+   0245 5E                  525 	ld	e,(hl)
+   0246 23                  526 	inc	hl
+   0247 56                  527 	ld	d,(hl)
+   0248 21 09 00            528 	ld	hl,#0x0009
+   024B 19                  529 	add	hl,de
+   024C 4D                  530 	ld	c,l
+   024D 44                  531 	ld	b,h
+   024E F8 0D               532 	ldhl	sp,#13
+   0250 7E                  533 	ld	a,(hl)
+   0251 02                  534 	ld	(bc),a
+   0252 03                  535 	inc	bc
+   0253 23                  536 	inc	hl
+   0254 7E                  537 	ld	a,(hl)
+   0255 02                  538 	ld	(bc),a
+                            539 ;C:/gbdk/ZGB/common/src/SpriteManager.c:67: cachedSprite = THIS;
+   0256 21rA6r00            540 	ld	hl,#_THIS
+   0259 2A                  541 	ld	a,(hl+)
+   025A 5E                  542 	ld	e, (hl)
+   025B 21rA3r00            543 	ld	hl,#_cachedSprite
+   025E 22                  544 	ld	(hl+),a
+   025F 73                  545 	ld	(hl),e
+                            546 ;C:/gbdk/ZGB/common/src/SpriteManager.c:68: spriteIdxTmp = THIS_IDX;
+   0260 21rA5r00            547 	ld	hl,#_THIS_IDX
+   0263 7E                  548 	ld	a,(hl)
+   0264 F8 03               549 	ldhl	sp,#3
+   0266 22                  550 	ld	(hl+),a
+   0267 36 00               551 	ld	(hl),#0x00
+                            552 ;C:/gbdk/ZGB/common/src/SpriteManager.c:69: THIS = sprite;
+   0269 F8 01               553 	ldhl	sp,#1
+   026B 2A                  554 	ld	a,(hl+)
+   026C 5E                  555 	ld	e, (hl)
+   026D 21rA6r00            556 	ld	hl,#_THIS
+   0270 22                  557 	ld	(hl+),a
+   0271 73                  558 	ld	(hl),e
+                            559 ;C:/gbdk/ZGB/common/src/SpriteManager.c:70: THIS_IDX = sprite_manager_updatables[0] - 1;
+   0272 FAr79r00            560 	ld	a, (#_sprite_manager_updatables + 0)
+   0275 C6 FF               561 	add	a,#0xff
+   0277 21rA5r00            562 	ld	hl,#_THIS_IDX
+   027A 77                  563 	ld	(hl),a
+                            564 ;C:/gbdk/ZGB/common/src/SpriteManager.c:71: PUSH_BANK(spriteBanks[sprite->type]);
+   027B F8 06               565 	ldhl	sp,#(7 - 1)
+   027D 5E                  566 	ld	e,(hl)
+   027E 23                  567 	inc	hl
+   027F 56                  568 	ld	d,(hl)
+   0280 1A                  569 	ld	a,(de)
+   0281 C6r00               570 	add	a,#<(_spriteBanks)
+   0283 4F                  571 	ld	c,a
+   0284 3Es00               572 	ld	a,#>(_spriteBanks)
+   0286 CE 00               573 	adc	a, #0x00
+   0288 47                  574 	ld	b,a
+   0289 0A                  575 	ld	a,(bc)
+   028A 47                  576 	ld	b,a
+   028B C5                  577 	push	bc
+   028C 33                  578 	inc	sp
+   028D CDr00r00            579 	call	_PushBank
+   0290 33                  580 	inc	sp
+                            581 ;C:/gbdk/ZGB/common/src/SpriteManager.c:72: spriteStartFuncs[sprite->type]();
+   0291 F8 06               582 	ldhl	sp,#(7 - 1)
+   0293 5E                  583 	ld	e,(hl)
+   0294 23                  584 	inc	hl
+   0295 56                  585 	ld	d,(hl)
+   0296 1A                  586 	ld	a,(de)
+   0297 4F                  587 	ld	c,a
+   0298 06 00               588 	ld	b,#0x00
+   029A CB 21               589 	sla	c
+   029C CB 10               590 	rl	b
+   029E 21r00r00            591 	ld	hl,#_spriteStartFuncs
+   02A1 09                  592 	add	hl,bc
+   02A2 4D                  593 	ld	c,l
+   02A3 44                  594 	ld	b,h
+   02A4 59                  595 	ld	e, c
+   02A5 50                  596 	ld	d, b
+   02A6 1A                  597 	ld	a,(de)
+   02A7 4F                  598 	ld	c,a
+   02A8 13                  599 	inc	de
+   02A9 1A                  600 	ld	a,(de)
+   02AA 47                  601 	ld	b,a
+   02AB 69                  602 	ld	l, c
+   02AC 60                  603 	ld	h, b
+   02AD CDr00r00            604 	call	___sdcc_call_hl
+                            605 ;C:/gbdk/ZGB/common/src/SpriteManager.c:73: POP_BANK;
+   02B0 CDr00r00            606 	call	_PopBank
+                            607 ;C:/gbdk/ZGB/common/src/SpriteManager.c:75: THIS = cachedSprite;
+   02B3 21rA3r00            608 	ld	hl,#_cachedSprite
+   02B6 2A                  609 	ld	a,(hl+)
+   02B7 5E                  610 	ld	e, (hl)
+   02B8 21rA6r00            611 	ld	hl,#_THIS
+   02BB 22                  612 	ld	(hl+),a
+   02BC 73                  613 	ld	(hl),e
+                            614 ;C:/gbdk/ZGB/common/src/SpriteManager.c:76: THIS_IDX = spriteIdxTmp;
+   02BD E5                  615 	push	hl
+   02BE F8 05               616 	ldhl	sp,#5
+   02C0 7E                  617 	ld	a,(hl)
+   02C1 21rA5r00            618 	ld	hl,#_THIS_IDX
+   02C4 77                  619 	ld	(hl),a
+   02C5 E1                  620 	pop	hl
+                            621 ;C:/gbdk/ZGB/common/src/SpriteManager.c:77: return sprite;
+   02C6 F8 01               622 	ldhl	sp,#(2 - 1)
+   02C8 5E                  623 	ld	e,(hl)
+   02C9 23                  624 	inc	hl
+   02CA 56                  625 	ld	d,(hl)
+   02CB E8 08               626 	add	sp, #8
+   02CD C9                  627 	ret
+                            628 ;C:/gbdk/ZGB/common/src/SpriteManager.c:80: void SpriteManagerRemove(int idx) {
+                            629 ;	---------------------------------
+                            630 ; Function SpriteManagerRemove
+                            631 ; ---------------------------------
+   02CE                     632 _SpriteManagerRemove::
+                            633 ;C:/gbdk/ZGB/common/src/SpriteManager.c:81: sprite_manager_removal_check = 1;
+   02CE 21rA2r00            634 	ld	hl,#_sprite_manager_removal_check
+   02D1 36 01               635 	ld	(hl),#0x01
+                            636 ;C:/gbdk/ZGB/common/src/SpriteManager.c:82: sprite_manager_sprites[sprite_manager_updatables[idx + 1]]->marked_for_removal = 1;
+   02D3 F8 02               637 	ldhl	sp,#2
+   02D5 4E                  638 	ld	c,(hl)
+   02D6 0C                  639 	inc	c
+   02D7 3Er79               640 	ld	a,#<(_sprite_manager_updatables)
+   02D9 81                  641 	add	a, c
+   02DA 4F                  642 	ld	c,a
+   02DB 3Es00               643 	ld	a,#>(_sprite_manager_updatables)
+   02DD CE 00               644 	adc	a, #0x00
+   02DF 47                  645 	ld	b,a
+   02E0 0A                  646 	ld	a,(bc)
+   02E1 4F                  647 	ld	c,a
+   02E2 06 00               648 	ld	b,#0x00
+   02E4 CB 21               649 	sla	c
+   02E6 CB 10               650 	rl	b
+   02E8 21r00r00            651 	ld	hl,#_sprite_manager_sprites
+   02EB 09                  652 	add	hl,bc
+   02EC 4D                  653 	ld	c,l
+   02ED 44                  654 	ld	b,h
+   02EE 59                  655 	ld	e, c
+   02EF 50                  656 	ld	d, b
+   02F0 1A                  657 	ld	a,(de)
+   02F1 4F                  658 	ld	c,a
+   02F2 13                  659 	inc	de
+   02F3 1A                  660 	ld	a,(de)
+   02F4 47                  661 	ld	b,a
+   02F5 21 11 00            662 	ld	hl,#0x0011
+   02F8 09                  663 	add	hl,bc
+   02F9 4D                  664 	ld	c,l
+   02FA 44                  665 	ld	b,h
+   02FB 3E 01               666 	ld	a,#0x01
+   02FD 02                  667 	ld	(bc),a
+   02FE C9                  668 	ret
+                            669 ;C:/gbdk/ZGB/common/src/SpriteManager.c:85: void SpriteManagerRemoveSprite(struct Sprite* sprite) {
+                            670 ;	---------------------------------
+                            671 ; Function SpriteManagerRemoveSprite
+                            672 ; ---------------------------------
+   02FF                     673 _SpriteManagerRemoveSprite::
+   02FF E8 FE               674 	add	sp, #-2
+                            675 ;C:/gbdk/ZGB/common/src/SpriteManager.c:88: for(i = 0u; i != sprite_manager_updatables[0]; ++i) {
+   0301 F8 00               676 	ldhl	sp,#0
+   0303 36 00               677 	ld	(hl),#0x00
+   0305                     678 00105$:
+   0305 11r79r00            679 	ld	de, #_sprite_manager_updatables + 0
+   0308 1A                  680 	ld	a,(de)
+   0309 4F                  681 	ld	c,a
+   030A F8 00               682 	ldhl	sp,#0
+   030C 7E                  683 	ld	a,(hl)
+   030D 91                  684 	sub	a, c
+   030E CAr55r03            685 	jp	Z,00107$
+                            686 ;C:/gbdk/ZGB/common/src/SpriteManager.c:89: s = sprite_manager_sprites[sprite_manager_updatables[i + 1]];
+   0311 F8 00               687 	ldhl	sp,#0
+   0313 7E                  688 	ld	a,(hl)
+   0314 3C                  689 	inc	a
+   0315 23                  690 	inc	hl
+   0316 77                  691 	ld	(hl),a
+   0317 11r79r00            692 	ld	de,#_sprite_manager_updatables
+   031A 6E                  693 	ld	l,(hl)
+   031B 26 00               694 	ld	h,#0x00
+   031D 19                  695 	add	hl,de
+   031E 4D                  696 	ld	c,l
+   031F 44                  697 	ld	b,h
+   0320 0A                  698 	ld	a,(bc)
+   0321 4F                  699 	ld	c,a
+   0322 06 00               700 	ld	b,#0x00
+   0324 CB 21               701 	sla	c
+   0326 CB 10               702 	rl	b
+   0328 21r00r00            703 	ld	hl,#_sprite_manager_sprites
+   032B 09                  704 	add	hl,bc
+   032C 4D                  705 	ld	c,l
+   032D 44                  706 	ld	b,h
+   032E 59                  707 	ld	e, c
+   032F 50                  708 	ld	d, b
+   0330 1A                  709 	ld	a,(de)
+   0331 4F                  710 	ld	c,a
+   0332 13                  711 	inc	de
+   0333 1A                  712 	ld	a,(de)
+   0334 47                  713 	ld	b,a
+                            714 ;C:/gbdk/ZGB/common/src/SpriteManager.c:90: if(s == sprite) {
+   0335 F8 04               715 	ldhl	sp,#4
+   0337 7E                  716 	ld	a,(hl)
+   0338 91                  717 	sub	a, c
+   0339 20 12               718 	jr	NZ,00106$
+   033B 23                  719 	inc	hl
+   033C 7E                  720 	ld	a,(hl)
+   033D 90                  721 	sub	a, b
+   033E 20 0D               722 	jr	NZ,00106$
+                            723 ;C:/gbdk/ZGB/common/src/SpriteManager.c:91: SpriteManagerRemove(i);
+   0340 F8 00               724 	ldhl	sp,#0
+   0342 4E                  725 	ld	c,(hl)
+   0343 06 00               726 	ld	b,#0x00
+   0345 C5                  727 	push	bc
+   0346 CDrCEr02            728 	call	_SpriteManagerRemove
+   0349 E8 02               729 	add	sp, #2
+                            730 ;C:/gbdk/ZGB/common/src/SpriteManager.c:92: break;
+   034B 18 08               731 	jr	00107$
+   034D                     732 00106$:
+                            733 ;C:/gbdk/ZGB/common/src/SpriteManager.c:88: for(i = 0u; i != sprite_manager_updatables[0]; ++i) {
+   034D F8 01               734 	ldhl	sp,#1
+   034F 4E                  735 	ld	c,(hl)
+   0350 2B                  736 	dec	hl
+   0351 71                  737 	ld	(hl),c
+   0352 C3r05r03            738 	jp	00105$
+   0355                     739 00107$:
+   0355 E8 02               740 	add	sp, #2
+   0357 C9                  741 	ret
+                            742 ;C:/gbdk/ZGB/common/src/SpriteManager.c:97: void SpriteManagerFlushRemove() {
+                            743 ;	---------------------------------
+                            744 ; Function SpriteManagerFlushRemove
+                            745 ; ---------------------------------
+   0358                     746 _SpriteManagerFlushRemove::
+   0358 3B                  747 	dec	sp
+                            748 ;C:/gbdk/ZGB/common/src/SpriteManager.c:99: for(THIS_IDX = sprite_manager_updatables[0] - 1u; (UINT8)(THIS_IDX + 1u) != 0u; THIS_IDX --) {
+   0359 FAr79r00            749 	ld	a, (#_sprite_manager_updatables + 0)
+   035C C6 FF               750 	add	a,#0xff
+   035E 21rA5r00            751 	ld	hl,#_THIS_IDX
+   0361 77                  752 	ld	(hl),a
+   0362                     753 00105$:
+   0362 21rA5r00            754 	ld	hl,#_THIS_IDX
+   0365 4E                  755 	ld	c,(hl)
+   0366 0C                  756 	inc	c
+   0367 79                  757 	ld	a,c
+   0368 B7                  758 	or	a, a
+   0369 CAr0Ar04            759 	jp	Z,00103$
+                            760 ;C:/gbdk/ZGB/common/src/SpriteManager.c:100: THIS = sprite_manager_sprites[sprite_manager_updatables[THIS_IDX + 1u]];
+   036C 3Er79               761 	ld	a,#<(_sprite_manager_updatables)
+   036E 81                  762 	add	a, c
+   036F 4F                  763 	ld	c,a
+   0370 3Es00               764 	ld	a,#>(_sprite_manager_updatables)
+   0372 CE 00               765 	adc	a, #0x00
+   0374 47                  766 	ld	b,a
+   0375 0A                  767 	ld	a,(bc)
+   0376 F8 00               768 	ldhl	sp,#0
+   0378 77                  769 	ld	(hl),a
+   0379 4E                  770 	ld	c,(hl)
+   037A 06 00               771 	ld	b,#0x00
+   037C CB 21               772 	sla	c
+   037E CB 10               773 	rl	b
+   0380 21r00r00            774 	ld	hl,#_sprite_manager_sprites
+   0383 09                  775 	add	hl,bc
+   0384 4D                  776 	ld	c,l
+   0385 44                  777 	ld	b,h
+   0386 59                  778 	ld	e, c
+   0387 50                  779 	ld	d, b
+   0388 1A                  780 	ld	a,(de)
+   0389 21rA6r00            781 	ld	hl,#_THIS
+   038C 22                  782 	ld	(hl+),a
+   038D 13                  783 	inc	de
+   038E 1A                  784 	ld	a,(de)
+                            785 ;C:/gbdk/ZGB/common/src/SpriteManager.c:101: if(THIS->marked_for_removal) {
+   038F 32                  786 	ld	(hl-),a
+   0390 4E                  787 	ld	c,(hl)
+   0391 23                  788 	inc	hl
+   0392 46                  789 	ld	b,(hl)
+   0393 21 11 00            790 	ld	hl,#0x0011
+   0396 09                  791 	add	hl,bc
+   0397 4D                  792 	ld	c,l
+   0398 44                  793 	ld	b,h
+   0399 0A                  794 	ld	a,(bc)
+   039A B7                  795 	or	a, a
+   039B CAr03r04            796 	jp	Z,00106$
+                            797 ;C:/gbdk/ZGB/common/src/SpriteManager.c:102: StackPush(sprite_manager_sprites_pool, sprite_manager_updatables[THIS_IDX + 1u]);
+   039E F8 00               798 	ldhl	sp,#0
+   03A0 7E                  799 	ld	a,(hl)
+   03A1 F5                  800 	push	af
+   03A2 33                  801 	inc	sp
+   03A3 21r50r00            802 	ld	hl,#_sprite_manager_sprites_pool
+   03A6 E5                  803 	push	hl
+   03A7 CDr00r00            804 	call	_StackPush
+   03AA E8 03               805 	add	sp, #3
+                            806 ;C:/gbdk/ZGB/common/src/SpriteManager.c:103: VectorRemovePos(sprite_manager_updatables, THIS_IDX);
+   03AC 21rA5r00            807 	ld	hl,#_THIS_IDX
+   03AF 7E                  808 	ld	a,(hl)
+   03B0 F5                  809 	push	af
+   03B1 33                  810 	inc	sp
+   03B2 21r79r00            811 	ld	hl,#_sprite_manager_updatables
+   03B5 E5                  812 	push	hl
+   03B6 CDr00r00            813 	call	_VectorRemovePos
+   03B9 E8 03               814 	add	sp, #3
+                            815 ;C:/gbdk/ZGB/common/src/SpriteManager.c:105: PUSH_BANK(spriteBanks[THIS->type]);
+   03BB 21rA7r00            816 	ld	hl,#_THIS + 1
+   03BE 2B                  817 	dec	hl
+   03BF 4E                  818 	ld	c,(hl)
+   03C0 23                  819 	inc	hl
+   03C1 46                  820 	ld	b,(hl)
+   03C2 21 10 00            821 	ld	hl,#0x0010
+   03C5 09                  822 	add	hl,bc
+   03C6 4D                  823 	ld	c,l
+   03C7 44                  824 	ld	b,h
+   03C8 0A                  825 	ld	a,(bc)
+   03C9 C6r00               826 	add	a,#<(_spriteBanks)
+   03CB 4F                  827 	ld	c,a
+   03CC 3Es00               828 	ld	a,#>(_spriteBanks)
+   03CE CE 00               829 	adc	a, #0x00
+   03D0 47                  830 	ld	b,a
+   03D1 0A                  831 	ld	a,(bc)
+   03D2 47                  832 	ld	b,a
+   03D3 C5                  833 	push	bc
+   03D4 33                  834 	inc	sp
+   03D5 CDr00r00            835 	call	_PushBank
+   03D8 33                  836 	inc	sp
+                            837 ;C:/gbdk/ZGB/common/src/SpriteManager.c:106: spriteDestroyFuncs[THIS->type]();
+   03D9 21rA7r00            838 	ld	hl,#_THIS + 1
+   03DC 2B                  839 	dec	hl
+   03DD 4E                  840 	ld	c,(hl)
+   03DE 23                  841 	inc	hl
+   03DF 46                  842 	ld	b,(hl)
+   03E0 21 10 00            843 	ld	hl,#0x0010
+   03E3 09                  844 	add	hl,bc
+   03E4 4D                  845 	ld	c,l
+   03E5 44                  846 	ld	b,h
+   03E6 0A                  847 	ld	a,(bc)
+   03E7 4F                  848 	ld	c,a
+   03E8 06 00               849 	ld	b,#0x00
+   03EA CB 21               850 	sla	c
+   03EC CB 10               851 	rl	b
+   03EE 21r00r00            852 	ld	hl,#_spriteDestroyFuncs
+   03F1 09                  853 	add	hl,bc
+   03F2 4D                  854 	ld	c,l
+   03F3 44                  855 	ld	b,h
+   03F4 59                  856 	ld	e, c
+   03F5 50                  857 	ld	d, b
+   03F6 1A                  858 	ld	a,(de)
+   03F7 4F                  859 	ld	c,a
+   03F8 13                  860 	inc	de
+   03F9 1A                  861 	ld	a,(de)
+   03FA 47                  862 	ld	b,a
+   03FB 69                  863 	ld	l, c
+   03FC 60                  864 	ld	h, b
+   03FD CDr00r00            865 	call	___sdcc_call_hl
+                            866 ;C:/gbdk/ZGB/common/src/SpriteManager.c:107: POP_BANK;
+   0400 CDr00r00            867 	call	_PopBank
+   0403                     868 00106$:
+                            869 ;C:/gbdk/ZGB/common/src/SpriteManager.c:99: for(THIS_IDX = sprite_manager_updatables[0] - 1u; (UINT8)(THIS_IDX + 1u) != 0u; THIS_IDX --) {
+   0403 21rA5r00            870 	ld	hl,#_THIS_IDX
+   0406 35                  871 	dec	(hl)
+   0407 C3r62r03            872 	jp	00105$
+   040A                     873 00103$:
+                            874 ;C:/gbdk/ZGB/common/src/SpriteManager.c:110: sprite_manager_removal_check = 0;
+   040A 21rA2r00            875 	ld	hl,#_sprite_manager_removal_check
+   040D 36 00               876 	ld	(hl),#0x00
+   040F 33                  877 	inc	sp
+   0410 C9                  878 	ret
+                            879 ;C:/gbdk/ZGB/common/src/SpriteManager.c:118: void SpriteManagerUpdate() {
+                            880 ;	---------------------------------
+                            881 ; Function SpriteManagerUpdate
+                            882 ; ---------------------------------
+   0411                     883 _SpriteManagerUpdate::
+   0411 E8 FE               884 	add	sp, #-2
+                            885 ;C:/gbdk/ZGB/common/src/SpriteManager.c:119: for(THIS_IDX = 0u; THIS_IDX != sprite_manager_updatables[0]; ++THIS_IDX) {
+   0413 21rA5r00            886 	ld	hl,#_THIS_IDX
+   0416 36 00               887 	ld	(hl),#0x00
+   0418                     888 00109$:
+   0418 11r79r00            889 	ld	de, #_sprite_manager_updatables + 0
+   041B 1A                  890 	ld	a,(de)
+   041C 4F                  891 	ld	c,a
+   041D 21rA5r00            892 	ld	hl,#_THIS_IDX
+   0420 7E                  893 	ld	a,(hl)
+   0421 91                  894 	sub	a, c
+   0422 CArC7r04            895 	jp	Z,00105$
+                            896 ;C:/gbdk/ZGB/common/src/SpriteManager.c:120: THIS = sprite_manager_sprites[sprite_manager_updatables[THIS_IDX + 1]];
+   0425 21rA5r00            897 	ld	hl,#_THIS_IDX
+   0428 4E                  898 	ld	c,(hl)
+   0429 0C                  899 	inc	c
+   042A 3Er79               900 	ld	a,#<(_sprite_manager_updatables)
+   042C 81                  901 	add	a, c
+   042D 4F                  902 	ld	c,a
+   042E 3Es00               903 	ld	a,#>(_sprite_manager_updatables)
+   0430 CE 00               904 	adc	a, #0x00
+   0432 47                  905 	ld	b,a
+   0433 0A                  906 	ld	a,(bc)
+   0434 4F                  907 	ld	c,a
+   0435 06 00               908 	ld	b,#0x00
+   0437 CB 21               909 	sla	c
+   0439 CB 10               910 	rl	b
+   043B 21r00r00            911 	ld	hl,#_sprite_manager_sprites
+   043E 09                  912 	add	hl,bc
+   043F 4D                  913 	ld	c,l
+   0440 44                  914 	ld	b,h
+   0441 59                  915 	ld	e, c
+   0442 50                  916 	ld	d, b
+   0443 1A                  917 	ld	a,(de)
+   0444 21rA6r00            918 	ld	hl,#_THIS
+   0447 22                  919 	ld	(hl+),a
+   0448 13                  920 	inc	de
+   0449 1A                  921 	ld	a,(de)
+                            922 ;C:/gbdk/ZGB/common/src/SpriteManager.c:121: if(!THIS->marked_for_removal) {
+   044A 32                  923 	ld	(hl-),a
+   044B 4E                  924 	ld	c,(hl)
+   044C 23                  925 	inc	hl
+   044D 46                  926 	ld	b,(hl)
+   044E 21 11 00            927 	ld	hl,#0x0011
+   0451 09                  928 	add	hl,bc
+   0452 33                  929 	inc	sp
+   0453 33                  930 	inc	sp
+   0454 E5                  931 	push	hl
+   0455 D1                  932 	pop	de
+   0456 D5                  933 	push	de
+   0457 1A                  934 	ld	a,(de)
+   0458 B7                  935 	or	a, a
+   0459 C2rC0r04            936 	jp	NZ,00110$
+                            937 ;C:/gbdk/ZGB/common/src/SpriteManager.c:123: PUSH_BANK(spriteBanks[THIS->type]);
+   045C 21 10 00            938 	ld	hl,#0x0010
+   045F 09                  939 	add	hl,bc
+   0460 4D                  940 	ld	c,l
+   0461 44                  941 	ld	b,h
+   0462 0A                  942 	ld	a,(bc)
+   0463 C6r00               943 	add	a,#<(_spriteBanks)
+   0465 4F                  944 	ld	c,a
+   0466 3Es00               945 	ld	a,#>(_spriteBanks)
+   0468 CE 00               946 	adc	a, #0x00
+   046A 47                  947 	ld	b,a
+   046B 0A                  948 	ld	a,(bc)
+   046C 47                  949 	ld	b,a
+   046D C5                  950 	push	bc
+   046E 33                  951 	inc	sp
+   046F CDr00r00            952 	call	_PushBank
+   0472 33                  953 	inc	sp
+                            954 ;C:/gbdk/ZGB/common/src/SpriteManager.c:124: spriteUpdateFuncs[THIS->type]();
+   0473 21rA7r00            955 	ld	hl,#_THIS + 1
+   0476 2B                  956 	dec	hl
+   0477 4E                  957 	ld	c,(hl)
+   0478 23                  958 	inc	hl
+   0479 46                  959 	ld	b,(hl)
+   047A 21 10 00            960 	ld	hl,#0x0010
+   047D 09                  961 	add	hl,bc
+   047E 4D                  962 	ld	c,l
+   047F 44                  963 	ld	b,h
+   0480 0A                  964 	ld	a,(bc)
+   0481 4F                  965 	ld	c,a
+   0482 06 00               966 	ld	b,#0x00
+   0484 CB 21               967 	sla	c
+   0486 CB 10               968 	rl	b
+   0488 21r00r00            969 	ld	hl,#_spriteUpdateFuncs
+   048B 09                  970 	add	hl,bc
+   048C 4D                  971 	ld	c,l
+   048D 44                  972 	ld	b,h
+   048E 59                  973 	ld	e, c
+   048F 50                  974 	ld	d, b
+   0490 1A                  975 	ld	a,(de)
+   0491 4F                  976 	ld	c,a
+   0492 13                  977 	inc	de
+   0493 1A                  978 	ld	a,(de)
+   0494 47                  979 	ld	b,a
+   0495 69                  980 	ld	l, c
+   0496 60                  981 	ld	h, b
+   0497 CDr00r00            982 	call	___sdcc_call_hl
+                            983 ;C:/gbdk/ZGB/common/src/SpriteManager.c:126: if(THIS == scroll_target)
+   049A 21rA6r00            984 	ld	hl,#_THIS
+   049D 7E                  985 	ld	a,(hl)
+   049E 21r00r00            986 	ld	hl,#_scroll_target
+   04A1 96                  987 	sub	a, (hl)
+   04A2 20 0D               988 	jr	NZ,00102$
+   04A4 21rA7r00            989 	ld	hl,#_THIS + 1
+   04A7 7E                  990 	ld	a,(hl)
+   04A8 21r01r00            991 	ld	hl,#_scroll_target + 1
+   04AB 96                  992 	sub	a, (hl)
+   04AC 20 03               993 	jr	NZ,00102$
+                            994 ;C:/gbdk/ZGB/common/src/SpriteManager.c:127: RefreshScroll();
+   04AE CDr00r00            995 	call	_RefreshScroll
+   04B1                     996 00102$:
+                            997 ;C:/gbdk/ZGB/common/src/SpriteManager.c:129: DrawSprite(THIS); //this needs to be done using the sprite bank because the animation array is stored there
+   04B1 21rA6r00            998 	ld	hl,#_THIS
+   04B4 2A                  999 	ld	a,(hl+)
+   04B5 66                 1000 	ld	h,(hl)
+   04B6 6F                 1001 	ld	l,a
+   04B7 E5                 1002 	push	hl
+   04B8 CDr00r00           1003 	call	_DrawSprite
+   04BB E8 02              1004 	add	sp, #2
+                           1005 ;C:/gbdk/ZGB/common/src/SpriteManager.c:131: POP_BANK;
+   04BD CDr00r00           1006 	call	_PopBank
+   04C0                    1007 00110$:
+                           1008 ;C:/gbdk/ZGB/common/src/SpriteManager.c:119: for(THIS_IDX = 0u; THIS_IDX != sprite_manager_updatables[0]; ++THIS_IDX) {
+   04C0 21rA5r00           1009 	ld	hl,#_THIS_IDX
+   04C3 34                 1010 	inc	(hl)
+   04C4 C3r18r04           1011 	jp	00109$
+   04C7                    1012 00105$:
+                           1013 ;C:/gbdk/ZGB/common/src/SpriteManager.c:135: SwapOAMs();
+   04C7 CDr00r00           1014 	call	_SwapOAMs
+                           1015 ;C:/gbdk/ZGB/common/src/SpriteManager.c:137: if(sprite_manager_removal_check) {
+   04CA 21rA2r00           1016 	ld	hl,#_sprite_manager_removal_check
+   04CD 7E                 1017 	ld	a,(hl)
+   04CE B7                 1018 	or	a, a
+   04CF 28 03              1019 	jr	Z,00111$
+                           1020 ;C:/gbdk/ZGB/common/src/SpriteManager.c:138: SpriteManagerFlushRemove();
+   04D1 CDr58r03           1021 	call	_SpriteManagerFlushRemove
+   04D4                    1022 00111$:
+   04D4 E8 02              1023 	add	sp, #2
+   04D6 C9                 1024 	ret
+                           1025 	.area _CODE
+                           1026 	.area _CABS (ABS)

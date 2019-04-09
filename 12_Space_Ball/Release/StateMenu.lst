@@ -1,0 +1,907 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module StateMenu
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _Update_STATE_MENU
+                             12 	.globl _Start_STATE_MENU
+                             13 	.globl _change_menu_settings
+                             14 	.globl _CP_LoadMusic
+                             15 	.globl _TILE_ANIMATE
+                             16 	.globl _LOAD_TILE_ANIM
+                             17 	.globl _MAP_ANIMATE
+                             18 	.globl _LOAD_MAP_ANIM
+                             19 	.globl _SpriteManagerAdd
+                             20 	.globl _SpriteManagerLoad
+                             21 	.globl _MoveScroll
+                             22 	.globl _InitScroll
+                             23 	.globl _ZInitScrollTilesColor
+                             24 	.globl _SetPalette
+                             25 	.globl _set_bkg_tiles
+                             26 	.globl _Settings_Op
+                             27 	.globl _M
+                             28 	.globl _Tile_items
+                             29 	.globl _Bkg_items
+                             30 	.globl _Activate_Parallax
+                             31 	.globl _Menu_Mode
+                             32 	.globl _bank_STATE_MENU
+                             33 	.globl _shipsPAL
+                             34 	.globl _tiles_menuPAL
+                             35 ;--------------------------------------------------------
+                             36 ; ram data
+                             37 ;--------------------------------------------------------
+                             38 	.area _DATA
+   0000                      39 _bank_STATE_MENU::
+   0000                      40 	.ds 1
+   0001                      41 _Menu_Mode::
+   0001                      42 	.ds 1
+   0002                      43 _Activate_Parallax::
+   0002                      44 	.ds 1
+   0003                      45 _Bkg_items::
+   0003                      46 	.ds 26
+   001D                      47 _Tile_items::
+   001D                      48 	.ds 20
+   0031                      49 _M::
+   0031                      50 	.ds 2
+   0033                      51 _Settings_Op::
+   0033                      52 	.ds 1
+                             53 ;--------------------------------------------------------
+                             54 ; absolute external ram data
+                             55 ;--------------------------------------------------------
+                             56 	.area _DABS (ABS)
+                             57 ;--------------------------------------------------------
+                             58 ; global & static initialisations
+                             59 ;--------------------------------------------------------
+                             60 	.area _HOME
+                             61 	.area _GSINIT
+                             62 	.area _GSFINAL
+                             63 	.area _GSINIT
+                             64 ;StateMenu.c:6: UINT8 bank_STATE_MENU = 2;
+   0000 21r00r00             65 	ld	hl,#_bank_STATE_MENU
+   0003 36 02                66 	ld	(hl),#0x02
+                             67 ;StateMenu.c:34: UINT8 Menu_Mode = 0;
+   0005 21r01r00             68 	ld	hl,#_Menu_Mode
+   0008 36 00                69 	ld	(hl),#0x00
+                             70 ;StateMenu.c:35: UINT8 Activate_Parallax = 0;
+   000A 21r02r00             71 	ld	hl,#_Activate_Parallax
+   000D 36 00                72 	ld	(hl),#0x00
+                             73 ;--------------------------------------------------------
+                             74 ; Home
+                             75 ;--------------------------------------------------------
+                             76 	.area _HOME
+                             77 	.area _HOME
+                             78 ;--------------------------------------------------------
+                             79 ; code
+                             80 ;--------------------------------------------------------
+                             81 	.area _CODE_2
+                             82 ;StateMenu.c:46: void change_menu_settings(UINT8 op, UINT8 set){
+                             83 ;	---------------------------------
+                             84 ; Function change_menu_settings
+                             85 ; ---------------------------------
+   0000                      86 _change_menu_settings::
+                             87 ;StateMenu.c:47: set_bkg_tiles(24,op,8,1,map_menu_anim_settings+set);
+   0000 11r00r00             88 	ld	de,#_map_menu_anim_settings
+   0003 F8 03                89 	ldhl	sp,#3
+   0005 6E                   90 	ld	l,(hl)
+   0006 26 00                91 	ld	h,#0x00
+   0008 19                   92 	add	hl,de
+   0009 4D                   93 	ld	c,l
+   000A 44                   94 	ld	b,h
+   000B 59                   95 	ld	e, c
+   000C 50                   96 	ld	d, b
+   000D C5                   97 	push	bc
+   000E D5                   98 	push	de
+   000F 21 08 01             99 	ld	hl,#0x0108
+   0012 E5                  100 	push	hl
+   0013 F8 08               101 	ldhl	sp,#8
+   0015 7E                  102 	ld	a,(hl)
+   0016 F5                  103 	push	af
+   0017 33                  104 	inc	sp
+   0018 3E 18               105 	ld	a,#0x18
+   001A F5                  106 	push	af
+   001B 33                  107 	inc	sp
+   001C CDr00r00            108 	call	_set_bkg_tiles
+   001F E8 06               109 	add	sp, #6
+   0021 C1                  110 	pop	bc
+                            111 ;StateMenu.c:48: set_bkg_tiles(0,op,4,1,map_menu_anim_settings+set+4);
+   0022 03                  112 	inc	bc
+   0023 03                  113 	inc	bc
+   0024 03                  114 	inc	bc
+   0025 03                  115 	inc	bc
+   0026 C5                  116 	push	bc
+   0027 21 04 01            117 	ld	hl,#0x0104
+   002A E5                  118 	push	hl
+   002B F8 06               119 	ldhl	sp,#6
+   002D 7E                  120 	ld	a,(hl)
+   002E F5                  121 	push	af
+   002F 33                  122 	inc	sp
+   0030 AF                  123 	xor	a, a
+   0031 F5                  124 	push	af
+   0032 33                  125 	inc	sp
+   0033 CDr00r00            126 	call	_set_bkg_tiles
+   0036 E8 06               127 	add	sp, #6
+   0038 C9                  128 	ret
+   0039                     129 _tiles_menuPAL:
+   0039 FF 7F               130 	.dw #0x7fff
+   003B 73 4E               131 	.dw #0x4e73
+   003D 4A 29               132 	.dw #0x294a
+   003F 00 00               133 	.dw #0x0000
+   0041 FF 7F               134 	.dw #0x7fff
+   0043 1F 21               135 	.dw #0x211f
+   0045 11 00               136 	.dw #0x0011
+   0047 00 00               137 	.dw #0x0000
+   0049 02 4C               138 	.dw #0x4c02
+   004B FF 7F               139 	.dw #0x7fff
+   004D AD 35               140 	.dw #0x35ad
+   004F 00 00               141 	.dw #0x0000
+   0051 02 4C               142 	.dw #0x4c02
+   0053 ED 37               143 	.dw #0x37ed
+   0055 20 0E               144 	.dw #0x0e20
+   0057 00 00               145 	.dw #0x0000
+   0059 02 4C               146 	.dw #0x4c02
+   005B B3 7A               147 	.dw #0x7ab3
+   005D 66 7D               148 	.dw #0x7d66
+   005F 00 00               149 	.dw #0x0000
+   0061 02 4C               150 	.dw #0x4c02
+   0063 1E 72               151 	.dw #0x721e
+   0065 20 0E               152 	.dw #0x0e20
+   0067 00 00               153 	.dw #0x0000
+   0069 02 4C               154 	.dw #0x4c02
+   006B D6 5A               155 	.dw #0x5ad6
+   006D 1F 00               156 	.dw #0x001f
+   006F 00 00               157 	.dw #0x0000
+   0071 02 4C               158 	.dw #0x4c02
+   0073 9F 26               159 	.dw #0x269f
+   0075 77 01               160 	.dw #0x0177
+   0077 00 00               161 	.dw #0x0000
+   0079                     162 _shipsPAL:
+   0079 FF 7F               163 	.dw #0x7fff
+   007B FF 7F               164 	.dw #0x7fff
+   007D D6 5A               165 	.dw #0x5ad6
+   007F 00 00               166 	.dw #0x0000
+   0081 21 40               167 	.dw #0x4021
+   0083 3F 04               168 	.dw #0x043f
+   0085 52 00               169 	.dw #0x0052
+   0087 00 00               170 	.dw #0x0000
+   0089 21 40               171 	.dw #0x4021
+   008B E9 23               172 	.dw #0x23e9
+   008D 20 06               173 	.dw #0x0620
+   008F 00 00               174 	.dw #0x0000
+   0091 21 40               175 	.dw #0x4021
+   0093 FD 23               176 	.dw #0x23fd
+   0095 D4 02               177 	.dw #0x02d4
+   0097 00 00               178 	.dw #0x0000
+   0099 21 40               179 	.dw #0x4021
+   009B 09 7F               180 	.dw #0x7f09
+   009D FE 17               181 	.dw #0x17fe
+   009F 00 00               182 	.dw #0x0000
+   00A1 21 40               183 	.dw #0x4021
+   00A3 09 7F               184 	.dw #0x7f09
+   00A5 3F 04               185 	.dw #0x043f
+   00A7 00 00               186 	.dw #0x0000
+   00A9 21 40               187 	.dw #0x4021
+   00AB 09 7F               188 	.dw #0x7f09
+   00AD 5F 7C               189 	.dw #0x7c5f
+   00AF 00 00               190 	.dw #0x0000
+   00B1 21 44               191 	.dw #0x4421
+   00B3 FF 7F               192 	.dw #0x7fff
+   00B5 DF 00               193 	.dw #0x00df
+   00B7 00 00               194 	.dw #0x0000
+                            195 ;StateMenu.c:51: void Start_STATE_MENU() {
+                            196 ;	---------------------------------
+                            197 ; Function Start_STATE_MENU
+                            198 ; ---------------------------------
+   00B9                     199 _Start_STATE_MENU::
+                            200 ;StateMenu.c:54: HIDE_WIN;
+   00B9 11 40 FF            201 	ld	de,#0xff40
+   00BC 1A                  202 	ld	a,(de)
+   00BD 4F                  203 	ld	c,a
+   00BE 06 00               204 	ld	b,#0x00
+   00C0 CB A9               205 	res	5, c
+   00C2 06 00               206 	ld	b,#0x00
+   00C4 21 40 FF            207 	ld	hl,#0xff40
+   00C7 71                  208 	ld	(hl),c
+                            209 ;StateMenu.c:56: ZGB_Parallax = 0;
+   00C8 21r00r00            210 	ld	hl,#_ZGB_Parallax
+   00CB 36 00               211 	ld	(hl),#0x00
+                            212 ;StateMenu.c:58: SPRITES_8x16;
+   00CD 11 40 FF            213 	ld	de,#0xff40
+   00D0 1A                  214 	ld	a,(de)
+   00D1 4F                  215 	ld	c,a
+   00D2 06 00               216 	ld	b,#0x00
+   00D4 79                  217 	ld	a,c
+   00D5 CB D7               218 	set	2, a
+   00D7 4F                  219 	ld	c,a
+   00D8 21 40 FF            220 	ld	hl,#0xff40
+   00DB 71                  221 	ld	(hl),c
+                            222 ;StateMenu.c:59: for(i = 0; i != N_SPRITE_TYPES; ++ i) {
+   00DC 01 00 00            223 	ld	bc,#0x0000
+   00DF                     224 00108$:
+                            225 ;StateMenu.c:60: SpriteManagerLoad(i);
+   00DF 51                  226 	ld	d,c
+   00E0 C5                  227 	push	bc
+   00E1 D5                  228 	push	de
+   00E2 33                  229 	inc	sp
+   00E3 CDr00r00            230 	call	_SpriteManagerLoad
+   00E6 33                  231 	inc	sp
+   00E7 C1                  232 	pop	bc
+                            233 ;StateMenu.c:59: for(i = 0; i != N_SPRITE_TYPES; ++ i) {
+   00E8 03                  234 	inc	bc
+   00E9 79                  235 	ld	a,c
+   00EA D6 06               236 	sub	a, #0x06
+   00EC 20 F1               237 	jr	NZ,00108$
+   00EE 78                  238 	ld	a,b
+   00EF B7                  239 	or	a, a
+   00F0 20 ED               240 	jr	NZ,00108$
+                            241 ;StateMenu.c:62: SHOW_SPRITES; 
+   00F2 11 40 FF            242 	ld	de,#0xff40
+   00F5 1A                  243 	ld	a,(de)
+   00F6 4F                  244 	ld	c,a
+   00F7 06 00               245 	ld	b,#0x00
+   00F9 79                  246 	ld	a,c
+   00FA CB CF               247 	set	1, a
+   00FC 4F                  248 	ld	c,a
+   00FD 21 40 FF            249 	ld	hl,#0xff40
+   0100 71                  250 	ld	(hl),c
+                            251 ;StateMenu.c:64: SetPalette(tiles_menuPAL, shipsPAL, 2);
+   0101 3E 02               252 	ld	a,#0x02
+   0103 F5                  253 	push	af
+   0104 33                  254 	inc	sp
+   0105 21r79r00            255 	ld	hl,#_shipsPAL
+   0108 E5                  256 	push	hl
+   0109 21r39r00            257 	ld	hl,#_tiles_menuPAL
+   010C E5                  258 	push	hl
+   010D CDr00r00            259 	call	_SetPalette
+   0110 E8 05               260 	add	sp, #5
+                            261 ;StateMenu.c:66: InitScrollTiles(0, 256, tiles_menu, 3);
+   0112 21 00 00            262 	ld	hl,#0x0000
+   0115 E5                  263 	push	hl
+   0116 3E 03               264 	ld	a,#0x03
+   0118 F5                  265 	push	af
+   0119 33                  266 	inc	sp
+   011A 21r00r00            267 	ld	hl,#_tiles_menu
+   011D E5                  268 	push	hl
+   011E 21 00 00            269 	ld	hl,#0x0000
+   0121 E5                  270 	push	hl
+   0122 CDr00r00            271 	call	_ZInitScrollTilesColor
+   0125 E8 07               272 	add	sp, #7
+                            273 ;StateMenu.c:67: if (Menu_Mode == 0)InitScroll(map_plogoWidth, map_plogoHeight, map_plogoPLN0, 0, 0, 2, map_plogoPLN1);
+   0127 21r01r00            274 	ld	hl,#_Menu_Mode
+   012A 7E                  275 	ld	a,(hl)
+   012B B7                  276 	or	a, a
+   012C 20 1F               277 	jr	NZ,00103$
+   012E 21r00r00            278 	ld	hl,#_map_plogoPLN1
+   0131 E5                  279 	push	hl
+   0132 3E 02               280 	ld	a,#0x02
+   0134 F5                  281 	push	af
+   0135 33                  282 	inc	sp
+   0136 21 00 00            283 	ld	hl,#0x0000
+   0139 E5                  284 	push	hl
+   013A 2E 00               285 	ld	l, #0x00
+   013C E5                  286 	push	hl
+   013D 21r00r00            287 	ld	hl,#_map_plogoPLN0
+   0140 E5                  288 	push	hl
+   0141 21 12 00            289 	ld	hl,#0x0012
+   0144 E5                  290 	push	hl
+   0145 2E 14               291 	ld	l, #0x14
+   0147 E5                  292 	push	hl
+   0148 CDr00r00            293 	call	_InitScroll
+   014B E8 0D               294 	add	sp, #13
+   014D                     295 00103$:
+                            296 ;StateMenu.c:68: if (Menu_Mode == 2){
+   014D 21r01r00            297 	ld	hl,#_Menu_Mode
+   0150 7E                  298 	ld	a,(hl)
+   0151 D6 02               299 	sub	a, #0x02
+   0153 20 28               300 	jr	NZ,00105$
+                            301 ;StateMenu.c:69: CP_LoadMusic(6,1);
+   0155 21 06 01            302 	ld	hl,#0x0106
+   0158 E5                  303 	push	hl
+   0159 CDr00r00            304 	call	_CP_LoadMusic
+   015C E8 02               305 	add	sp, #2
+                            306 ;StateMenu.c:70: InitScroll(map_menuWidth, map_menuHeight, map_menuPLN0, 0, 0, 3, map_menuPLN1);
+   015E 21r00r00            307 	ld	hl,#_map_menuPLN1
+   0161 E5                  308 	push	hl
+   0162 3E 03               309 	ld	a,#0x03
+   0164 F5                  310 	push	af
+   0165 33                  311 	inc	sp
+   0166 21 00 00            312 	ld	hl,#0x0000
+   0169 E5                  313 	push	hl
+   016A 2E 00               314 	ld	l, #0x00
+   016C E5                  315 	push	hl
+   016D 21r00r00            316 	ld	hl,#_map_menuPLN0
+   0170 E5                  317 	push	hl
+   0171 21 24 00            318 	ld	hl,#0x0024
+   0174 E5                  319 	push	hl
+   0175 2E 28               320 	ld	l, #0x28
+   0177 E5                  321 	push	hl
+   0178 CDr00r00            322 	call	_InitScroll
+   017B E8 0D               323 	add	sp, #13
+   017D                     324 00105$:
+                            325 ;StateMenu.c:73: SHOW_BKG;
+   017D 11 40 FF            326 	ld	de,#0xff40
+   0180 1A                  327 	ld	a,(de)
+   0181 4F                  328 	ld	c,a
+   0182 06 00               329 	ld	b,#0x00
+   0184 79                  330 	ld	a,c
+   0185 CB C7               331 	set	0, a
+   0187 4F                  332 	ld	c,a
+   0188 21 40 FF            333 	ld	hl,#0xff40
+   018B 71                  334 	ld	(hl),c
+                            335 ;StateMenu.c:76: LOAD_MAP_ANIM(&Bkg_items[0],3, 3, 4, map_menu_anim_asteroid, 3);
+   018C 3E 03               336 	ld	a,#0x03
+   018E F5                  337 	push	af
+   018F 33                  338 	inc	sp
+   0190 21r00r00            339 	ld	hl,#_map_menu_anim_asteroid
+   0193 E5                  340 	push	hl
+   0194 21 03 04            341 	ld	hl,#0x0403
+   0197 E5                  342 	push	hl
+   0198 3E 03               343 	ld	a,#0x03
+   019A F5                  344 	push	af
+   019B 33                  345 	inc	sp
+   019C 21r03r00            346 	ld	hl,#_Bkg_items
+   019F E5                  347 	push	hl
+   01A0 CDr00r00            348 	call	_LOAD_MAP_ANIM
+   01A3 E8 08               349 	add	sp, #8
+                            350 ;StateMenu.c:77: LOAD_MAP_ANIM(&Bkg_items[1], 2, 3, 4, map_menu_anim_ball, 3);
+   01A5 3E 03               351 	ld	a,#0x03
+   01A7 F5                  352 	push	af
+   01A8 33                  353 	inc	sp
+   01A9 21r00r00            354 	ld	hl,#_map_menu_anim_ball
+   01AC E5                  355 	push	hl
+   01AD 21 03 04            356 	ld	hl,#0x0403
+   01B0 E5                  357 	push	hl
+   01B1 3E 02               358 	ld	a,#0x02
+   01B3 F5                  359 	push	af
+   01B4 33                  360 	inc	sp
+   01B5 21r10r00            361 	ld	hl,#(_Bkg_items + 0x000d)
+   01B8 E5                  362 	push	hl
+   01B9 CDr00r00            363 	call	_LOAD_MAP_ANIM
+   01BC E8 08               364 	add	sp, #8
+                            365 ;StateMenu.c:79: LOAD_TILE_ANIM(&Tile_items[0], 1, 4, tile_menu_anim_star, 3);
+   01BE 3E 03               366 	ld	a,#0x03
+   01C0 F5                  367 	push	af
+   01C1 33                  368 	inc	sp
+   01C2 21r00r00            369 	ld	hl,#_tile_menu_anim_star
+   01C5 E5                  370 	push	hl
+   01C6 21 01 04            371 	ld	hl,#0x0401
+   01C9 E5                  372 	push	hl
+   01CA 21r1Dr00            373 	ld	hl,#_Tile_items
+   01CD E5                  374 	push	hl
+   01CE CDr00r00            375 	call	_LOAD_TILE_ANIM
+   01D1 E8 07               376 	add	sp, #7
+                            377 ;StateMenu.c:80: LOAD_TILE_ANIM(&Tile_items[1], 1, 4, tile_menu_anim_star2, 3);	
+   01D3 3E 03               378 	ld	a,#0x03
+   01D5 F5                  379 	push	af
+   01D6 33                  380 	inc	sp
+   01D7 21r00r00            381 	ld	hl,#_tile_menu_anim_star2
+   01DA E5                  382 	push	hl
+   01DB 21 01 04            383 	ld	hl,#0x0401
+   01DE E5                  384 	push	hl
+   01DF 21r27r00            385 	ld	hl,#(_Tile_items + 0x000a)
+   01E2 E5                  386 	push	hl
+   01E3 CDr00r00            387 	call	_LOAD_TILE_ANIM
+   01E6 E8 07               388 	add	sp, #7
+                            389 ;StateMenu.c:82: if (Menu_Mode == 0) CP_LoadMusic(6,0);
+   01E8 21r01r00            390 	ld	hl,#_Menu_Mode
+   01EB 7E                  391 	ld	a,(hl)
+   01EC B7                  392 	or	a, a
+   01ED 20 09               393 	jr	NZ,00107$
+   01EF 21 06 00            394 	ld	hl,#0x0006
+   01F2 E5                  395 	push	hl
+   01F3 CDr00r00            396 	call	_CP_LoadMusic
+   01F6 E8 02               397 	add	sp, #2
+   01F8                     398 00107$:
+                            399 ;StateMenu.c:83: M = 0;
+   01F8 21r31r00            400 	ld	hl,#_M
+   01FB 36 00               401 	ld	(hl),#0x00
+   01FD 23                  402 	inc	hl
+   01FE 36 00               403 	ld	(hl),#0x00
+                            404 ;StateMenu.c:84: Settings_Op = 0;
+   0200 21r33r00            405 	ld	hl,#_Settings_Op
+   0203 36 00               406 	ld	(hl),#0x00
+   0205 C9                  407 	ret
+                            408 ;StateMenu.c:87: void Update_STATE_MENU() {
+                            409 ;	---------------------------------
+                            410 ; Function Update_STATE_MENU
+                            411 ; ---------------------------------
+   0206                     412 _Update_STATE_MENU::
+                            413 ;StateMenu.c:89: TILE_ANIMATE(&Tile_items[0], 100, 8);
+   0206 21 64 08            414 	ld	hl,#0x0864
+   0209 E5                  415 	push	hl
+   020A 21r1Dr00            416 	ld	hl,#_Tile_items
+   020D E5                  417 	push	hl
+   020E CDr00r00            418 	call	_TILE_ANIMATE
+   0211 E8 04               419 	add	sp, #4
+                            420 ;StateMenu.c:90: TILE_ANIMATE(&Tile_items[1], 98, 5);	
+   0213 21 62 05            421 	ld	hl,#0x0562
+   0216 E5                  422 	push	hl
+   0217 21r27r00            423 	ld	hl,#(_Tile_items + 0x000a)
+   021A E5                  424 	push	hl
+   021B CDr00r00            425 	call	_TILE_ANIMATE
+   021E E8 04               426 	add	sp, #4
+                            427 ;StateMenu.c:91: switch (Menu_Mode){
+   0220 3E 0A               428 	ld	a,#0x0a
+   0222 21r01r00            429 	ld	hl,#_Menu_Mode
+   0225 96                  430 	sub	a, (hl)
+   0226 D8                  431 	ret	C
+   0227 5E                  432 	ld	e,(hl)
+   0228 16 00               433 	ld	d,#0x00
+   022A 21r31r02            434 	ld	hl,#00210$
+   022D 19                  435 	add	hl,de
+   022E 19                  436 	add	hl,de
+   022F 19                  437 	add	hl,de
+   0230 E9                  438 	jp	(hl)
+   0231                     439 00210$:
+   0231 C3r52r02            440 	jp	00101$
+   0234 C3r94r02            441 	jp	00104$
+   0237 C3rABr02            442 	jp	00107$
+   023A C3r01r03            443 	jp	00108$
+   023D C3r24r03            444 	jp	00109$
+   0240 C3r49r03            445 	jp	00110$
+   0243 C3r7Ar03            446 	jp	00113$
+   0246 C3rAFr03            447 	jp	00114$
+   0249 C3rD9r03            448 	jp	00117$
+   024C C3r9Cr04            449 	jp	00135$
+   024F C3rF6r04            450 	jp	00138$
+                            451 ;StateMenu.c:92: case 0:
+   0252                     452 00101$:
+                            453 ;StateMenu.c:93: if(M == 250){
+   0252 21r31r00            454 	ld	hl,#_M
+   0255 7E                  455 	ld	a,(hl)
+   0256 D6 FA               456 	sub	a, #0xfa
+   0258 20 32               457 	jr	NZ,00103$
+   025A 23                  458 	inc	hl
+   025B 7E                  459 	ld	a,(hl)
+   025C B7                  460 	or	a, a
+   025D 20 2D               461 	jr	NZ,00103$
+                            462 ;StateMenu.c:94: InitScroll(map_flogoWidth, map_flogoHeight, map_flogoPLN0, 0, 0, 3, map_flogoPLN1);
+   025F 21r00r00            463 	ld	hl,#_map_flogoPLN1
+   0262 E5                  464 	push	hl
+   0263 3E 03               465 	ld	a,#0x03
+   0265 F5                  466 	push	af
+   0266 33                  467 	inc	sp
+   0267 21 00 00            468 	ld	hl,#0x0000
+   026A E5                  469 	push	hl
+   026B 2E 00               470 	ld	l, #0x00
+   026D E5                  471 	push	hl
+   026E 21r00r00            472 	ld	hl,#_map_flogoPLN0
+   0271 E5                  473 	push	hl
+   0272 21 12 00            474 	ld	hl,#0x0012
+   0275 E5                  475 	push	hl
+   0276 2E 14               476 	ld	l, #0x14
+   0278 E5                  477 	push	hl
+   0279 CDr00r00            478 	call	_InitScroll
+   027C E8 0D               479 	add	sp, #13
+                            480 ;StateMenu.c:95: Menu_Mode = 1;
+   027E 21r01r00            481 	ld	hl,#_Menu_Mode
+   0281 36 01               482 	ld	(hl),#0x01
+                            483 ;StateMenu.c:96: CP_LoadMusic(6,1);
+   0283 21 06 01            484 	ld	hl,#0x0106
+   0286 E5                  485 	push	hl
+   0287 CDr00r00            486 	call	_CP_LoadMusic
+   028A E8 02               487 	add	sp, #2
+   028C                     488 00103$:
+                            489 ;StateMenu.c:98: M++;
+   028C 21r31r00            490 	ld	hl,#_M
+   028F 34                  491 	inc	(hl)
+   0290 C0                  492 	ret	NZ
+   0291 23                  493 	inc	hl
+   0292 34                  494 	inc	(hl)
+                            495 ;StateMenu.c:99: break;
+   0293 C9                  496 	ret
+                            497 ;StateMenu.c:100: case 1:
+   0294                     498 00104$:
+                            499 ;StateMenu.c:101: if(KEY_PRESSED(J_START)) {M = 0; Menu_Mode = 2;}
+   0294 21r00r00            500 	ld	hl,#_keys
+   0297 4E                  501 	ld	c,(hl)
+   0298 06 00               502 	ld	b,#0x00
+   029A CB 79               503 	bit	7, c
+   029C C8                  504 	ret	Z
+   029D 21r31r00            505 	ld	hl,#_M
+   02A0 36 00               506 	ld	(hl),#0x00
+   02A2 23                  507 	inc	hl
+   02A3 36 00               508 	ld	(hl),#0x00
+   02A5 21r01r00            509 	ld	hl,#_Menu_Mode
+   02A8 36 02               510 	ld	(hl),#0x02
+                            511 ;StateMenu.c:102: break;
+   02AA C9                  512 	ret
+                            513 ;StateMenu.c:103: case 2: // To Main Menu
+   02AB                     514 00107$:
+                            515 ;StateMenu.c:104: InitScroll(map_menuWidth, map_menuHeight, map_menuPLN0, 0, 0, 3, map_menuPLN1);
+   02AB 21r00r00            516 	ld	hl,#_map_menuPLN1
+   02AE E5                  517 	push	hl
+   02AF 3E 03               518 	ld	a,#0x03
+   02B1 F5                  519 	push	af
+   02B2 33                  520 	inc	sp
+   02B3 21 00 00            521 	ld	hl,#0x0000
+   02B6 E5                  522 	push	hl
+   02B7 2E 00               523 	ld	l, #0x00
+   02B9 E5                  524 	push	hl
+   02BA 21r00r00            525 	ld	hl,#_map_menuPLN0
+   02BD E5                  526 	push	hl
+   02BE 21 24 00            527 	ld	hl,#0x0024
+   02C1 E5                  528 	push	hl
+   02C2 2E 28               529 	ld	l, #0x28
+   02C4 E5                  530 	push	hl
+   02C5 CDr00r00            531 	call	_InitScroll
+   02C8 E8 0D               532 	add	sp, #13
+                            533 ;StateMenu.c:105: SpriteManagerAdd(SPRITE_SHIP, 160+16, 3*8);
+   02CA 21 18 00            534 	ld	hl,#0x0018
+   02CD E5                  535 	push	hl
+   02CE 2E B0               536 	ld	l, #0xb0
+   02D0 E5                  537 	push	hl
+   02D1 3E 02               538 	ld	a,#0x02
+   02D3 F5                  539 	push	af
+   02D4 33                  540 	inc	sp
+   02D5 CDr00r00            541 	call	_SpriteManagerAdd
+   02D8 E8 05               542 	add	sp, #5
+                            543 ;StateMenu.c:106: SpriteManagerAdd(SPRITE_UFO, -16, 10*8);
+   02DA 21 50 00            544 	ld	hl,#0x0050
+   02DD E5                  545 	push	hl
+   02DE 21 F0 FF            546 	ld	hl,#0xfff0
+   02E1 E5                  547 	push	hl
+   02E2 3E 03               548 	ld	a,#0x03
+   02E4 F5                  549 	push	af
+   02E5 33                  550 	inc	sp
+   02E6 CDr00r00            551 	call	_SpriteManagerAdd
+   02E9 E8 05               552 	add	sp, #5
+                            553 ;StateMenu.c:107: SpriteManagerAdd(SPRITE_ARROW, 80, 80);
+   02EB 21 50 00            554 	ld	hl,#0x0050
+   02EE E5                  555 	push	hl
+   02EF 2E 50               556 	ld	l, #0x50
+   02F1 E5                  557 	push	hl
+   02F2 3E 04               558 	ld	a,#0x04
+   02F4 F5                  559 	push	af
+   02F5 33                  560 	inc	sp
+   02F6 CDr00r00            561 	call	_SpriteManagerAdd
+   02F9 E8 05               562 	add	sp, #5
+                            563 ;StateMenu.c:108: Menu_Mode = 3;
+   02FB 21r01r00            564 	ld	hl,#_Menu_Mode
+   02FE 36 03               565 	ld	(hl),#0x03
+                            566 ;StateMenu.c:109: break;
+   0300 C9                  567 	ret
+                            568 ;StateMenu.c:111: case 3: //Main Menu
+   0301                     569 00108$:
+                            570 ;StateMenu.c:114: MAP_ANIMATE(&Bkg_items[0], 14, 2, 8);
+   0301 21 02 08            571 	ld	hl,#0x0802
+   0304 E5                  572 	push	hl
+   0305 3E 0E               573 	ld	a,#0x0e
+   0307 F5                  574 	push	af
+   0308 33                  575 	inc	sp
+   0309 21r03r00            576 	ld	hl,#_Bkg_items
+   030C E5                  577 	push	hl
+   030D CDr00r00            578 	call	_MAP_ANIMATE
+   0310 E8 05               579 	add	sp, #5
+                            580 ;StateMenu.c:115: MAP_ANIMATE(&Bkg_items[1], 8, 10, 20);
+   0312 21 0A 14            581 	ld	hl,#0x140a
+   0315 E5                  582 	push	hl
+   0316 3E 08               583 	ld	a,#0x08
+   0318 F5                  584 	push	af
+   0319 33                  585 	inc	sp
+   031A 21r10r00            586 	ld	hl,#(_Bkg_items + 0x000d)
+   031D E5                  587 	push	hl
+   031E CDr00r00            588 	call	_MAP_ANIMATE
+   0321 E8 05               589 	add	sp, #5
+                            590 ;StateMenu.c:119: break;
+   0323 C9                  591 	ret
+                            592 ;StateMenu.c:121: case 4: //Scroll to info	
+   0324                     593 00109$:
+                            594 ;StateMenu.c:122: InitScroll(map_menuWidth, map_menuHeight, map_menuPLN0+(40*18), 0, 0, 3, map_menuPLN1+(40*9));
+   0324 21r68r01            595 	ld	hl,#(_map_menuPLN1 + 0x0168)
+   0327 E5                  596 	push	hl
+   0328 3E 03               597 	ld	a,#0x03
+   032A F5                  598 	push	af
+   032B 33                  599 	inc	sp
+   032C 21 00 00            600 	ld	hl,#0x0000
+   032F E5                  601 	push	hl
+   0330 2E 00               602 	ld	l, #0x00
+   0332 E5                  603 	push	hl
+   0333 21rD0r02            604 	ld	hl,#(_map_menuPLN0 + 0x02d0)
+   0336 E5                  605 	push	hl
+   0337 21 24 00            606 	ld	hl,#0x0024
+   033A E5                  607 	push	hl
+   033B 2E 28               608 	ld	l, #0x28
+   033D E5                  609 	push	hl
+   033E CDr00r00            610 	call	_InitScroll
+   0341 E8 0D               611 	add	sp, #13
+                            612 ;StateMenu.c:123: Menu_Mode = 5;
+   0343 21r01r00            613 	ld	hl,#_Menu_Mode
+   0346 36 05               614 	ld	(hl),#0x05
+                            615 ;StateMenu.c:124: break;
+   0348 C9                  616 	ret
+                            617 ;StateMenu.c:125: case 5: //Info
+   0349                     618 00110$:
+                            619 ;StateMenu.c:126: if(KEY_PRESSED(J_B))Menu_Mode = 6;
+   0349 21r00r00            620 	ld	hl,#_keys
+   034C 4E                  621 	ld	c,(hl)
+   034D 06 00               622 	ld	b,#0x00
+   034F CB 69               623 	bit	5, c
+   0351 28 05               624 	jr	Z,00112$
+   0353 21r01r00            625 	ld	hl,#_Menu_Mode
+   0356 36 06               626 	ld	(hl),#0x06
+   0358                     627 00112$:
+                            628 ;StateMenu.c:129: MAP_ANIMATE(&Bkg_items[0], 0, 14, 8);
+   0358 21 0E 08            629 	ld	hl,#0x080e
+   035B E5                  630 	push	hl
+   035C AF                  631 	xor	a, a
+   035D F5                  632 	push	af
+   035E 33                  633 	inc	sp
+   035F 21r03r00            634 	ld	hl,#_Bkg_items
+   0362 E5                  635 	push	hl
+   0363 CDr00r00            636 	call	_MAP_ANIMATE
+   0366 E8 05               637 	add	sp, #5
+                            638 ;StateMenu.c:130: MAP_ANIMATE(&Bkg_items[1], 1, 7, 20);			
+   0368 21 07 14            639 	ld	hl,#0x1407
+   036B E5                  640 	push	hl
+   036C 3E 01               641 	ld	a,#0x01
+   036E F5                  642 	push	af
+   036F 33                  643 	inc	sp
+   0370 21r10r00            644 	ld	hl,#(_Bkg_items + 0x000d)
+   0373 E5                  645 	push	hl
+   0374 CDr00r00            646 	call	_MAP_ANIMATE
+   0377 E8 05               647 	add	sp, #5
+                            648 ;StateMenu.c:131: break;
+   0379 C9                  649 	ret
+                            650 ;StateMenu.c:132: case 6: //Back to Main
+   037A                     651 00113$:
+                            652 ;StateMenu.c:133: SpriteManagerAdd(SPRITE_ARROW, 80, 80);
+   037A 21 50 00            653 	ld	hl,#0x0050
+   037D E5                  654 	push	hl
+   037E 2E 50               655 	ld	l, #0x50
+   0380 E5                  656 	push	hl
+   0381 3E 04               657 	ld	a,#0x04
+   0383 F5                  658 	push	af
+   0384 33                  659 	inc	sp
+   0385 CDr00r00            660 	call	_SpriteManagerAdd
+   0388 E8 05               661 	add	sp, #5
+                            662 ;StateMenu.c:134: InitScroll(map_menuWidth, map_menuHeight, map_menuPLN0, 0, 0, 3, map_menuPLN1);
+   038A 21r00r00            663 	ld	hl,#_map_menuPLN1
+   038D E5                  664 	push	hl
+   038E 3E 03               665 	ld	a,#0x03
+   0390 F5                  666 	push	af
+   0391 33                  667 	inc	sp
+   0392 21 00 00            668 	ld	hl,#0x0000
+   0395 E5                  669 	push	hl
+   0396 2E 00               670 	ld	l, #0x00
+   0398 E5                  671 	push	hl
+   0399 21r00r00            672 	ld	hl,#_map_menuPLN0
+   039C E5                  673 	push	hl
+   039D 21 24 00            674 	ld	hl,#0x0024
+   03A0 E5                  675 	push	hl
+   03A1 2E 28               676 	ld	l, #0x28
+   03A3 E5                  677 	push	hl
+   03A4 CDr00r00            678 	call	_InitScroll
+   03A7 E8 0D               679 	add	sp, #13
+                            680 ;StateMenu.c:135: Menu_Mode = 3;
+   03A9 21r01r00            681 	ld	hl,#_Menu_Mode
+   03AC 36 03               682 	ld	(hl),#0x03
+                            683 ;StateMenu.c:136: break;
+   03AE C9                  684 	ret
+                            685 ;StateMenu.c:138: case 7: //Scroll to settings
+   03AF                     686 00114$:
+                            687 ;StateMenu.c:139: if (M == 20*8) Menu_Mode = 8;
+   03AF 21r31r00            688 	ld	hl,#_M
+   03B2 7E                  689 	ld	a,(hl)
+   03B3 D6 A0               690 	sub	a, #0xa0
+   03B5 20 0A               691 	jr	NZ,00116$
+   03B7 23                  692 	inc	hl
+   03B8 7E                  693 	ld	a,(hl)
+   03B9 B7                  694 	or	a, a
+   03BA 20 05               695 	jr	NZ,00116$
+   03BC 21r01r00            696 	ld	hl,#_Menu_Mode
+   03BF 36 08               697 	ld	(hl),#0x08
+   03C1                     698 00116$:
+                            699 ;StateMenu.c:140: MoveScroll(M,0);
+   03C1 21 00 00            700 	ld	hl,#0x0000
+   03C4 E5                  701 	push	hl
+   03C5 21r31r00            702 	ld	hl,#_M
+   03C8 2A                  703 	ld	a,(hl+)
+   03C9 66                  704 	ld	h,(hl)
+   03CA 6F                  705 	ld	l,a
+   03CB E5                  706 	push	hl
+   03CC CDr00r00            707 	call	_MoveScroll
+   03CF E8 04               708 	add	sp, #4
+                            709 ;StateMenu.c:141: M++; 			
+   03D1 21r31r00            710 	ld	hl,#_M
+   03D4 34                  711 	inc	(hl)
+   03D5 C0                  712 	ret	NZ
+   03D6 23                  713 	inc	hl
+   03D7 34                  714 	inc	(hl)
+                            715 ;StateMenu.c:142: break;
+   03D8 C9                  716 	ret
+                            717 ;StateMenu.c:143: case 8: //settings
+   03D9                     718 00117$:
+                            719 ;StateMenu.c:144: if(KEY_TICKED(J_B))Menu_Mode = 9;
+   03D9 21r00r00            720 	ld	hl,#_keys
+   03DC 4E                  721 	ld	c,(hl)
+   03DD 06 00               722 	ld	b,#0x00
+   03DF CB 69               723 	bit	5, c
+   03E1 28 0F               724 	jr	Z,00119$
+   03E3 21r00r00            725 	ld	hl,#_previous_keys
+   03E6 5E                  726 	ld	e,(hl)
+   03E7 16 00               727 	ld	d,#0x00
+   03E9 CB 6B               728 	bit	5, e
+   03EB 20 05               729 	jr	NZ,00119$
+   03ED 21r01r00            730 	ld	hl,#_Menu_Mode
+   03F0 36 09               731 	ld	(hl),#0x09
+   03F2                     732 00119$:
+                            733 ;StateMenu.c:145: if(Settings_Op > 6*8) Settings_Op=0;
+   03F2 3E 30               734 	ld	a,#0x30
+   03F4 21r33r00            735 	ld	hl,#_Settings_Op
+   03F7 96                  736 	sub	a, (hl)
+   03F8 30 02               737 	jr	NC,00122$
+   03FA 36 00               738 	ld	(hl),#0x00
+   03FC                     739 00122$:
+                            740 ;StateMenu.c:147: if(KEY_TICKED(J_DOWN)){change_menu_settings(7, Settings_Op+12);Settings_Op+=6;}
+   03FC CB 59               741 	bit	3, c
+   03FE 28 23               742 	jr	Z,00124$
+   0400 21r00r00            743 	ld	hl,#_previous_keys
+   0403 4E                  744 	ld	c,(hl)
+   0404 06 00               745 	ld	b,#0x00
+   0406 CB 59               746 	bit	3, c
+   0408 20 19               747 	jr	NZ,00124$
+   040A 21r33r00            748 	ld	hl,#_Settings_Op
+   040D 7E                  749 	ld	a,(hl)
+   040E C6 0C               750 	add	a, #0x0c
+   0410 47                  751 	ld	b,a
+   0411 C5                  752 	push	bc
+   0412 33                  753 	inc	sp
+   0413 3E 07               754 	ld	a,#0x07
+   0415 F5                  755 	push	af
+   0416 33                  756 	inc	sp
+   0417 CDr00r00            757 	call	_change_menu_settings
+   041A E8 02               758 	add	sp, #2
+   041C 21r33r00            759 	ld	hl,#_Settings_Op
+   041F 7E                  760 	ld	a,(hl)
+   0420 C6 06               761 	add	a, #0x06
+   0422 77                  762 	ld	(hl),a
+   0423                     763 00124$:
+                            764 ;StateMenu.c:148: if(KEY_TICKED(J_UP)){change_menu_settings(7, Settings_Op+12);Settings_Op-=6;}		
+   0423 21r00r00            765 	ld	hl,#_keys
+   0426 4E                  766 	ld	c,(hl)
+   0427 06 00               767 	ld	b,#0x00
+   0429 CB 51               768 	bit	2, c
+   042B 28 23               769 	jr	Z,00127$
+   042D 21r00r00            770 	ld	hl,#_previous_keys
+   0430 4E                  771 	ld	c,(hl)
+   0431 06 00               772 	ld	b,#0x00
+   0433 CB 51               773 	bit	2, c
+   0435 20 19               774 	jr	NZ,00127$
+   0437 21r33r00            775 	ld	hl,#_Settings_Op
+   043A 7E                  776 	ld	a,(hl)
+   043B C6 0C               777 	add	a, #0x0c
+   043D 47                  778 	ld	b,a
+   043E C5                  779 	push	bc
+   043F 33                  780 	inc	sp
+   0440 3E 07               781 	ld	a,#0x07
+   0442 F5                  782 	push	af
+   0443 33                  783 	inc	sp
+   0444 CDr00r00            784 	call	_change_menu_settings
+   0447 E8 02               785 	add	sp, #2
+   0449 21r33r00            786 	ld	hl,#_Settings_Op
+   044C 7E                  787 	ld	a,(hl)
+   044D C6 FA               788 	add	a,#0xfa
+   044F 77                  789 	ld	(hl),a
+   0450                     790 00127$:
+                            791 ;StateMenu.c:150: if(KEY_TICKED(J_LEFT)) change_menu_settings(10, 0);
+   0450 21r00r00            792 	ld	hl,#_keys
+   0453 4E                  793 	ld	c,(hl)
+   0454 06 00               794 	ld	b,#0x00
+   0456 CB 49               795 	bit	1, c
+   0458 28 13               796 	jr	Z,00130$
+   045A 21r00r00            797 	ld	hl,#_previous_keys
+   045D 4E                  798 	ld	c,(hl)
+   045E 06 00               799 	ld	b,#0x00
+   0460 CB 49               800 	bit	1, c
+   0462 20 09               801 	jr	NZ,00130$
+   0464 21 0A 00            802 	ld	hl,#0x000a
+   0467 E5                  803 	push	hl
+   0468 CDr00r00            804 	call	_change_menu_settings
+   046B E8 02               805 	add	sp, #2
+   046D                     806 00130$:
+                            807 ;StateMenu.c:151: if(KEY_TICKED(J_RIGHT)) change_menu_settings(10, 6);	
+   046D 21r00r00            808 	ld	hl,#_keys
+   0470 4E                  809 	ld	c,(hl)
+   0471 06 00               810 	ld	b,#0x00
+   0473 CB 41               811 	bit	0, c
+   0475 28 13               812 	jr	Z,00133$
+   0477 21r00r00            813 	ld	hl,#_previous_keys
+   047A 4E                  814 	ld	c,(hl)
+   047B 06 00               815 	ld	b,#0x00
+   047D CB 41               816 	bit	0, c
+   047F 20 09               817 	jr	NZ,00133$
+   0481 21 0A 06            818 	ld	hl,#0x060a
+   0484 E5                  819 	push	hl
+   0485 CDr00r00            820 	call	_change_menu_settings
+   0488 E8 02               821 	add	sp, #2
+   048A                     822 00133$:
+                            823 ;StateMenu.c:154: MAP_ANIMATE(&Bkg_items[1], 5, 13, 8);	
+   048A 21 0D 08            824 	ld	hl,#0x080d
+   048D E5                  825 	push	hl
+   048E 3E 05               826 	ld	a,#0x05
+   0490 F5                  827 	push	af
+   0491 33                  828 	inc	sp
+   0492 21r10r00            829 	ld	hl,#(_Bkg_items + 0x000d)
+   0495 E5                  830 	push	hl
+   0496 CDr00r00            831 	call	_MAP_ANIMATE
+   0499 E8 05               832 	add	sp, #5
+                            833 ;StateMenu.c:155: break;
+   049B C9                  834 	ret
+                            835 ;StateMenu.c:156: case 9: //Back to Main
+   049C                     836 00135$:
+                            837 ;StateMenu.c:157: if (M == 0){
+   049C 21r32r00            838 	ld	hl,#_M + 1
+   049F 3A                  839 	ld	a,(hl-)
+   04A0 B6                  840 	or	a,(hl)
+   04A1 20 36               841 	jr	NZ,00137$
+                            842 ;StateMenu.c:158: Menu_Mode = 3;
+   04A3 21r01r00            843 	ld	hl,#_Menu_Mode
+   04A6 36 03               844 	ld	(hl),#0x03
+                            845 ;StateMenu.c:159: SpriteManagerAdd(SPRITE_UFO, -16, 3*8);
+   04A8 21 18 00            846 	ld	hl,#0x0018
+   04AB E5                  847 	push	hl
+   04AC 21 F0 FF            848 	ld	hl,#0xfff0
+   04AF E5                  849 	push	hl
+   04B0 3E 03               850 	ld	a,#0x03
+   04B2 F5                  851 	push	af
+   04B3 33                  852 	inc	sp
+   04B4 CDr00r00            853 	call	_SpriteManagerAdd
+   04B7 E8 05               854 	add	sp, #5
+                            855 ;StateMenu.c:160: SpriteManagerAdd(SPRITE_SHIP, 160+16, 10*8);
+   04B9 21 50 00            856 	ld	hl,#0x0050
+   04BC E5                  857 	push	hl
+   04BD 2E B0               858 	ld	l, #0xb0
+   04BF E5                  859 	push	hl
+   04C0 3E 02               860 	ld	a,#0x02
+   04C2 F5                  861 	push	af
+   04C3 33                  862 	inc	sp
+   04C4 CDr00r00            863 	call	_SpriteManagerAdd
+   04C7 E8 05               864 	add	sp, #5
+                            865 ;StateMenu.c:161: SpriteManagerAdd(SPRITE_ARROW, 80, 80);
+   04C9 21 50 00            866 	ld	hl,#0x0050
+   04CC E5                  867 	push	hl
+   04CD 2E 50               868 	ld	l, #0x50
+   04CF E5                  869 	push	hl
+   04D0 3E 04               870 	ld	a,#0x04
+   04D2 F5                  871 	push	af
+   04D3 33                  872 	inc	sp
+   04D4 CDr00r00            873 	call	_SpriteManagerAdd
+   04D7 E8 05               874 	add	sp, #5
+   04D9                     875 00137$:
+                            876 ;StateMenu.c:163: MoveScroll(M,0);
+   04D9 21 00 00            877 	ld	hl,#0x0000
+   04DC E5                  878 	push	hl
+   04DD 21r31r00            879 	ld	hl,#_M
+   04E0 2A                  880 	ld	a,(hl+)
+   04E1 66                  881 	ld	h,(hl)
+   04E2 6F                  882 	ld	l,a
+   04E3 E5                  883 	push	hl
+   04E4 CDr00r00            884 	call	_MoveScroll
+   04E7 E8 04               885 	add	sp, #4
+                            886 ;StateMenu.c:164: M--; 			
+   04E9 21r32r00            887 	ld	hl,#_M + 1
+   04EC 2B                  888 	dec	hl
+   04ED 5E                  889 	ld	e,(hl)
+   04EE 23                  890 	inc	hl
+   04EF 56                  891 	ld	d,(hl)
+   04F0 1B                  892 	dec	de
+   04F1 2B                  893 	dec	hl
+   04F2 73                  894 	ld	(hl),e
+   04F3 23                  895 	inc	hl
+   04F4 72                  896 	ld	(hl),d
+                            897 ;StateMenu.c:165: break;	
+   04F5 C9                  898 	ret
+                            899 ;StateMenu.c:166: case 10:
+   04F6                     900 00138$:
+                            901 ;StateMenu.c:167: SCX_REG++;
+   04F6 21 43 FF            902 	ld	hl,#0xff43
+   04F9 36 44               903 	ld	(hl),#0x44
+                            904 ;StateMenu.c:169: }
+   04FB C9                  905 	ret
+                            906 	.area _CODE_2
+                            907 	.area _CABS (ABS)

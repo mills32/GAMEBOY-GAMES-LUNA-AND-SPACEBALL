@@ -1,0 +1,671 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module Print
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _set_win_tiles
+                             12 	.globl _set_bkg_tiles
+                             13 	.globl _print_target
+                             14 	.globl _font_idx
+                             15 	.globl _print_y
+                             16 	.globl _print_x
+                             17 	.globl _UIntToString
+                             18 	.globl _IntToString
+                             19 	.globl _Printf
+                             20 ;--------------------------------------------------------
+                             21 ; ram data
+                             22 ;--------------------------------------------------------
+                             23 	.area _DATA
+   0000                      24 _print_x::
+   0000                      25 	.ds 1
+   0001                      26 _print_y::
+   0001                      27 	.ds 1
+   0002                      28 _font_idx::
+   0002                      29 	.ds 1
+   0003                      30 _print_target::
+   0003                      31 	.ds 1
+                             32 ;--------------------------------------------------------
+                             33 ; absolute external ram data
+                             34 ;--------------------------------------------------------
+                             35 	.area _DABS (ABS)
+                             36 ;--------------------------------------------------------
+                             37 ; global & static initialisations
+                             38 ;--------------------------------------------------------
+                             39 	.area _HOME
+                             40 	.area _GSINIT
+                             41 	.area _GSFINAL
+                             42 	.area _GSINIT
+                             43 ;C:/gbdk/ZGB/common/src/Print.c:7: UINT8 print_x = 0;
+   0000 21r00r00             44 	ld	hl,#_print_x
+   0003 36 00                45 	ld	(hl),#0x00
+                             46 ;C:/gbdk/ZGB/common/src/Print.c:8: UINT8 print_y = 0;
+   0005 21r01r00             47 	ld	hl,#_print_y
+   0008 36 00                48 	ld	(hl),#0x00
+                             49 ;C:/gbdk/ZGB/common/src/Print.c:9: UINT8 font_idx = 128;
+   000A 21r02r00             50 	ld	hl,#_font_idx
+   000D 36 80                51 	ld	(hl),#0x80
+                             52 ;C:/gbdk/ZGB/common/src/Print.c:10: UINT8 print_target = PRINT_BKG;
+   000F 21r03r00             53 	ld	hl,#_print_target
+   0012 36 00                54 	ld	(hl),#0x00
+                             55 ;--------------------------------------------------------
+                             56 ; Home
+                             57 ;--------------------------------------------------------
+                             58 	.area _HOME
+                             59 	.area _HOME
+                             60 ;--------------------------------------------------------
+                             61 ; code
+                             62 ;--------------------------------------------------------
+                             63 	.area _CODE
+                             64 ;C:/gbdk/ZGB/common/src/Print.c:12: void UIntToString(UINT16 n, unsigned char* str) {
+                             65 ;	---------------------------------
+                             66 ; Function UIntToString
+                             67 ; ---------------------------------
+   0000                      68 _UIntToString::
+   0000 E8 FE                69 	add	sp, #-2
+                             70 ;C:/gbdk/ZGB/common/src/Print.c:13: UINT16 tmp = n;
+   0002 F8 04                71 	ldhl	sp,#(5 - 1)
+   0004 5E                   72 	ld	e,(hl)
+   0005 23                   73 	inc	hl
+   0006 56                   74 	ld	d,(hl)
+                             75 ;C:/gbdk/ZGB/common/src/Print.c:16: if(n == 0) {
+   0007 7A                   76 	ld	a,d
+   0008 B3                   77 	or	a,e
+   0009 20 0D                78 	jr	NZ,00114$
+                             79 ;C:/gbdk/ZGB/common/src/Print.c:17: str[0] ='0';
+   000B 23                   80 	inc	hl
+   000C 4E                   81 	ld	c,(hl)
+   000D 23                   82 	inc	hl
+   000E 46                   83 	ld	b,(hl)
+   000F 3E 30                84 	ld	a,#0x30
+   0011 02                   85 	ld	(bc),a
+                             86 ;C:/gbdk/ZGB/common/src/Print.c:18: str[1] = '\0';
+   0012 03                   87 	inc	bc
+   0013 AF                   88 	xor	a, a
+   0014 02                   89 	ld	(bc),a
+   0015 C3r88r00             90 	jp	00110$
+                             91 ;C:/gbdk/ZGB/common/src/Print.c:20: while(tmp) {
+   0018                      92 00114$:
+   0018 F8 00                93 	ldhl	sp,#0
+   001A 36 00                94 	ld	(hl),#0x00
+   001C                      95 00101$:
+   001C 7A                   96 	ld	a,d
+   001D B3                   97 	or	a,e
+   001E 28 0F                98 	jr	Z,00103$
+                             99 ;C:/gbdk/ZGB/common/src/Print.c:21: tmp /= 10;
+   0020 21 0A 00            100 	ld	hl,#0x000a
+   0023 E5                  101 	push	hl
+   0024 D5                  102 	push	de
+   0025 CDr00r00            103 	call	__divuint
+   0028 E8 04               104 	add	sp, #4
+                            105 ;C:/gbdk/ZGB/common/src/Print.c:22: size ++;
+   002A F8 00               106 	ldhl	sp,#0
+   002C 34                  107 	inc	(hl)
+   002D 18 ED               108 	jr	00101$
+   002F                     109 00103$:
+                            110 ;C:/gbdk/ZGB/common/src/Print.c:24: str[size] = '\0';
+   002F F8 06               111 	ldhl	sp,#(7 - 1)
+   0031 5E                  112 	ld	e,(hl)
+   0032 23                  113 	inc	hl
+   0033 56                  114 	ld	d,(hl)
+   0034 F8 00               115 	ldhl	sp,#0
+   0036 6E                  116 	ld	l,(hl)
+   0037 26 00               117 	ld	h,#0x00
+   0039 19                  118 	add	hl,de
+   003A 4D                  119 	ld	c,l
+   003B 44                  120 	ld	b,h
+   003C AF                  121 	xor	a, a
+   003D 02                  122 	ld	(bc),a
+                            123 ;C:/gbdk/ZGB/common/src/Print.c:25: size --;
+   003E F8 00               124 	ldhl	sp,#0
+   0040 7E                  125 	ld	a,(hl)
+   0041 C6 FF               126 	add	a,#0xff
+   0043 23                  127 	inc	hl
+   0044 77                  128 	ld	(hl),a
+                            129 ;C:/gbdk/ZGB/common/src/Print.c:27: while(n) {
+   0045                     130 00104$:
+   0045 F8 05               131 	ldhl	sp,#5
+   0047 3A                  132 	ld	a,(hl-)
+   0048 B6                  133 	or	a,(hl)
+   0049 CAr88r00            134 	jp	Z,00110$
+                            135 ;C:/gbdk/ZGB/common/src/Print.c:28: str[size] = (n % 10) + '0';
+   004C F8 06               136 	ldhl	sp,#(7 - 1)
+   004E 5E                  137 	ld	e,(hl)
+   004F 23                  138 	inc	hl
+   0050 56                  139 	ld	d,(hl)
+   0051 F8 01               140 	ldhl	sp,#1
+   0053 6E                  141 	ld	l,(hl)
+   0054 26 00               142 	ld	h,#0x00
+   0056 19                  143 	add	hl,de
+   0057 4D                  144 	ld	c,l
+   0058 44                  145 	ld	b,h
+   0059 C5                  146 	push	bc
+   005A 21 0A 00            147 	ld	hl,#0x000a
+   005D E5                  148 	push	hl
+   005E F8 08               149 	ldhl	sp,#8
+   0060 2A                  150 	ld	a,(hl+)
+   0061 66                  151 	ld	h,(hl)
+   0062 6F                  152 	ld	l,a
+   0063 E5                  153 	push	hl
+   0064 CDr00r00            154 	call	__moduint
+   0067 E8 04               155 	add	sp, #4
+   0069 C1                  156 	pop	bc
+   006A 7B                  157 	ld	a,e
+   006B C6 30               158 	add	a, #0x30
+   006D 02                  159 	ld	(bc),a
+                            160 ;C:/gbdk/ZGB/common/src/Print.c:29: n /= 10;
+   006E 21 0A 00            161 	ld	hl,#0x000a
+   0071 E5                  162 	push	hl
+   0072 F8 06               163 	ldhl	sp,#6
+   0074 2A                  164 	ld	a,(hl+)
+   0075 66                  165 	ld	h,(hl)
+   0076 6F                  166 	ld	l,a
+   0077 E5                  167 	push	hl
+   0078 CDr00r00            168 	call	__divuint
+   007B E8 04               169 	add	sp, #4
+   007D F8 04               170 	ldhl	sp,#4
+   007F 73                  171 	ld	(hl),e
+   0080 23                  172 	inc	hl
+   0081 72                  173 	ld	(hl),d
+                            174 ;C:/gbdk/ZGB/common/src/Print.c:30: size --;
+   0082 F8 01               175 	ldhl	sp,#1
+   0084 35                  176 	dec	(hl)
+   0085 C3r45r00            177 	jp	00104$
+   0088                     178 00110$:
+   0088 E8 02               179 	add	sp, #2
+   008A C9                  180 	ret
+                            181 ;C:/gbdk/ZGB/common/src/Print.c:35: void IntToString(INT16 n, unsigned char* str) {
+                            182 ;	---------------------------------
+                            183 ; Function IntToString
+                            184 ; ---------------------------------
+   008B                     185 _IntToString::
+                            186 ;C:/gbdk/ZGB/common/src/Print.c:39: if(n < 0){
+   008B F8 02               187 	ldhl	sp,#2
+   008D 7E                  188 	ld	a, (hl)
+   008E D6 00               189 	sub	a, #0x00
+   0090 23                  190 	inc	hl
+   0091 7E                  191 	ld	a, (hl)
+   0092 DE 00               192 	sbc	a, #0x00
+   0094 56                  193 	ld	d, (hl)
+   0095 3E 00               194 	ld	a,#0x00
+   0097 5F                  195 	ld	e, a
+   0098 CB 7B               196 	bit	7, e
+   009A 28 07               197 	jr	Z,00109$
+   009C CB 7A               198 	bit	7, d
+   009E 20 08               199 	jr	NZ,00110$
+   00A0 BF                  200 	cp	a, a
+   00A1 18 05               201 	jr	00110$
+   00A3                     202 00109$:
+   00A3 CB 7A               203 	bit	7, d
+   00A5 28 01               204 	jr	Z,00110$
+   00A7 37                  205 	scf
+   00A8                     206 00110$:
+   00A8 30 1C               207 	jr	NC,00102$
+                            208 ;C:/gbdk/ZGB/common/src/Print.c:40: n = 0xFFFF - n + 1; //I tried -n but it doesn't work
+   00AA D1                  209 	pop	de
+   00AB C1                  210 	pop	bc
+   00AC C5                  211 	push	bc
+   00AD D5                  212 	push	de
+   00AE AF                  213 	xor	a, a
+   00AF 91                  214 	sub	a, c
+   00B0 4F                  215 	ld	c,a
+   00B1 3E 00               216 	ld	a, #0x00
+   00B3 98                  217 	sbc	a, b
+   00B4 47                  218 	ld	b,a
+   00B5 F8 02               219 	ldhl	sp,#2
+   00B7 71                  220 	ld	(hl),c
+   00B8 23                  221 	inc	hl
+   00B9 70                  222 	ld	(hl),b
+                            223 ;C:/gbdk/ZGB/common/src/Print.c:41: str[0] = '-';
+   00BA 23                  224 	inc	hl
+   00BB 4E                  225 	ld	c,(hl)
+   00BC 23                  226 	inc	hl
+   00BD 46                  227 	ld	b,(hl)
+   00BE 3E 2D               228 	ld	a,#0x2d
+   00C0 02                  229 	ld	(bc),a
+                            230 ;C:/gbdk/ZGB/common/src/Print.c:42: str ++;
+   00C1 03                  231 	inc	bc
+   00C2 2B                  232 	dec	hl
+   00C3 71                  233 	ld	(hl),c
+   00C4 23                  234 	inc	hl
+   00C5 70                  235 	ld	(hl),b
+   00C6                     236 00102$:
+                            237 ;C:/gbdk/ZGB/common/src/Print.c:45: UIntToString(n, str);
+   00C6 F8 04               238 	ldhl	sp,#4
+   00C8 2A                  239 	ld	a,(hl+)
+   00C9 66                  240 	ld	h,(hl)
+   00CA 6F                  241 	ld	l,a
+   00CB E5                  242 	push	hl
+   00CC F8 04               243 	ldhl	sp,#4
+   00CE 2A                  244 	ld	a,(hl+)
+   00CF 66                  245 	ld	h,(hl)
+   00D0 6F                  246 	ld	l,a
+   00D1 E5                  247 	push	hl
+   00D2 CDr00r00            248 	call	_UIntToString
+   00D5 E8 04               249 	add	sp, #4
+   00D7 C9                  250 	ret
+                            251 ;C:/gbdk/ZGB/common/src/Print.c:48: void Printf(const char* txt, ...){
+                            252 ;	---------------------------------
+                            253 ; Function Printf
+                            254 ; ---------------------------------
+   00D8                     255 _Printf::
+   00D8 E8 E9               256 	add	sp, #-23
+                            257 ;C:/gbdk/ZGB/common/src/Print.c:54: va_start(list, txt); 
+   00DA F8 19               258 	ldhl	sp,#25
+   00DC 4D                  259 	ld	c,l
+   00DD 44                  260 	ld	b,h
+   00DE 03                  261 	inc	bc
+   00DF 03                  262 	inc	bc
+   00E0 F8 0B               263 	ldhl	sp,#11
+   00E2 71                  264 	ld	(hl),c
+   00E3 23                  265 	inc	hl
+   00E4 70                  266 	ld	(hl),b
+                            267 ;C:/gbdk/ZGB/common/src/Print.c:55: while(*txt) {
+   00E5 F8 01               268 	ldhl	sp,#1
+   00E7 7D                  269 	ld	a,l
+   00E8 54                  270 	ld	d,h
+   00E9 F8 15               271 	ldhl	sp,#21
+   00EB 22                  272 	ld	(hl+),a
+   00EC 72                  273 	ld	(hl),d
+   00ED 2B                  274 	dec	hl
+   00EE 2A                  275 	ld	a,(hl+)
+   00EF 5E                  276 	ld	e, (hl)
+   00F0 F8 11               277 	ldhl	sp,#17
+   00F2 22                  278 	ld	(hl+),a
+   00F3 73                  279 	ld	(hl),e
+   00F4 F8 15               280 	ldhl	sp,#21
+   00F6 2A                  281 	ld	a,(hl+)
+   00F7 5E                  282 	ld	e, (hl)
+   00F8 F8 0F               283 	ldhl	sp,#15
+   00FA 22                  284 	ld	(hl+),a
+   00FB 73                  285 	ld	(hl),e
+   00FC F8 15               286 	ldhl	sp,#21
+   00FE 2A                  287 	ld	a,(hl+)
+   00FF 5E                  288 	ld	e, (hl)
+   0100 F8 13               289 	ldhl	sp,#19
+   0102 22                  290 	ld	(hl+),a
+   0103 73                  291 	ld	(hl),e
+   0104                     292 00133$:
+   0104 F8 19               293 	ldhl	sp,#(26 - 1)
+   0106 4E                  294 	ld	c,(hl)
+   0107 23                  295 	inc	hl
+   0108 46                  296 	ld	b,(hl)
+   0109 0A                  297 	ld	a,(bc)
+   010A 4F                  298 	ld	c,a
+   010B B7                  299 	or	a, a
+   010C CAr04r03            300 	jp	Z,00136$
+                            301 ;C:/gbdk/ZGB/common/src/Print.c:56: if(*txt == ' ') {
+   010F 79                  302 	ld	a,c
+   0110 D6 20               303 	sub	a, #0x20
+   0112 20 0C               304 	jr	NZ,00128$
+                            305 ;C:/gbdk/ZGB/common/src/Print.c:57: c = font_idx;
+   0114 E5                  306 	push	hl
+   0115 21r02r00            307 	ld	hl,#_font_idx
+   0118 7E                  308 	ld	a,(hl)
+   0119 F8 02               309 	ldhl	sp,#2
+   011B 77                  310 	ld	(hl),a
+   011C E1                  311 	pop	hl
+   011D C3rA9r02            312 	jp	00129$
+   0120                     313 00128$:
+                            314 ;C:/gbdk/ZGB/common/src/Print.c:58: } else if(*txt >= 'A' && *txt <= 'Z'){
+   0120 79                  315 	ld	a,c
+   0121 D6 41               316 	sub	a, #0x41
+   0123 38 15               317 	jr	C,00124$
+   0125 3E 5A               318 	ld	a,#0x5a
+   0127 91                  319 	sub	a, c
+   0128 38 10               320 	jr	C,00124$
+                            321 ;C:/gbdk/ZGB/common/src/Print.c:59: c = font_idx +  1 + *txt - 'A';
+   012A 79                  322 	ld	a,c
+   012B C6 C0               323 	add	a, #0xc0
+   012D 4F                  324 	ld	c,a
+   012E 21r02r00            325 	ld	hl,#_font_idx
+   0131 46                  326 	ld	b,(hl)
+   0132 79                  327 	ld	a,c
+   0133 80                  328 	add	a, b
+   0134 F8 00               329 	ldhl	sp,#0
+   0136 77                  330 	ld	(hl),a
+   0137 C3rA9r02            331 	jp	00129$
+   013A                     332 00124$:
+                            333 ;C:/gbdk/ZGB/common/src/Print.c:60: } else if(*txt >= 'a' && *txt <= 'z') {
+   013A F8 19               334 	ldhl	sp,#(26 - 1)
+   013C 4E                  335 	ld	c,(hl)
+   013D 23                  336 	inc	hl
+   013E 46                  337 	ld	b,(hl)
+   013F 0A                  338 	ld	a,(bc)
+   0140 4F                  339 	ld	c,a
+   0141 D6 61               340 	sub	a, #0x61
+   0143 38 15               341 	jr	C,00120$
+   0145 3E 7A               342 	ld	a,#0x7a
+   0147 91                  343 	sub	a, c
+   0148 38 10               344 	jr	C,00120$
+                            345 ;C:/gbdk/ZGB/common/src/Print.c:61: c = font_idx +  1 + *txt - 'a';
+   014A 79                  346 	ld	a,c
+   014B C6 A0               347 	add	a, #0xa0
+   014D 4F                  348 	ld	c,a
+   014E 21r02r00            349 	ld	hl,#_font_idx
+   0151 46                  350 	ld	b,(hl)
+   0152 79                  351 	ld	a,c
+   0153 80                  352 	add	a, b
+   0154 F8 00               353 	ldhl	sp,#0
+   0156 77                  354 	ld	(hl),a
+   0157 C3rA9r02            355 	jp	00129$
+   015A                     356 00120$:
+                            357 ;C:/gbdk/ZGB/common/src/Print.c:62: } else if(*txt >= '0' && *txt <= '9') {
+   015A F8 19               358 	ldhl	sp,#(26 - 1)
+   015C 4E                  359 	ld	c,(hl)
+   015D 23                  360 	inc	hl
+   015E 46                  361 	ld	b,(hl)
+   015F 0A                  362 	ld	a,(bc)
+   0160 4F                  363 	ld	c,a
+   0161 D6 30               364 	sub	a, #0x30
+   0163 38 15               365 	jr	C,00116$
+   0165 3E 39               366 	ld	a,#0x39
+   0167 91                  367 	sub	a, c
+   0168 38 10               368 	jr	C,00116$
+                            369 ;C:/gbdk/ZGB/common/src/Print.c:63: c = font_idx + 27 + *txt - '0';
+   016A 79                  370 	ld	a,c
+   016B C6 EB               371 	add	a, #0xeb
+   016D 4F                  372 	ld	c,a
+   016E 21r02r00            373 	ld	hl,#_font_idx
+   0171 46                  374 	ld	b,(hl)
+   0172 79                  375 	ld	a,c
+   0173 80                  376 	add	a, b
+   0174 F8 00               377 	ldhl	sp,#0
+   0176 77                  378 	ld	(hl),a
+   0177 C3rA9r02            379 	jp	00129$
+   017A                     380 00116$:
+                            381 ;C:/gbdk/ZGB/common/src/Print.c:65: switch(*txt) {
+   017A F8 19               382 	ldhl	sp,#(26 - 1)
+   017C 4E                  383 	ld	c,(hl)
+   017D 23                  384 	inc	hl
+   017E 46                  385 	ld	b,(hl)
+   017F 0A                  386 	ld	a,(bc)
+   0180 5F                  387 	ld	e,a
+   0181 D6 21               388 	sub	a, #0x21
+   0183 28 29               389 	jr	Z,00101$
+   0185 7B                  390 	ld	a,e
+   0186 FE 25               391 	cp	a,#0x25
+   0188 CAr0Er02            392 	jp	Z,00109$
+   018B FE 27               393 	cp	a,##0x27
+   018D 28 2B               394 	jr	Z,00102$
+   018F FE 28               395 	cp	a,#0x28
+   0191 28 33               396 	jr	Z,00103$
+   0193 FE 29               397 	cp	a,##0x29
+   0195 28 3B               398 	jr	Z,00104$
+   0197 FE 2D               399 	cp	a,#0x2d
+   0199 CArDEr01            400 	jp	Z,00105$
+   019C FE 2E               401 	cp	a,##0x2e
+   019E CArEAr01            402 	jp	Z,00106$
+   01A1 FE 3A               403 	cp	a,#0x3a
+   01A3 CArF6r01            404 	jp	Z,00107$
+   01A6 D6 3F               405 	sub	a, #0x3f
+   01A8 CAr02r02            406 	jp	Z,00108$
+   01AB C3rA9r02            407 	jp	00129$
+                            408 ;C:/gbdk/ZGB/common/src/Print.c:66: case  '!': c= font_idx + 37; break;
+   01AE                     409 00101$:
+   01AE 21r02r00            410 	ld	hl,#_font_idx
+   01B1 7E                  411 	ld	a,(hl)
+   01B2 C6 25               412 	add	a, #0x25
+   01B4 F8 00               413 	ldhl	sp,#0
+   01B6 77                  414 	ld	(hl),a
+   01B7 C3rA9r02            415 	jp	00129$
+                            416 ;C:/gbdk/ZGB/common/src/Print.c:67: case '\'': c= font_idx + 38; break;
+   01BA                     417 00102$:
+   01BA 21r02r00            418 	ld	hl,#_font_idx
+   01BD 7E                  419 	ld	a,(hl)
+   01BE C6 26               420 	add	a, #0x26
+   01C0 F8 00               421 	ldhl	sp,#0
+   01C2 77                  422 	ld	(hl),a
+   01C3 C3rA9r02            423 	jp	00129$
+                            424 ;C:/gbdk/ZGB/common/src/Print.c:68: case  '(': c= font_idx + 39; break;
+   01C6                     425 00103$:
+   01C6 21r02r00            426 	ld	hl,#_font_idx
+   01C9 7E                  427 	ld	a,(hl)
+   01CA C6 27               428 	add	a, #0x27
+   01CC F8 00               429 	ldhl	sp,#0
+   01CE 77                  430 	ld	(hl),a
+   01CF C3rA9r02            431 	jp	00129$
+                            432 ;C:/gbdk/ZGB/common/src/Print.c:69: case  ')': c= font_idx + 40; break;
+   01D2                     433 00104$:
+   01D2 21r02r00            434 	ld	hl,#_font_idx
+   01D5 7E                  435 	ld	a,(hl)
+   01D6 C6 28               436 	add	a, #0x28
+   01D8 F8 00               437 	ldhl	sp,#0
+   01DA 77                  438 	ld	(hl),a
+   01DB C3rA9r02            439 	jp	00129$
+                            440 ;C:/gbdk/ZGB/common/src/Print.c:70: case  '-': c= font_idx + 41; break;
+   01DE                     441 00105$:
+   01DE 21r02r00            442 	ld	hl,#_font_idx
+   01E1 7E                  443 	ld	a,(hl)
+   01E2 C6 29               444 	add	a, #0x29
+   01E4 F8 00               445 	ldhl	sp,#0
+   01E6 77                  446 	ld	(hl),a
+   01E7 C3rA9r02            447 	jp	00129$
+                            448 ;C:/gbdk/ZGB/common/src/Print.c:71: case  '.': c= font_idx + 42; break;
+   01EA                     449 00106$:
+   01EA 21r02r00            450 	ld	hl,#_font_idx
+   01ED 7E                  451 	ld	a,(hl)
+   01EE C6 2A               452 	add	a, #0x2a
+   01F0 F8 00               453 	ldhl	sp,#0
+   01F2 77                  454 	ld	(hl),a
+   01F3 C3rA9r02            455 	jp	00129$
+                            456 ;C:/gbdk/ZGB/common/src/Print.c:72: case  ':': c= font_idx + 43; break;
+   01F6                     457 00107$:
+   01F6 21r02r00            458 	ld	hl,#_font_idx
+   01F9 7E                  459 	ld	a,(hl)
+   01FA C6 2B               460 	add	a, #0x2b
+   01FC F8 00               461 	ldhl	sp,#0
+   01FE 77                  462 	ld	(hl),a
+   01FF C3rA9r02            463 	jp	00129$
+                            464 ;C:/gbdk/ZGB/common/src/Print.c:73: case  '?': c= font_idx + 44; break;
+   0202                     465 00108$:
+   0202 21r02r00            466 	ld	hl,#_font_idx
+   0205 7E                  467 	ld	a,(hl)
+   0206 C6 2C               468 	add	a, #0x2c
+   0208 F8 00               469 	ldhl	sp,#0
+   020A 77                  470 	ld	(hl),a
+   020B C3rA9r02            471 	jp	00129$
+                            472 ;C:/gbdk/ZGB/common/src/Print.c:74: case  '%':
+   020E                     473 00109$:
+                            474 ;C:/gbdk/ZGB/common/src/Print.c:75: switch(*(txt + 1)) {
+   020E 03                  475 	inc	bc
+   020F 0A                  476 	ld	a,(bc)
+   0210 4F                  477 	ld	c,a
+   0211 D6 64               478 	sub	a, #0x64
+   0213 28 0D               479 	jr	Z,00111$
+   0215 79                  480 	ld	a,c
+   0216 FE 69               481 	cp	a,#0x69
+   0218 28 08               482 	jr	Z,00111$
+   021A D6 75               483 	sub	a, #0x75
+   021C CAr67r02            484 	jp	Z,00112$
+   021F C3rA9r02            485 	jp	00129$
+                            486 ;C:/gbdk/ZGB/common/src/Print.c:77: case 'i':
+   0222                     487 00111$:
+                            488 ;C:/gbdk/ZGB/common/src/Print.c:78: IntToString(va_arg(list, INT16), tmp);
+   0222 F8 15               489 	ldhl	sp,#21
+   0224 2A                  490 	ld	a,(hl+)
+   0225 5E                  491 	ld	e, (hl)
+   0226 F8 0D               492 	ldhl	sp,#13
+   0228 22                  493 	ld	(hl+),a
+   0229 73                  494 	ld	(hl),e
+   022A 2B                  495 	dec	hl
+   022B 2B                  496 	dec	hl
+   022C 2B                  497 	dec	hl
+   022D 4E                  498 	ld	c,(hl)
+   022E 23                  499 	inc	hl
+   022F 46                  500 	ld	b,(hl)
+   0230 03                  501 	inc	bc
+   0231 03                  502 	inc	bc
+   0232 2B                  503 	dec	hl
+   0233 71                  504 	ld	(hl),c
+   0234 23                  505 	inc	hl
+   0235 70                  506 	ld	(hl),b
+   0236 0B                  507 	dec	bc
+   0237 0B                  508 	dec	bc
+   0238 59                  509 	ld	e, c
+   0239 50                  510 	ld	d, b
+   023A 1A                  511 	ld	a,(de)
+   023B 4F                  512 	ld	c,a
+   023C 13                  513 	inc	de
+   023D 1A                  514 	ld	a,(de)
+   023E 47                  515 	ld	b,a
+   023F 23                  516 	inc	hl
+   0240 2A                  517 	ld	a,(hl+)
+   0241 66                  518 	ld	h,(hl)
+   0242 6F                  519 	ld	l,a
+   0243 E5                  520 	push	hl
+   0244 C5                  521 	push	bc
+   0245 CDr8Br00            522 	call	_IntToString
+   0248 E8 04               523 	add	sp, #4
+                            524 ;C:/gbdk/ZGB/common/src/Print.c:79: Printf(tmp);
+   024A F8 11               525 	ldhl	sp,#(18 - 1)
+   024C 4E                  526 	ld	c,(hl)
+   024D 23                  527 	inc	hl
+   024E 46                  528 	ld	b,(hl)
+   024F C5                  529 	push	bc
+   0250 CDrD8r00            530 	call	_Printf
+   0253 E8 02               531 	add	sp, #2
+                            532 ;C:/gbdk/ZGB/common/src/Print.c:80: txt += 2;
+   0255 F8 19               533 	ldhl	sp,#(26 - 1)
+   0257 5E                  534 	ld	e,(hl)
+   0258 23                  535 	inc	hl
+   0259 56                  536 	ld	d,(hl)
+   025A 21 02 00            537 	ld	hl,#0x0002
+   025D 19                  538 	add	hl,de
+   025E 7D                  539 	ld	a,l
+   025F 54                  540 	ld	d,h
+   0260 F8 19               541 	ldhl	sp,#25
+   0262 22                  542 	ld	(hl+),a
+   0263 72                  543 	ld	(hl),d
+                            544 ;C:/gbdk/ZGB/common/src/Print.c:81: continue;
+   0264 C3r04r01            545 	jp	00133$
+                            546 ;C:/gbdk/ZGB/common/src/Print.c:83: case 'u':
+   0267                     547 00112$:
+                            548 ;C:/gbdk/ZGB/common/src/Print.c:84: UIntToString(va_arg(list, UINT16), tmp);
+   0267 F8 0F               549 	ldhl	sp,#15
+   0269 2A                  550 	ld	a,(hl+)
+   026A 5E                  551 	ld	e, (hl)
+   026B F8 0D               552 	ldhl	sp,#13
+   026D 22                  553 	ld	(hl+),a
+   026E 73                  554 	ld	(hl),e
+   026F 2B                  555 	dec	hl
+   0270 2B                  556 	dec	hl
+   0271 2B                  557 	dec	hl
+   0272 4E                  558 	ld	c,(hl)
+   0273 23                  559 	inc	hl
+   0274 46                  560 	ld	b,(hl)
+   0275 03                  561 	inc	bc
+   0276 03                  562 	inc	bc
+   0277 2B                  563 	dec	hl
+   0278 71                  564 	ld	(hl),c
+   0279 23                  565 	inc	hl
+   027A 70                  566 	ld	(hl),b
+   027B 0B                  567 	dec	bc
+   027C 0B                  568 	dec	bc
+   027D 59                  569 	ld	e, c
+   027E 50                  570 	ld	d, b
+   027F 1A                  571 	ld	a,(de)
+   0280 4F                  572 	ld	c,a
+   0281 13                  573 	inc	de
+   0282 1A                  574 	ld	a,(de)
+   0283 47                  575 	ld	b,a
+   0284 23                  576 	inc	hl
+   0285 2A                  577 	ld	a,(hl+)
+   0286 66                  578 	ld	h,(hl)
+   0287 6F                  579 	ld	l,a
+   0288 E5                  580 	push	hl
+   0289 C5                  581 	push	bc
+   028A CDr00r00            582 	call	_UIntToString
+   028D E8 04               583 	add	sp, #4
+                            584 ;C:/gbdk/ZGB/common/src/Print.c:85: Printf(tmp);
+   028F F8 13               585 	ldhl	sp,#(20 - 1)
+   0291 4E                  586 	ld	c,(hl)
+   0292 23                  587 	inc	hl
+   0293 46                  588 	ld	b,(hl)
+   0294 C5                  589 	push	bc
+   0295 CDrD8r00            590 	call	_Printf
+   0298 E8 02               591 	add	sp, #2
+                            592 ;C:/gbdk/ZGB/common/src/Print.c:86: txt += 2;
+   029A F8 19               593 	ldhl	sp,#(26 - 1)
+   029C 5E                  594 	ld	e,(hl)
+   029D 23                  595 	inc	hl
+   029E 56                  596 	ld	d,(hl)
+   029F 21 02 00            597 	ld	hl,#0x0002
+   02A2 19                  598 	add	hl,de
+   02A3 7D                  599 	ld	a,l
+   02A4 54                  600 	ld	d,h
+   02A5 F8 19               601 	ldhl	sp,#25
+   02A7 22                  602 	ld	(hl+),a
+   02A8 72                  603 	ld	(hl),d
+                            604 ;C:/gbdk/ZGB/common/src/Print.c:90: }
+   02A9                     605 00129$:
+                            606 ;C:/gbdk/ZGB/common/src/Print.c:92: if(print_target == PRINT_BKG)
+   02A9 21r03r00            607 	ld	hl,#_print_target
+   02AC 7E                  608 	ld	a,(hl)
+   02AD B7                  609 	or	a, a
+   02AE 20 2B               610 	jr	NZ,00131$
+                            611 ;C:/gbdk/ZGB/common/src/Print.c:93: set_bkg_tiles(0x1F & (print_x + scroll_offset_x), 0x1F & (print_y + scroll_offset_y), 1, 1, &c);
+   02B0 F8 00               612 	ldhl	sp,#0
+   02B2 4D                  613 	ld	c,l
+   02B3 44                  614 	ld	b,h
+   02B4 21r01r00            615 	ld	hl,#_print_y
+   02B7 7E                  616 	ld	a,(hl)
+   02B8 21r00r00            617 	ld	hl,#_scroll_offset_y
+   02BB 86                  618 	add	a, (hl)
+   02BC E6 1F               619 	and	a, #0x1f
+   02BE 5F                  620 	ld	e,a
+   02BF 21r00r00            621 	ld	hl,#_print_x
+   02C2 7E                  622 	ld	a,(hl)
+   02C3 21r00r00            623 	ld	hl,#_scroll_offset_x
+   02C6 86                  624 	add	a, (hl)
+   02C7 E6 1F               625 	and	a, #0x1f
+   02C9 57                  626 	ld	d,a
+   02CA C5                  627 	push	bc
+   02CB 21 01 01            628 	ld	hl,#0x0101
+   02CE E5                  629 	push	hl
+   02CF 7B                  630 	ld	a,e
+   02D0 F5                  631 	push	af
+   02D1 33                  632 	inc	sp
+   02D2 D5                  633 	push	de
+   02D3 33                  634 	inc	sp
+   02D4 CDr00r00            635 	call	_set_bkg_tiles
+   02D7 E8 06               636 	add	sp, #6
+   02D9 18 1A               637 	jr	00132$
+   02DB                     638 00131$:
+                            639 ;C:/gbdk/ZGB/common/src/Print.c:95: set_win_tiles(print_x, print_y, 1, 1, &c);
+   02DB F8 00               640 	ldhl	sp,#0
+   02DD 4D                  641 	ld	c,l
+   02DE 44                  642 	ld	b,h
+   02DF C5                  643 	push	bc
+   02E0 21 01 01            644 	ld	hl,#0x0101
+   02E3 E5                  645 	push	hl
+   02E4 21r01r00            646 	ld	hl,#_print_y
+   02E7 7E                  647 	ld	a,(hl)
+   02E8 F5                  648 	push	af
+   02E9 33                  649 	inc	sp
+   02EA 21r00r00            650 	ld	hl,#_print_x
+   02ED 7E                  651 	ld	a,(hl)
+   02EE F5                  652 	push	af
+   02EF 33                  653 	inc	sp
+   02F0 CDr00r00            654 	call	_set_win_tiles
+   02F3 E8 06               655 	add	sp, #6
+   02F5                     656 00132$:
+                            657 ;C:/gbdk/ZGB/common/src/Print.c:97: print_x ++;
+   02F5 21r00r00            658 	ld	hl,#_print_x
+   02F8 34                  659 	inc	(hl)
+                            660 ;C:/gbdk/ZGB/common/src/Print.c:98: txt ++;
+   02F9 F8 19               661 	ldhl	sp,#25
+   02FB 34                  662 	inc	(hl)
+   02FC C2r04r01            663 	jp	NZ,00133$
+   02FF 23                  664 	inc	hl
+   0300 34                  665 	inc	(hl)
+   0301 C3r04r01            666 	jp	00133$
+   0304                     667 00136$:
+   0304 E8 17               668 	add	sp, #23
+   0306 C9                  669 	ret
+                            670 	.area _CODE
+                            671 	.area _CABS (ABS)

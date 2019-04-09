@@ -1,0 +1,41 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 1.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+    .__.$$$.                                                    =  2710 L
+    .__.ABS.                                                    =  0000 G
+    .__.CPU.                                                    =  0000 L
+    .__.H$L.                                                    =  0000 L
+    _DespRight                                                     **** GX
+  6 _FadeDMG                                                       0022 GR
+  6 _FadeInCOLOR                                                   048E GR
+  6 _FadeInDMG                                                     02A5 GR
+  6 _FadeInOp                                                      0000 GR
+  6 _FadeIn_b                                                      049F GR
+  6 _FadeOutColor                                                  04AB GR
+  6 _FadeOutDMG                                                    04A2 GR
+  6 _FadeOut_b                                                     04BB GR
+  6 _FadeStepColor                                                 036A GR
+  6 _UpdateColor                                                   02AD GR
+  1 _ZGB_Fading_BPal                                               0001 GR
+  1 _ZGB_Fading_SPal                                               0041 GR
+    _delay                                                         **** GX
+  1 _fade_bank                                                     0000 GR
+    _set_bkg_palette                                               **** GX
+    _set_sprite_palette                                            **** GX
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 2.
+Hexadecimal [16-Bits]
+
+Area Table
+
+   0 _CODE                                      size    0   flags    0
+   1 _DATA                                      size   81   flags    0
+   2 _DABS                                      size    0   flags    8
+   3 _HOME                                      size    0   flags    0
+   4 _GSINIT                                    size    5   flags    0
+   5 _GSFINAL                                   size    0   flags    0
+   6 _CODE_1                                    size  4BE   flags    0
+   7 _CABS                                      size    0   flags    8
+

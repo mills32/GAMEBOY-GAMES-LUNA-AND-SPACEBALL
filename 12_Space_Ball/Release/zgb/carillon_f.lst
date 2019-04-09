@@ -1,0 +1,209 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module carillon_f
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _CP_StopMusic
+                             12 	.globl _CP_UpdateMusic
+                             13 	.globl _CP_LoadMusic
+                             14 	.globl _PopBank
+                             15 	.globl _PushBank
+                             16 	.globl _CP_VARS
+                             17 	.globl _ZGB_CP_ON
+                             18 	.globl _ZGB_CPSong
+                             19 	.globl _ZGB_CPBank
+                             20 ;--------------------------------------------------------
+                             21 ; ram data
+                             22 ;--------------------------------------------------------
+                             23 	.area _DATA
+   0000                      24 _ZGB_CPBank::
+   0000                      25 	.ds 1
+   0001                      26 _ZGB_CPSong::
+   0001                      27 	.ds 1
+   0002                      28 _ZGB_CP_ON::
+   0002                      29 	.ds 1
+                             30 ;--------------------------------------------------------
+                             31 ; absolute external ram data
+                             32 ;--------------------------------------------------------
+                             33 	.area _DABS (ABS)
+   C7C0                      34 	.org 0xC7C0
+   C7C0                      35 _CP_VARS::
+   C7C0                      36 	.ds 32
+                             37 ;--------------------------------------------------------
+                             38 ; global & static initialisations
+                             39 ;--------------------------------------------------------
+                             40 	.area _HOME
+                             41 	.area _GSINIT
+                             42 	.area _GSFINAL
+                             43 	.area _GSINIT
+                             44 ;C:/gbdk/ZGB/common/src/carillon_f.c:4: UINT8 ZGB_CPBank = 0; 
+   0000 21r00r00             45 	ld	hl,#_ZGB_CPBank
+   0003 36 00                46 	ld	(hl),#0x00
+                             47 ;C:/gbdk/ZGB/common/src/carillon_f.c:5: UINT8 ZGB_CPSong = 0;
+   0005 21r01r00             48 	ld	hl,#_ZGB_CPSong
+   0008 36 00                49 	ld	(hl),#0x00
+                             50 ;C:/gbdk/ZGB/common/src/carillon_f.c:10: UINT8 __at (0xc7c0) CP_VARS[32] = {
+   000A 21rC0rC7             51 	ld	hl,#_CP_VARS
+   000D 36 01                52 	ld	(hl),#0x01
+   000F 21rC1rC7             53 	ld	hl,#(_CP_VARS + 0x0001)
+   0012 36 02                54 	ld	(hl),#0x02
+   0014 21rC2rC7             55 	ld	hl,#(_CP_VARS + 0x0002)
+   0017 36 03                56 	ld	(hl),#0x03
+   0019 21rC3rC7             57 	ld	hl,#(_CP_VARS + 0x0003)
+   001C 36 04                58 	ld	(hl),#0x04
+   001E 21rC4rC7             59 	ld	hl,#(_CP_VARS + 0x0004)
+   0021 36 01                60 	ld	(hl),#0x01
+   0023 21rC5rC7             61 	ld	hl,#(_CP_VARS + 0x0005)
+   0026 36 02                62 	ld	(hl),#0x02
+   0028 21rC6rC7             63 	ld	hl,#(_CP_VARS + 0x0006)
+   002B 36 03                64 	ld	(hl),#0x03
+   002D 21rC7rC7             65 	ld	hl,#(_CP_VARS + 0x0007)
+   0030 36 04                66 	ld	(hl),#0x04
+   0032 21rC8rC7             67 	ld	hl,#(_CP_VARS + 0x0008)
+   0035 36 01                68 	ld	(hl),#0x01
+   0037 21rC9rC7             69 	ld	hl,#(_CP_VARS + 0x0009)
+   003A 36 02                70 	ld	(hl),#0x02
+   003C 21rCArC7             71 	ld	hl,#(_CP_VARS + 0x000a)
+   003F 36 03                72 	ld	(hl),#0x03
+   0041 21rCBrC7             73 	ld	hl,#(_CP_VARS + 0x000b)
+   0044 36 04                74 	ld	(hl),#0x04
+   0046 21rCCrC7             75 	ld	hl,#(_CP_VARS + 0x000c)
+   0049 36 01                76 	ld	(hl),#0x01
+   004B 21rCDrC7             77 	ld	hl,#(_CP_VARS + 0x000d)
+   004E 36 02                78 	ld	(hl),#0x02
+   0050 21rCErC7             79 	ld	hl,#(_CP_VARS + 0x000e)
+   0053 36 03                80 	ld	(hl),#0x03
+   0055 21rCFrC7             81 	ld	hl,#(_CP_VARS + 0x000f)
+   0058 36 04                82 	ld	(hl),#0x04
+   005A 21rD0rC7             83 	ld	hl,#(_CP_VARS + 0x0010)
+   005D 36 01                84 	ld	(hl),#0x01
+   005F 21rD1rC7             85 	ld	hl,#(_CP_VARS + 0x0011)
+   0062 36 02                86 	ld	(hl),#0x02
+   0064 21rD2rC7             87 	ld	hl,#(_CP_VARS + 0x0012)
+   0067 36 03                88 	ld	(hl),#0x03
+   0069 21rD3rC7             89 	ld	hl,#(_CP_VARS + 0x0013)
+   006C 36 04                90 	ld	(hl),#0x04
+   006E 21rD4rC7             91 	ld	hl,#(_CP_VARS + 0x0014)
+   0071 36 01                92 	ld	(hl),#0x01
+   0073 21rD5rC7             93 	ld	hl,#(_CP_VARS + 0x0015)
+   0076 36 02                94 	ld	(hl),#0x02
+   0078 21rD6rC7             95 	ld	hl,#(_CP_VARS + 0x0016)
+   007B 36 03                96 	ld	(hl),#0x03
+   007D 21rD7rC7             97 	ld	hl,#(_CP_VARS + 0x0017)
+   0080 36 04                98 	ld	(hl),#0x04
+   0082 21rD8rC7             99 	ld	hl,#(_CP_VARS + 0x0018)
+   0085 36 01               100 	ld	(hl),#0x01
+   0087 21rD9rC7            101 	ld	hl,#(_CP_VARS + 0x0019)
+   008A 36 02               102 	ld	(hl),#0x02
+   008C 21rDArC7            103 	ld	hl,#(_CP_VARS + 0x001a)
+   008F 36 03               104 	ld	(hl),#0x03
+   0091 21rDBrC7            105 	ld	hl,#(_CP_VARS + 0x001b)
+   0094 36 04               106 	ld	(hl),#0x04
+   0096 21rDCrC7            107 	ld	hl,#(_CP_VARS + 0x001c)
+   0099 36 01               108 	ld	(hl),#0x01
+   009B 21rDDrC7            109 	ld	hl,#(_CP_VARS + 0x001d)
+   009E 36 02               110 	ld	(hl),#0x02
+   00A0 21rDErC7            111 	ld	hl,#(_CP_VARS + 0x001e)
+   00A3 36 03               112 	ld	(hl),#0x03
+   00A5 21rDFrC7            113 	ld	hl,#(_CP_VARS + 0x001f)
+   00A8 36 04               114 	ld	(hl),#0x04
+                            115 ;--------------------------------------------------------
+                            116 ; Home
+                            117 ;--------------------------------------------------------
+                            118 	.area _HOME
+                            119 	.area _HOME
+                            120 ;--------------------------------------------------------
+                            121 ; code
+                            122 ;--------------------------------------------------------
+                            123 	.area _CODE
+                            124 ;C:/gbdk/ZGB/common/src/carillon_f.c:15: void CP_LoadMusic(UINT8 bank, UINT8 song){ 
+                            125 ;	---------------------------------
+                            126 ; Function CP_LoadMusic
+                            127 ; ---------------------------------
+   0000                     128 _CP_LoadMusic::
+                            129 ;C:/gbdk/ZGB/common/src/carillon_f.c:16: ZGB_CP_ON = 1;
+   0000 21r02r00            130 	ld	hl,#_ZGB_CP_ON
+   0003 36 01               131 	ld	(hl),#0x01
+                            132 ;C:/gbdk/ZGB/common/src/carillon_f.c:17: ZGB_CPBank = bank;
+   0005 E5                  133 	push	hl
+   0006 F8 04               134 	ldhl	sp,#4
+   0008 7E                  135 	ld	a,(hl)
+   0009 21r00r00            136 	ld	hl,#_ZGB_CPBank
+   000C 77                  137 	ld	(hl),a
+   000D E1                  138 	pop	hl
+                            139 ;C:/gbdk/ZGB/common/src/carillon_f.c:18: ZGB_CPSong = song;
+   000E E5                  140 	push	hl
+   000F F8 05               141 	ldhl	sp,#5
+   0011 7E                  142 	ld	a,(hl)
+   0012 21r01r00            143 	ld	hl,#_ZGB_CPSong
+   0015 77                  144 	ld	(hl),a
+   0016 E1                  145 	pop	hl
+                            146 ;C:/gbdk/ZGB/common/src/carillon_f.c:19: PUSH_BANK(ZGB_CPBank);
+   0017 21r00r00            147 	ld	hl,#_ZGB_CPBank
+   001A 7E                  148 	ld	a,(hl)
+   001B F5                  149 	push	af
+   001C 33                  150 	inc	sp
+   001D CDr00r00            151 	call	_PushBank
+   0020 33                  152 	inc	sp
+                            153 ;C:/gbdk/ZGB/common/src/carillon_f.c:30: __endasm;
+   0021 C5                  154 	push	BC
+   0022 CD 00 40            155 	call	0x4000
+   0025 C1                  156 	pop	BC
+   0026 C5                  157 	push	BC
+   0027 CD 03 40            158 	call	0x4003
+   002A C1                  159 	pop	BC
+   002B F8 02               160 	LDA	HL,2(SP)
+   002D FAr01r00            161 	LD	A,(_ZGB_CPSong)
+   0030 CD 0C 40            162 	call	0x400c
+                            163 ;C:/gbdk/ZGB/common/src/carillon_f.c:31: POP_BANK;
+   0033 C3r00r00            164 	jp	_PopBank
+                            165 ;C:/gbdk/ZGB/common/src/carillon_f.c:33: void CP_UpdateMusic(){
+                            166 ;	---------------------------------
+                            167 ; Function CP_UpdateMusic
+                            168 ; ---------------------------------
+   0036                     169 _CP_UpdateMusic::
+                            170 ;C:/gbdk/ZGB/common/src/carillon_f.c:34: PUSH_BANK(ZGB_CPBank);
+   0036 21r00r00            171 	ld	hl,#_ZGB_CPBank
+   0039 7E                  172 	ld	a,(hl)
+   003A F5                  173 	push	af
+   003B 33                  174 	inc	sp
+   003C CDr00r00            175 	call	_PushBank
+   003F 33                  176 	inc	sp
+                            177 ;C:/gbdk/ZGB/common/src/carillon_f.c:37: __endasm;
+   0040 CD 00 41            178 	call	0x4100
+                            179 ;C:/gbdk/ZGB/common/src/carillon_f.c:38: POP_BANK;
+   0043 C3r00r00            180 	jp	_PopBank
+                            181 ;C:/gbdk/ZGB/common/src/carillon_f.c:40: void CP_StopMusic(){
+                            182 ;	---------------------------------
+                            183 ; Function CP_StopMusic
+                            184 ; ---------------------------------
+   0046                     185 _CP_StopMusic::
+                            186 ;C:/gbdk/ZGB/common/src/carillon_f.c:41: if (ZGB_CP_ON == 1){
+   0046 21r02r00            187 	ld	hl,#_ZGB_CP_ON
+   0049 7E                  188 	ld	a,(hl)
+   004A 3D                  189 	dec	a
+   004B C0                  190 	ret	NZ
+                            191 ;C:/gbdk/ZGB/common/src/carillon_f.c:42: PUSH_BANK(ZGB_CPBank);
+   004C 21r00r00            192 	ld	hl,#_ZGB_CPBank
+   004F 7E                  193 	ld	a,(hl)
+   0050 F5                  194 	push	af
+   0051 33                  195 	inc	sp
+   0052 CDr00r00            196 	call	_PushBank
+   0055 33                  197 	inc	sp
+                            198 ;C:/gbdk/ZGB/common/src/carillon_f.c:45: __endasm;
+   0056 CD 06 40            199 	call	0x4006
+                            200 ;C:/gbdk/ZGB/common/src/carillon_f.c:46: ZGB_CPBank = 0;
+   0059 21r00r00            201 	ld	hl,#_ZGB_CPBank
+   005C 36 00               202 	ld	(hl),#0x00
+                            203 ;C:/gbdk/ZGB/common/src/carillon_f.c:47: ZGB_CP_ON = 0;
+   005E 21r02r00            204 	ld	hl,#_ZGB_CP_ON
+   0061 36 00               205 	ld	(hl),#0x00
+                            206 ;C:/gbdk/ZGB/common/src/carillon_f.c:48: POP_BANK;
+   0063 C3r00r00            207 	jp	_PopBank
+                            208 	.area _CODE
+                            209 	.area _CABS (ABS)

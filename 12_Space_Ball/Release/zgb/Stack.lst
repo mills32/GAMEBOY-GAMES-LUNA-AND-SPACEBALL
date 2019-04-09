@@ -1,0 +1,91 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module Stack
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _StackPush
+                             12 	.globl _StackPop
+                             13 ;--------------------------------------------------------
+                             14 ; ram data
+                             15 ;--------------------------------------------------------
+                             16 	.area _DATA
+                             17 ;--------------------------------------------------------
+                             18 ; absolute external ram data
+                             19 ;--------------------------------------------------------
+                             20 	.area _DABS (ABS)
+                             21 ;--------------------------------------------------------
+                             22 ; global & static initialisations
+                             23 ;--------------------------------------------------------
+                             24 	.area _HOME
+                             25 	.area _GSINIT
+                             26 	.area _GSFINAL
+                             27 	.area _GSINIT
+                             28 ;--------------------------------------------------------
+                             29 ; Home
+                             30 ;--------------------------------------------------------
+                             31 	.area _HOME
+                             32 	.area _HOME
+                             33 ;--------------------------------------------------------
+                             34 ; code
+                             35 ;--------------------------------------------------------
+                             36 	.area _CODE
+                             37 ;C:/gbdk/ZGB/common/src/Stack.c:3: void StackPush(UINT8* stack, UINT8 elem) {
+                             38 ;	---------------------------------
+                             39 ; Function StackPush
+                             40 ; ---------------------------------
+   0000                      41 _StackPush::
+   0000 3B                   42 	dec	sp
+                             43 ;C:/gbdk/ZGB/common/src/Stack.c:4: stack[++ stack[0]] = elem;
+   0001 F8 03                44 	ldhl	sp,#(4 - 1)
+   0003 4E                   45 	ld	c,(hl)
+   0004 23                   46 	inc	hl
+   0005 46                   47 	ld	b,(hl)
+   0006 0A                   48 	ld	a,(bc)
+   0007 3C                   49 	inc	a
+   0008 F8 00                50 	ldhl	sp,#0
+   000A 77                   51 	ld	(hl),a
+   000B 7E                   52 	ld	a,(hl)
+   000C 02                   53 	ld	(bc),a
+   000D 6E                   54 	ld	l,(hl)
+   000E 26 00                55 	ld	h,#0x00
+   0010 09                   56 	add	hl,bc
+   0011 4D                   57 	ld	c,l
+   0012 44                   58 	ld	b,h
+   0013 F8 05                59 	ldhl	sp,#5
+   0015 7E                   60 	ld	a,(hl)
+   0016 02                   61 	ld	(bc),a
+   0017 33                   62 	inc	sp
+   0018 C9                   63 	ret
+                             64 ;C:/gbdk/ZGB/common/src/Stack.c:7: UINT8 StackPop(UINT8* stack) {
+                             65 ;	---------------------------------
+                             66 ; Function StackPop
+                             67 ; ---------------------------------
+   0019                      68 _StackPop::
+   0019 3B                   69 	dec	sp
+                             70 ;C:/gbdk/ZGB/common/src/Stack.c:8: return stack[(stack[0] --)];
+   001A F8 03                71 	ldhl	sp,#(4 - 1)
+   001C 4E                   72 	ld	c,(hl)
+   001D 23                   73 	inc	hl
+   001E 46                   74 	ld	b,(hl)
+   001F 0A                   75 	ld	a,(bc)
+   0020 F8 00                76 	ldhl	sp,#0
+   0022 77                   77 	ld	(hl),a
+   0023 7E                   78 	ld	a,(hl)
+   0024 C6 FF                79 	add	a,#0xff
+   0026 02                   80 	ld	(bc),a
+   0027 6E                   81 	ld	l,(hl)
+   0028 26 00                82 	ld	h,#0x00
+   002A 09                   83 	add	hl,bc
+   002B 4D                   84 	ld	c,l
+   002C 44                   85 	ld	b,h
+   002D 0A                   86 	ld	a,(bc)
+   002E 5F                   87 	ld	e,a
+   002F 33                   88 	inc	sp
+   0030 C9                   89 	ret
+                             90 	.area _CODE
+                             91 	.area _CABS (ABS)

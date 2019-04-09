@@ -1,0 +1,102 @@
+                              1 ;---------------------------------------------------------------------------
+                              2 ; CARILLON PLAYER Header file for GBDK
+                              3 ; (c)2000-2001 Aleksi Eeben (email: aleksi@cncd.fi)
+                              4 ; Ported to GBDK by nitro2k01 (http://gbdev.gg8.se/forums/)
+                              5 ;---------------------------------------------------------------------------
+                              6         
+                              7 		.globl	_CP_Mute_Chan
+                              8 		.globl	_CP_Reset_Chan
+                     00C8     9 .tts	=	200
+                             10 
+                             11 ;Keep RAM c7c0 - c7ef for player variables
+                             12 ;.area	_Playervars (ABS)
+                             13 ;		.org	0xc7c0
+                             14 ;		.ds		0x30
+                             15 		
+                             16 .area	_CODE_1
+                             17 
+                             18 ;MILLS:
+                             19 ;As carillon does not have any functions to mute channels, 
+                             20 ;I figured out this "thing" that writes to the ram (0xc7c0)used by carillon...
+                             21 ;it just works...
+                             22 
+   0000                      23 _CP_Mute_Chan:	
+                             24 
+   0000 F8 02                25 	LDA	HL,2(SP)
+   0002 7E                   26 	LD	A,(HL)
+   0003 FE 00                27 	CP	#0
+   0005 28 0C                28 	JR	Z,MCH1
+   0007 FE 01                29 	CP	#1
+   0009 28 0F                30 	JR	Z,MCH2
+   000B FE 02                31 	CP	#2
+   000D 28 12                32 	JR	Z,MCH3
+   000F FE 03                33 	CP	#3
+   0011 28 15                34 	JR	Z,MCH4
+                             35 	;////////////////////////////////
+   0013                      36 MCH1:
+   0013 21 C7 C7             37 	LD	HL,#0xc7c7	;BASE+7
+   0016 3E 00                38 	LD	A,#0x00
+   0018 77                   39 	LD  (HL),A		;CHAN 1 OFF
+   0019 C9                   40 	ret
+   001A                      41 MCH2:
+   001A 21 CD C7             42 	LD	HL,#0xc7cD	;BASE+D
+   001D 3E 00                43 	LD	A,#0x00
+   001F 77                   44 	LD  (HL),A		;CHAN 2 OFF
+   0020 C9                   45 	ret
+   0021                      46 MCH3:
+   0021 21 D3 C7             47 	LD	HL,#0xc7d3	;BASE+13
+   0024 3E 00                48 	LD	A,#0x00
+   0026 77                   49 	LD  (HL),A		;CHAN 3 OFF
+   0027 C9                   50 	ret
+   0028                      51 MCH4:
+   0028 21 DA C7             52 	LD	HL,#0xc7da	;BASE+1A
+   002B 77                   53 	LD  (HL),A		;CHAN 4 OFF
+   002C C9                   54 	ret
+                             55 
+                             56 ;MILLS:
+                             57 ;This just resets all parameters after playing a SFX, 
+                             58 ;so that carillon keeps playing
+   002D                      59 _CP_Reset_Chan:
+                             60 	;LDA	HL,2(SP)
+                             61 	;LD	A,(HL)
+                             62 	;CP	#0
+                             63 	;JR	Z,CH1
+                             64 	;CP	#1
+                             65 	;JR	Z,CH2
+                             66 	;CP	#2
+                             67 	;JR	Z,CH3
+                             68 	;CP	#3
+                             69 	;JR	Z,CH4
+                             70 	;////////////////////////////////
+                             71 ;CH1:    ;SOUND REG
+   002D 3E 00                72 	LD	A,#0x00
+   002F EA 10 FF             73 	LD  (#0xFF10),A		;CHAN 1 RESET
+   0032 EA 11 FF             74 	LD  (#0xFF11),A	
+   0035 EA 12 FF             75 	LD  (#0xFF12),A	
+   0038 EA 13 FF             76 	LD  (#0xFF13),A	
+   003B EA 14 FF             77 	LD  (#0xFF14),A	
+                             78 ;	ret
+                             79 ;CH2:
+                             80 ;	LD	A,#0x00
+   003E EA 16 FF             81 	LD  (#0xFF16),A		;CHAN 2 RESET
+   0041 EA 17 FF             82 	LD  (#0xFF17),A	
+   0044 EA 18 FF             83 	LD  (#0xFF18),A	
+   0047 EA 19 FF             84 	LD  (#0xFF19),A	
+                             85 ;	ret
+                             86 ;CH3:
+                             87 ;	LD	A,#0x00
+   004A EA 1A FF             88 	LD  (#0xFF1A),A		;CHAN 3 RESET
+   004D EA 1B FF             89 	LD  (#0xFF1B),A	
+   0050 EA 1C FF             90 	LD  (#0xFF1C),A	
+   0053 EA 1D FF             91 	LD  (#0xFF1D),A	
+   0056 EA 1E FF             92 	LD  (#0xFF1E),A
+                             93 ;	ret
+                             94 ;CH4:
+                             95 ;	LD	A,#0x00
+   0059 EA 20 FF             96 	LD  (#0xFF20),A		;CHAN 4 RESET
+   005C EA 21 FF             97 	LD  (#0xFF21),A	
+   005F EA 22 FF             98 	LD  (#0xFF22),A	
+   0062 EA 23 FF             99 	LD  (#0xFF23),A	
+   0065 C9                  100 	ret
+                            101 	
+                            102 	

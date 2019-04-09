@@ -1,0 +1,2379 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module Sprite
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _SpriteManagerRemove
+                             12 	.globl _PopBank
+                             13 	.globl _PushBank
+                             14 	.globl _GetScrollTilePtr
+                             15 	.globl _DrawFrame
+                             16 	.globl _tile_coll
+                             17 	.globl _InitSprite
+                             18 	.globl _SetSpriteAnim
+                             19 	.globl _DrawSprite
+                             20 	.globl _TranslateSprite
+                             21 	.globl _CheckCollision
+                             22 ;--------------------------------------------------------
+                             23 ; ram data
+                             24 ;--------------------------------------------------------
+                             25 	.area _DATA
+   0000                      26 _tile_coll::
+   0000                      27 	.ds 2
+                             28 ;--------------------------------------------------------
+                             29 ; absolute external ram data
+                             30 ;--------------------------------------------------------
+                             31 	.area _DABS (ABS)
+                             32 ;--------------------------------------------------------
+                             33 ; global & static initialisations
+                             34 ;--------------------------------------------------------
+                             35 	.area _HOME
+                             36 	.area _GSINIT
+                             37 	.area _GSFINAL
+                             38 	.area _GSINIT
+                             39 ;--------------------------------------------------------
+                             40 ; Home
+                             41 ;--------------------------------------------------------
+                             42 	.area _HOME
+                             43 	.area _HOME
+                             44 ;--------------------------------------------------------
+                             45 ; code
+                             46 ;--------------------------------------------------------
+                             47 	.area _CODE
+                             48 ;C:/gbdk/ZGB/common/src/Sprite.c:6: void InitSprite(struct Sprite* sprite, FrameSize size, UINT8 first_tile) {
+                             49 ;	---------------------------------
+                             50 ; Function InitSprite
+                             51 ; ---------------------------------
+   0000                      52 _InitSprite::
+   0000 E8 FE                53 	add	sp, #-2
+                             54 ;C:/gbdk/ZGB/common/src/Sprite.c:7: sprite->size = size;
+   0002 F8 04                55 	ldhl	sp,#4
+   0004 2A                   56 	ld	a,(hl+)
+   0005 5E                   57 	ld	e, (hl)
+   0006 F8 00                58 	ldhl	sp,#0
+   0008 22                   59 	ld	(hl+),a
+   0009 73                   60 	ld	(hl),e
+   000A D1                   61 	pop	de
+   000B D5                   62 	push	de
+   000C F8 06                63 	ldhl	sp,#6
+   000E 7E                   64 	ld	a,(hl)
+   000F 12                   65 	ld	(de),a
+                             66 ;C:/gbdk/ZGB/common/src/Sprite.c:8: sprite->first_tile = first_tile;
+   0010 C1                   67 	pop	bc
+   0011 C5                   68 	push	bc
+   0012 03                   69 	inc	bc
+   0013 23                   70 	inc	hl
+   0014 7E                   71 	ld	a,(hl)
+   0015 02                   72 	ld	(bc),a
+                             73 ;C:/gbdk/ZGB/common/src/Sprite.c:9: sprite->anim_data = 0u;
+   0016 C1                   74 	pop	bc
+   0017 C5                   75 	push	bc
+   0018 03                   76 	inc	bc
+   0019 03                   77 	inc	bc
+   001A 3E 00                78 	ld	a,#0x00
+   001C 02                   79 	ld	(bc),a
+   001D 03                   80 	inc	bc
+   001E 3E 00                81 	ld	a,#0x00
+   0020 02                   82 	ld	(bc),a
+                             83 ;C:/gbdk/ZGB/common/src/Sprite.c:10: sprite->current_frame = 0u;
+   0021 D1                   84 	pop	de
+   0022 D5                   85 	push	de
+   0023 21 04 00             86 	ld	hl,#0x0004
+   0026 19                   87 	add	hl,de
+   0027 4D                   88 	ld	c,l
+   0028 44                   89 	ld	b,h
+   0029 AF                   90 	xor	a, a
+   002A 02                   91 	ld	(bc),a
+                             92 ;C:/gbdk/ZGB/common/src/Sprite.c:11: sprite->anim_speed = 33u;
+   002B D1                   93 	pop	de
+   002C D5                   94 	push	de
+   002D 21 06 00             95 	ld	hl,#0x0006
+   0030 19                   96 	add	hl,de
+   0031 4D                   97 	ld	c,l
+   0032 44                   98 	ld	b,h
+   0033 3E 21                99 	ld	a,#0x21
+   0035 02                  100 	ld	(bc),a
+                            101 ;C:/gbdk/ZGB/common/src/Sprite.c:13: sprite->x = 0;
+   0036 D1                  102 	pop	de
+   0037 D5                  103 	push	de
+   0038 21 07 00            104 	ld	hl,#0x0007
+   003B 19                  105 	add	hl,de
+   003C 4D                  106 	ld	c,l
+   003D 44                  107 	ld	b,h
+   003E 3E 00               108 	ld	a,#0x00
+   0040 02                  109 	ld	(bc),a
+   0041 03                  110 	inc	bc
+   0042 3E 00               111 	ld	a,#0x00
+   0044 02                  112 	ld	(bc),a
+                            113 ;C:/gbdk/ZGB/common/src/Sprite.c:14: sprite->y = 0;
+   0045 D1                  114 	pop	de
+   0046 D5                  115 	push	de
+   0047 21 09 00            116 	ld	hl,#0x0009
+   004A 19                  117 	add	hl,de
+   004B 4D                  118 	ld	c,l
+   004C 44                  119 	ld	b,h
+   004D 3E 00               120 	ld	a,#0x00
+   004F 02                  121 	ld	(bc),a
+   0050 03                  122 	inc	bc
+   0051 3E 00               123 	ld	a,#0x00
+   0053 02                  124 	ld	(bc),a
+                            125 ;C:/gbdk/ZGB/common/src/Sprite.c:16: sprite->coll_x = 0u;
+   0054 D1                  126 	pop	de
+   0055 D5                  127 	push	de
+   0056 21 0C 00            128 	ld	hl,#0x000c
+   0059 19                  129 	add	hl,de
+   005A 4D                  130 	ld	c,l
+   005B 44                  131 	ld	b,h
+   005C AF                  132 	xor	a, a
+   005D 02                  133 	ld	(bc),a
+                            134 ;C:/gbdk/ZGB/common/src/Sprite.c:17: sprite->coll_y = 0u;
+   005E D1                  135 	pop	de
+   005F D5                  136 	push	de
+   0060 21 0D 00            137 	ld	hl,#0x000d
+   0063 19                  138 	add	hl,de
+   0064 4D                  139 	ld	c,l
+   0065 44                  140 	ld	b,h
+   0066 AF                  141 	xor	a, a
+   0067 02                  142 	ld	(bc),a
+                            143 ;C:/gbdk/ZGB/common/src/Sprite.c:19: case FRAME_8x8:   sprite->coll_w =  8u; sprite->coll_h =  8u; break;
+   0068 D1                  144 	pop	de
+   0069 D5                  145 	push	de
+   006A 21 0E 00            146 	ld	hl,#0x000e
+   006D 19                  147 	add	hl,de
+   006E 4D                  148 	ld	c,l
+   006F 44                  149 	ld	b,h
+   0070 D1                  150 	pop	de
+   0071 D5                  151 	push	de
+   0072 21 0F 00            152 	ld	hl,#0x000f
+   0075 19                  153 	add	hl,de
+   0076 33                  154 	inc	sp
+   0077 33                  155 	inc	sp
+   0078 E5                  156 	push	hl
+                            157 ;C:/gbdk/ZGB/common/src/Sprite.c:18: switch(size) {
+   0079 F8 06               158 	ldhl	sp,#6
+   007B 7E                  159 	ld	a,(hl)
+   007C B7                  160 	or	a, a
+   007D 28 16               161 	jr	Z,00101$
+   007F F8 06               162 	ldhl	sp,#6
+   0081 7E                  163 	ld	a,(hl)
+   0082 3D                  164 	dec	a
+   0083 28 19               165 	jr	Z,00102$
+   0085 F8 06               166 	ldhl	sp,#6
+   0087 7E                  167 	ld	a,(hl)
+   0088 D6 02               168 	sub	a, #0x02
+   008A 28 1B               169 	jr	Z,00103$
+   008C F8 06               170 	ldhl	sp,#6
+   008E 7E                  171 	ld	a,(hl)
+   008F D6 04               172 	sub	a, #0x04
+   0091 28 1D               173 	jr	Z,00104$
+   0093 18 22               174 	jr	00106$
+                            175 ;C:/gbdk/ZGB/common/src/Sprite.c:19: case FRAME_8x8:   sprite->coll_w =  8u; sprite->coll_h =  8u; break;
+   0095                     176 00101$:
+   0095 3E 08               177 	ld	a,#0x08
+   0097 02                  178 	ld	(bc),a
+   0098 E1                  179 	pop	hl
+   0099 E5                  180 	push	hl
+   009A 36 08               181 	ld	(hl),#0x08
+   009C 18 19               182 	jr	00106$
+                            183 ;C:/gbdk/ZGB/common/src/Sprite.c:20: case FRAME_8x16:  sprite->coll_w =  8u; sprite->coll_h = 16u; break;
+   009E                     184 00102$:
+   009E 3E 08               185 	ld	a,#0x08
+   00A0 02                  186 	ld	(bc),a
+   00A1 E1                  187 	pop	hl
+   00A2 E5                  188 	push	hl
+   00A3 36 10               189 	ld	(hl),#0x10
+   00A5 18 10               190 	jr	00106$
+                            191 ;C:/gbdk/ZGB/common/src/Sprite.c:21: case FRAME_16x16: sprite->coll_w = 16u; sprite->coll_h = 16u; break;
+   00A7                     192 00103$:
+   00A7 3E 10               193 	ld	a,#0x10
+   00A9 02                  194 	ld	(bc),a
+   00AA E1                  195 	pop	hl
+   00AB E5                  196 	push	hl
+   00AC 36 10               197 	ld	(hl),#0x10
+   00AE 18 07               198 	jr	00106$
+                            199 ;C:/gbdk/ZGB/common/src/Sprite.c:22: case FRAME_32x32: sprite->coll_w = 32u; sprite->coll_h = 32u; break;
+   00B0                     200 00104$:
+   00B0 3E 20               201 	ld	a,#0x20
+   00B2 02                  202 	ld	(bc),a
+   00B3 E1                  203 	pop	hl
+   00B4 E5                  204 	push	hl
+   00B5 36 20               205 	ld	(hl),#0x20
+                            206 ;C:/gbdk/ZGB/common/src/Sprite.c:23: }
+   00B7                     207 00106$:
+   00B7 E8 02               208 	add	sp, #2
+   00B9 C9                  209 	ret
+                            210 ;C:/gbdk/ZGB/common/src/Sprite.c:26: void SetSpriteAnim(struct Sprite* sprite, UINT8* data, UINT8 speed) {
+                            211 ;	---------------------------------
+                            212 ; Function SetSpriteAnim
+                            213 ; ---------------------------------
+   00BA                     214 _SetSpriteAnim::
+   00BA E8 FC               215 	add	sp, #-4
+                            216 ;C:/gbdk/ZGB/common/src/Sprite.c:27: if(sprite->anim_data !=  data) {
+   00BC F8 06               217 	ldhl	sp,#6
+   00BE 2A                  218 	ld	a,(hl+)
+   00BF 5E                  219 	ld	e, (hl)
+   00C0 F8 00               220 	ldhl	sp,#0
+   00C2 22                  221 	ld	(hl+),a
+   00C3 73                  222 	ld	(hl),e
+   00C4 C1                  223 	pop	bc
+   00C5 C5                  224 	push	bc
+   00C6 03                  225 	inc	bc
+   00C7 03                  226 	inc	bc
+   00C8 59                  227 	ld	e, c
+   00C9 50                  228 	ld	d, b
+   00CA 1A                  229 	ld	a,(de)
+   00CB 23                  230 	inc	hl
+   00CC 22                  231 	ld	(hl+),a
+   00CD 13                  232 	inc	de
+   00CE 1A                  233 	ld	a,(de)
+   00CF 77                  234 	ld	(hl),a
+   00D0 F8 08               235 	ldhl	sp,#8
+   00D2 7E                  236 	ld	a,(hl)
+   00D3 F8 02               237 	ldhl	sp,#2
+   00D5 96                  238 	sub	a, (hl)
+   00D6 20 09               239 	jr	NZ,00109$
+   00D8 F8 09               240 	ldhl	sp,#9
+   00DA 7E                  241 	ld	a,(hl)
+   00DB F8 03               242 	ldhl	sp,#3
+   00DD 96                  243 	sub	a, (hl)
+   00DE CAr09r01            244 	jp	Z,00103$
+   00E1                     245 00109$:
+                            246 ;C:/gbdk/ZGB/common/src/Sprite.c:28: sprite->anim_data = data;
+   00E1 F8 08               247 	ldhl	sp,#8
+   00E3 7E                  248 	ld	a,(hl)
+   00E4 02                  249 	ld	(bc),a
+   00E5 03                  250 	inc	bc
+   00E6 23                  251 	inc	hl
+   00E7 7E                  252 	ld	a,(hl)
+   00E8 02                  253 	ld	(bc),a
+                            254 ;C:/gbdk/ZGB/common/src/Sprite.c:29: sprite->current_frame = 0;
+   00E9 D1                  255 	pop	de
+   00EA D5                  256 	push	de
+   00EB 21 04 00            257 	ld	hl,#0x0004
+   00EE 19                  258 	add	hl,de
+   00EF 4D                  259 	ld	c,l
+   00F0 44                  260 	ld	b,h
+   00F1 AF                  261 	xor	a, a
+   00F2 02                  262 	ld	(bc),a
+                            263 ;C:/gbdk/ZGB/common/src/Sprite.c:30: sprite->accum_ticks = 0;
+   00F3 D1                  264 	pop	de
+   00F4 D5                  265 	push	de
+   00F5 21 05 00            266 	ld	hl,#0x0005
+   00F8 19                  267 	add	hl,de
+   00F9 4D                  268 	ld	c,l
+   00FA 44                  269 	ld	b,h
+   00FB AF                  270 	xor	a, a
+   00FC 02                  271 	ld	(bc),a
+                            272 ;C:/gbdk/ZGB/common/src/Sprite.c:31: sprite->anim_speed = speed;
+   00FD D1                  273 	pop	de
+   00FE D5                  274 	push	de
+   00FF 21 06 00            275 	ld	hl,#0x0006
+   0102 19                  276 	add	hl,de
+   0103 4D                  277 	ld	c,l
+   0104 44                  278 	ld	b,h
+   0105 F8 0A               279 	ldhl	sp,#10
+   0107 7E                  280 	ld	a,(hl)
+   0108 02                  281 	ld	(bc),a
+   0109                     282 00103$:
+   0109 E8 04               283 	add	sp, #4
+   010B C9                  284 	ret
+                            285 ;C:/gbdk/ZGB/common/src/Sprite.c:38: void DrawSprite(struct Sprite* sprite) {
+                            286 ;	---------------------------------
+                            287 ; Function DrawSprite
+                            288 ; ---------------------------------
+   010C                     289 _DrawSprite::
+   010C E8 F3               290 	add	sp, #-13
+                            291 ;C:/gbdk/ZGB/common/src/Sprite.c:42: if(sprite->anim_data) {	
+   010E F8 0F               292 	ldhl	sp,#15
+   0110 2A                  293 	ld	a,(hl+)
+   0111 5E                  294 	ld	e, (hl)
+   0112 F8 0B               295 	ldhl	sp,#11
+   0114 22                  296 	ld	(hl+),a
+   0115 73                  297 	ld	(hl),e
+   0116 2B                  298 	dec	hl
+   0117 5E                  299 	ld	e,(hl)
+   0118 23                  300 	inc	hl
+   0119 56                  301 	ld	d,(hl)
+   011A 21 02 00            302 	ld	hl,#0x0002
+   011D 19                  303 	add	hl,de
+   011E 7D                  304 	ld	a,l
+   011F 54                  305 	ld	d,h
+   0120 F8 09               306 	ldhl	sp,#9
+   0122 22                  307 	ld	(hl+),a
+   0123 72                  308 	ld	(hl),d
+   0124 2B                  309 	dec	hl
+   0125 5E                  310 	ld	e,(hl)
+   0126 23                  311 	inc	hl
+   0127 56                  312 	ld	d,(hl)
+   0128 1A                  313 	ld	a,(de)
+   0129 4F                  314 	ld	c,a
+   012A 13                  315 	inc	de
+   012B 1A                  316 	ld	a,(de)
+   012C 47                  317 	ld	b,a
+                            318 ;C:/gbdk/ZGB/common/src/Sprite.c:45: sprite->current_frame ++;
+   012D 23                  319 	inc	hl
+   012E 5E                  320 	ld	e,(hl)
+   012F 23                  321 	inc	hl
+   0130 56                  322 	ld	d,(hl)
+   0131 21 04 00            323 	ld	hl,#0x0004
+   0134 19                  324 	add	hl,de
+   0135 7D                  325 	ld	a,l
+   0136 54                  326 	ld	d,h
+   0137 F8 07               327 	ldhl	sp,#7
+   0139 22                  328 	ld	(hl+),a
+   013A 72                  329 	ld	(hl),d
+                            330 ;C:/gbdk/ZGB/common/src/Sprite.c:42: if(sprite->anim_data) {	
+   013B 78                  331 	ld	a,b
+   013C B1                  332 	or	a,c
+   013D CArDAr01            333 	jp	Z,00106$
+                            334 ;C:/gbdk/ZGB/common/src/Sprite.c:43: sprite->accum_ticks += sprite->anim_speed << delta_time;
+   0140 F8 0B               335 	ldhl	sp,#(12 - 1)
+   0142 5E                  336 	ld	e,(hl)
+   0143 23                  337 	inc	hl
+   0144 56                  338 	ld	d,(hl)
+   0145 21 05 00            339 	ld	hl,#0x0005
+   0148 19                  340 	add	hl,de
+   0149 7D                  341 	ld	a,l
+   014A 54                  342 	ld	d,h
+   014B F8 05               343 	ldhl	sp,#5
+   014D 22                  344 	ld	(hl+),a
+   014E 72                  345 	ld	(hl),d
+   014F 2B                  346 	dec	hl
+   0150 5E                  347 	ld	e,(hl)
+   0151 23                  348 	inc	hl
+   0152 56                  349 	ld	d,(hl)
+   0153 1A                  350 	ld	a,(de)
+   0154 2B                  351 	dec	hl
+   0155 2B                  352 	dec	hl
+   0156 77                  353 	ld	(hl),a
+   0157 F8 0B               354 	ldhl	sp,#(12 - 1)
+   0159 5E                  355 	ld	e,(hl)
+   015A 23                  356 	inc	hl
+   015B 56                  357 	ld	d,(hl)
+   015C 21 06 00            358 	ld	hl,#0x0006
+   015F 19                  359 	add	hl,de
+   0160 4D                  360 	ld	c,l
+   0161 44                  361 	ld	b,h
+   0162 0A                  362 	ld	a,(bc)
+   0163 4F                  363 	ld	c,a
+   0164 21r00r00            364 	ld	hl,#_delta_time
+   0167 7E                  365 	ld	a,(hl)
+   0168 3C                  366 	inc	a
+   0169 18 02               367 	jr	00142$
+   016B                     368 00141$:
+   016B CB 21               369 	sla	c
+   016D                     370 00142$:
+   016D 3D                  371 	dec	a
+   016E 20 FB               372 	jr	NZ,00141$
+   0170 F8 04               373 	ldhl	sp,#4
+   0172 7E                  374 	ld	a,(hl)
+   0173 81                  375 	add	a, c
+   0174 4F                  376 	ld	c,a
+   0175 23                  377 	inc	hl
+   0176 2A                  378 	ld	a,(hl+)
+   0177 66                  379 	ld	h,(hl)
+   0178 6F                  380 	ld	l,a
+   0179 71                  381 	ld	(hl),c
+                            382 ;C:/gbdk/ZGB/common/src/Sprite.c:44: if(sprite->accum_ticks > 100u) {
+   017A 3E 64               383 	ld	a,#0x64
+   017C 91                  384 	sub	a, c
+   017D D2rBAr01            385 	jp	NC,00104$
+                            386 ;C:/gbdk/ZGB/common/src/Sprite.c:45: sprite->current_frame ++;
+   0180 F8 07               387 	ldhl	sp,#(8 - 1)
+   0182 5E                  388 	ld	e,(hl)
+   0183 23                  389 	inc	hl
+   0184 56                  390 	ld	d,(hl)
+   0185 1A                  391 	ld	a,(de)
+   0186 3C                  392 	inc	a
+   0187 F8 04               393 	ldhl	sp,#4
+   0189 77                  394 	ld	(hl),a
+   018A F8 07               395 	ldhl	sp,#(8 - 1)
+   018C 5E                  396 	ld	e,(hl)
+   018D 23                  397 	inc	hl
+   018E 56                  398 	ld	d,(hl)
+   018F F8 04               399 	ldhl	sp,#4
+   0191 7E                  400 	ld	a,(hl)
+   0192 12                  401 	ld	(de),a
+                            402 ;C:/gbdk/ZGB/common/src/Sprite.c:46: if(sprite->current_frame == sprite->anim_data[0]){
+   0193 F8 09               403 	ldhl	sp,#(10 - 1)
+   0195 5E                  404 	ld	e,(hl)
+   0196 23                  405 	inc	hl
+   0197 56                  406 	ld	d,(hl)
+   0198 1A                  407 	ld	a,(de)
+   0199 4F                  408 	ld	c,a
+   019A 13                  409 	inc	de
+   019B 1A                  410 	ld	a,(de)
+   019C 47                  411 	ld	b,a
+   019D 0A                  412 	ld	a,(bc)
+   019E 4F                  413 	ld	c,a
+   019F F8 04               414 	ldhl	sp,#4
+   01A1 7E                  415 	ld	a,(hl)
+   01A2 91                  416 	sub	a, c
+   01A3 20 07               417 	jr	NZ,00102$
+                            418 ;C:/gbdk/ZGB/common/src/Sprite.c:47: sprite->current_frame = 0;
+   01A5 F8 07               419 	ldhl	sp,#7
+   01A7 2A                  420 	ld	a,(hl+)
+   01A8 66                  421 	ld	h,(hl)
+   01A9 6F                  422 	ld	l,a
+   01AA 36 00               423 	ld	(hl),#0x00
+   01AC                     424 00102$:
+                            425 ;C:/gbdk/ZGB/common/src/Sprite.c:50: sprite->accum_ticks -= 100u;
+   01AC F8 05               426 	ldhl	sp,#(6 - 1)
+   01AE 5E                  427 	ld	e,(hl)
+   01AF 23                  428 	inc	hl
+   01B0 56                  429 	ld	d,(hl)
+   01B1 1A                  430 	ld	a,(de)
+   01B2 C6 9C               431 	add	a,#0x9c
+   01B4 4F                  432 	ld	c,a
+   01B5 2B                  433 	dec	hl
+   01B6 2A                  434 	ld	a,(hl+)
+   01B7 66                  435 	ld	h,(hl)
+   01B8 6F                  436 	ld	l,a
+   01B9 71                  437 	ld	(hl),c
+   01BA                     438 00104$:
+                            439 ;C:/gbdk/ZGB/common/src/Sprite.c:52: frame = sprite->anim_data[1 + sprite->current_frame];
+   01BA F8 09               440 	ldhl	sp,#(10 - 1)
+   01BC 5E                  441 	ld	e,(hl)
+   01BD 23                  442 	inc	hl
+   01BE 56                  443 	ld	d,(hl)
+   01BF 1A                  444 	ld	a,(de)
+   01C0 F8 05               445 	ldhl	sp,#5
+   01C2 22                  446 	ld	(hl+),a
+   01C3 13                  447 	inc	de
+   01C4 1A                  448 	ld	a,(de)
+   01C5 22                  449 	ld	(hl+),a
+   01C6 5E                  450 	ld	e,(hl)
+   01C7 23                  451 	inc	hl
+   01C8 56                  452 	ld	d,(hl)
+   01C9 1A                  453 	ld	a,(de)
+   01CA 4F                  454 	ld	c,a
+   01CB 06 00               455 	ld	b,#0x00
+   01CD 03                  456 	inc	bc
+   01CE F8 05               457 	ldhl	sp,#5
+   01D0 2A                  458 	ld	a,(hl+)
+   01D1 66                  459 	ld	h,(hl)
+   01D2 6F                  460 	ld	l,a
+   01D3 09                  461 	add	hl,bc
+   01D4 4D                  462 	ld	c,l
+   01D5 44                  463 	ld	b,h
+   01D6 0A                  464 	ld	a,(bc)
+   01D7 4F                  465 	ld	c,a
+   01D8 18 07               466 	jr	00107$
+   01DA                     467 00106$:
+                            468 ;C:/gbdk/ZGB/common/src/Sprite.c:54: frame = sprite->current_frame;
+   01DA F8 07               469 	ldhl	sp,#(8 - 1)
+   01DC 5E                  470 	ld	e,(hl)
+   01DD 23                  471 	inc	hl
+   01DE 56                  472 	ld	d,(hl)
+   01DF 1A                  473 	ld	a,(de)
+   01E0 4F                  474 	ld	c,a
+   01E1                     475 00107$:
+                            476 ;C:/gbdk/ZGB/common/src/Sprite.c:57: screen_x = sprite->x - scroll_x;
+   01E1 F8 0B               477 	ldhl	sp,#(12 - 1)
+   01E3 5E                  478 	ld	e,(hl)
+   01E4 23                  479 	inc	hl
+   01E5 56                  480 	ld	d,(hl)
+   01E6 21 07 00            481 	ld	hl,#0x0007
+   01E9 19                  482 	add	hl,de
+   01EA 7D                  483 	ld	a,l
+   01EB 54                  484 	ld	d,h
+   01EC F8 05               485 	ldhl	sp,#5
+   01EE 22                  486 	ld	(hl+),a
+   01EF 72                  487 	ld	(hl),d
+   01F0 2B                  488 	dec	hl
+   01F1 5E                  489 	ld	e,(hl)
+   01F2 23                  490 	inc	hl
+   01F3 56                  491 	ld	d,(hl)
+   01F4 1A                  492 	ld	a,(de)
+   01F5 2B                  493 	dec	hl
+   01F6 22                  494 	ld	(hl+),a
+   01F7 13                  495 	inc	de
+   01F8 1A                  496 	ld	a,(de)
+   01F9 77                  497 	ld	(hl),a
+   01FA 21r00r00            498 	ld	hl,#_scroll_x
+   01FD 2A                  499 	ld	a,(hl+)
+   01FE 5E                  500 	ld	e, (hl)
+   01FF F8 07               501 	ldhl	sp,#7
+   0201 22                  502 	ld	(hl+),a
+   0202 73                  503 	ld	(hl),e
+   0203 2B                  504 	dec	hl
+   0204 2B                  505 	dec	hl
+   0205 2B                  506 	dec	hl
+   0206 5E                  507 	ld	e,(hl)
+   0207 23                  508 	inc	hl
+   0208 56                  509 	ld	d,(hl)
+   0209 23                  510 	inc	hl
+   020A 2A                  511 	ld	a,(hl+)
+   020B 66                  512 	ld	h,(hl)
+   020C 6F                  513 	ld	l,a
+   020D 7B                  514 	ld	a,e
+   020E 95                  515 	sub	a,l
+   020F 5F                  516 	ld	e,a
+   0210 7A                  517 	ld	a,d
+   0211 9C                  518 	sbc	a,h
+   0212 F8 01               519 	ldhl	sp,#1
+   0214 32                  520 	ld	(hl-),a
+   0215 73                  521 	ld	(hl),e
+                            522 ;C:/gbdk/ZGB/common/src/Sprite.c:58: screen_y = sprite->y - scroll_y;
+   0216 F8 0B               523 	ldhl	sp,#(12 - 1)
+   0218 5E                  524 	ld	e,(hl)
+   0219 23                  525 	inc	hl
+   021A 56                  526 	ld	d,(hl)
+   021B 21 09 00            527 	ld	hl,#0x0009
+   021E 19                  528 	add	hl,de
+   021F 7D                  529 	ld	a,l
+   0220 54                  530 	ld	d,h
+   0221 F8 05               531 	ldhl	sp,#5
+   0223 22                  532 	ld	(hl+),a
+   0224 72                  533 	ld	(hl),d
+   0225 2B                  534 	dec	hl
+   0226 5E                  535 	ld	e,(hl)
+   0227 23                  536 	inc	hl
+   0228 56                  537 	ld	d,(hl)
+   0229 1A                  538 	ld	a,(de)
+   022A 2B                  539 	dec	hl
+   022B 22                  540 	ld	(hl+),a
+   022C 13                  541 	inc	de
+   022D 1A                  542 	ld	a,(de)
+   022E 77                  543 	ld	(hl),a
+   022F 21r00r00            544 	ld	hl,#_scroll_y
+   0232 2A                  545 	ld	a,(hl+)
+   0233 5E                  546 	ld	e, (hl)
+   0234 F8 07               547 	ldhl	sp,#7
+   0236 22                  548 	ld	(hl+),a
+   0237 73                  549 	ld	(hl),e
+   0238 2B                  550 	dec	hl
+   0239 2B                  551 	dec	hl
+   023A 2B                  552 	dec	hl
+   023B 5E                  553 	ld	e,(hl)
+   023C 23                  554 	inc	hl
+   023D 56                  555 	ld	d,(hl)
+   023E 23                  556 	inc	hl
+   023F 2A                  557 	ld	a,(hl+)
+   0240 66                  558 	ld	h,(hl)
+   0241 6F                  559 	ld	l,a
+   0242 7B                  560 	ld	a,e
+   0243 95                  561 	sub	a,l
+   0244 5F                  562 	ld	e,a
+   0245 7A                  563 	ld	a,d
+   0246 9C                  564 	sbc	a,h
+   0247 F8 03               565 	ldhl	sp,#3
+   0249 32                  566 	ld	(hl-),a
+   024A 73                  567 	ld	(hl),e
+                            568 ;C:/gbdk/ZGB/common/src/Sprite.c:60: if((screen_x + 32u < SCREENWIDTH_PLUS_32) && (screen_y + 32 < SCREENHEIGHT_PLUS_32)) {
+   024B D1                  569 	pop	de
+   024C D5                  570 	push	de
+   024D 21 20 00            571 	ld	hl,#0x0020
+   0250 19                  572 	add	hl,de
+   0251 7D                  573 	ld	a,l
+   0252 54                  574 	ld	d,h
+   0253 F8 05               575 	ldhl	sp,#5
+   0255 22                  576 	ld	(hl+),a
+   0256 72                  577 	ld	(hl),d
+   0257 2B                  578 	dec	hl
+   0258 7E                  579 	ld	a, (hl)
+   0259 D6 C0               580 	sub	a, #0xc0
+   025B 23                  581 	inc	hl
+   025C 7E                  582 	ld	a, (hl)
+   025D DE 00               583 	sbc	a, #0x00
+   025F D2rF3r02            584 	jp	NC,00112$
+   0262 F8 02               585 	ldhl	sp,#(3 - 1)
+   0264 5E                  586 	ld	e,(hl)
+   0265 23                  587 	inc	hl
+   0266 56                  588 	ld	d,(hl)
+   0267 21 20 00            589 	ld	hl,#0x0020
+   026A 19                  590 	add	hl,de
+   026B 7D                  591 	ld	a,l
+   026C 54                  592 	ld	d,h
+   026D F8 05               593 	ldhl	sp,#5
+   026F 22                  594 	ld	(hl+),a
+   0270 72                  595 	ld	(hl),d
+   0271 2B                  596 	dec	hl
+   0272 7E                  597 	ld	a, (hl)
+   0273 D6 B0               598 	sub	a, #0xb0
+   0275 23                  599 	inc	hl
+   0276 7E                  600 	ld	a, (hl)
+   0277 DE 00               601 	sbc	a, #0x00
+   0279 D2rF3r02            602 	jp	NC,00112$
+                            603 ;C:/gbdk/ZGB/common/src/Sprite.c:61: DrawFrame(sprite->size, sprite->first_tile + (frame << sprite->size), screen_x, screen_y, sprite->flags);		
+   027C F8 0B               604 	ldhl	sp,#(12 - 1)
+   027E 5E                  605 	ld	e,(hl)
+   027F 23                  606 	inc	hl
+   0280 56                  607 	ld	d,(hl)
+   0281 21 0B 00            608 	ld	hl,#0x000b
+   0284 19                  609 	add	hl,de
+   0285 7D                  610 	ld	a,l
+   0286 54                  611 	ld	d,h
+   0287 F8 05               612 	ldhl	sp,#5
+   0289 22                  613 	ld	(hl+),a
+   028A 72                  614 	ld	(hl),d
+   028B 2B                  615 	dec	hl
+   028C 5E                  616 	ld	e,(hl)
+   028D 23                  617 	inc	hl
+   028E 56                  618 	ld	d,(hl)
+   028F 1A                  619 	ld	a,(de)
+   0290 2B                  620 	dec	hl
+   0291 2B                  621 	dec	hl
+   0292 77                  622 	ld	(hl),a
+   0293 E5                  623 	push	hl
+   0294 2B                  624 	dec	hl
+   0295 2B                  625 	dec	hl
+   0296 7E                  626 	ld	a,(hl)
+   0297 F8 07               627 	ldhl	sp,#7
+   0299 77                  628 	ld	(hl),a
+   029A E1                  629 	pop	hl
+   029B E5                  630 	push	hl
+   029C F8 02               631 	ldhl	sp,#2
+   029E 7E                  632 	ld	a,(hl)
+   029F F8 09               633 	ldhl	sp,#9
+   02A1 77                  634 	ld	(hl),a
+   02A2 E1                  635 	pop	hl
+   02A3 F8 0B               636 	ldhl	sp,#(12 - 1)
+   02A5 5E                  637 	ld	e,(hl)
+   02A6 23                  638 	inc	hl
+   02A7 56                  639 	ld	d,(hl)
+   02A8 21 01 00            640 	ld	hl,#0x0001
+   02AB 19                  641 	add	hl,de
+   02AC 7D                  642 	ld	a,l
+   02AD 54                  643 	ld	d,h
+   02AE F8 09               644 	ldhl	sp,#9
+   02B0 22                  645 	ld	(hl+),a
+   02B1 72                  646 	ld	(hl),d
+   02B2 2B                  647 	dec	hl
+   02B3 5E                  648 	ld	e,(hl)
+   02B4 23                  649 	inc	hl
+   02B5 56                  650 	ld	d,(hl)
+   02B6 1A                  651 	ld	a,(de)
+   02B7 2B                  652 	dec	hl
+   02B8 22                  653 	ld	(hl+),a
+   02B9 36 00               654 	ld	(hl),#0x00
+   02BB 06 00               655 	ld	b,#0x00
+   02BD 23                  656 	inc	hl
+   02BE 5E                  657 	ld	e,(hl)
+   02BF 23                  658 	inc	hl
+   02C0 56                  659 	ld	d,(hl)
+   02C1 1A                  660 	ld	a,(de)
+   02C2 2B                  661 	dec	hl
+   02C3 77                  662 	ld	(hl),a
+   02C4 7E                  663 	ld	a,(hl)
+   02C5 3C                  664 	inc	a
+   02C6 18 04               665 	jr	00146$
+   02C8                     666 00145$:
+   02C8 CB 21               667 	sla	c
+   02CA CB 10               668 	rl	b
+   02CC                     669 00146$:
+   02CC 3D                  670 	dec	a
+   02CD 20 F9               671 	jr	NZ,00145$
+   02CF 2B                  672 	dec	hl
+   02D0 2B                  673 	dec	hl
+   02D1 2A                  674 	ld	a,(hl+)
+   02D2 66                  675 	ld	h,(hl)
+   02D3 6F                  676 	ld	l,a
+   02D4 09                  677 	add	hl,bc
+   02D5 4D                  678 	ld	c,l
+   02D6 44                  679 	ld	b,h
+   02D7 F8 04               680 	ldhl	sp,#4
+   02D9 7E                  681 	ld	a,(hl)
+   02DA F5                  682 	push	af
+   02DB 33                  683 	inc	sp
+   02DC 23                  684 	inc	hl
+   02DD 7E                  685 	ld	a,(hl)
+   02DE F5                  686 	push	af
+   02DF 33                  687 	inc	sp
+   02E0 23                  688 	inc	hl
+   02E1 23                  689 	inc	hl
+   02E2 7E                  690 	ld	a,(hl)
+   02E3 F5                  691 	push	af
+   02E4 33                  692 	inc	sp
+   02E5 C5                  693 	push	bc
+   02E6 F8 10               694 	ldhl	sp,#16
+   02E8 7E                  695 	ld	a,(hl)
+   02E9 F5                  696 	push	af
+   02EA 33                  697 	inc	sp
+   02EB CDr00r00            698 	call	_DrawFrame
+   02EE E8 06               699 	add	sp, #6
+   02F0 C3r83r03            700 	jp	00115$
+   02F3                     701 00112$:
+                            702 ;C:/gbdk/ZGB/common/src/Sprite.c:63: if((screen_x + THIS->lim_x + 16) > ((THIS->lim_x << 1) + 16 + SCREENWIDTH) ||
+   02F3 21r00r00            703 	ld	hl,#_THIS
+   02F6 2A                  704 	ld	a,(hl+)
+   02F7 5E                  705 	ld	e, (hl)
+   02F8 F8 05               706 	ldhl	sp,#5
+   02FA 22                  707 	ld	(hl+),a
+   02FB 73                  708 	ld	(hl),e
+   02FC 2B                  709 	dec	hl
+   02FD 5E                  710 	ld	e,(hl)
+   02FE 23                  711 	inc	hl
+   02FF 56                  712 	ld	d,(hl)
+   0300 21 12 00            713 	ld	hl,#0x0012
+   0303 19                  714 	add	hl,de
+   0304 4D                  715 	ld	c,l
+   0305 44                  716 	ld	b,h
+   0306 59                  717 	ld	e, c
+   0307 50                  718 	ld	d, b
+   0308 1A                  719 	ld	a,(de)
+   0309 4F                  720 	ld	c,a
+   030A 13                  721 	inc	de
+   030B 1A                  722 	ld	a,(de)
+   030C 47                  723 	ld	b,a
+   030D E1                  724 	pop	hl
+   030E E5                  725 	push	hl
+   030F 09                  726 	add	hl,bc
+   0310 7D                  727 	ld	a,l
+   0311 54                  728 	ld	d,h
+   0312 F8 07               729 	ldhl	sp,#7
+   0314 22                  730 	ld	(hl+),a
+   0315 72                  731 	ld	(hl),d
+   0316 2B                  732 	dec	hl
+   0317 5E                  733 	ld	e,(hl)
+   0318 23                  734 	inc	hl
+   0319 56                  735 	ld	d,(hl)
+   031A 21 10 00            736 	ld	hl,#0x0010
+   031D 19                  737 	add	hl,de
+   031E 7D                  738 	ld	a,l
+   031F 54                  739 	ld	d,h
+   0320 F8 07               740 	ldhl	sp,#7
+   0322 22                  741 	ld	(hl+),a
+   0323 72                  742 	ld	(hl),d
+   0324 CB 21               743 	sla	c
+   0326 CB 10               744 	rl	b
+   0328 21 B0 00            745 	ld	hl,#0x00b0
+   032B 09                  746 	add	hl,bc
+   032C 4D                  747 	ld	c,l
+   032D 44                  748 	ld	b,h
+   032E F8 07               749 	ldhl	sp,#7
+   0330 79                  750 	ld	a,c
+   0331 96                  751 	sub	a, (hl)
+   0332 23                  752 	inc	hl
+   0333 78                  753 	ld	a,b
+   0334 9E                  754 	sbc	a, (hl)
+   0335 DAr77r03            755 	jp	C,00108$
+                            756 ;C:/gbdk/ZGB/common/src/Sprite.c:64: (screen_y + THIS->lim_y + 16) > ((THIS->lim_y << 1) + 16 + SCREENHEIGHT)
+   0338 F8 05               757 	ldhl	sp,#(6 - 1)
+   033A 5E                  758 	ld	e,(hl)
+   033B 23                  759 	inc	hl
+   033C 56                  760 	ld	d,(hl)
+   033D 21 14 00            761 	ld	hl,#0x0014
+   0340 19                  762 	add	hl,de
+   0341 4D                  763 	ld	c,l
+   0342 44                  764 	ld	b,h
+   0343 59                  765 	ld	e, c
+   0344 50                  766 	ld	d, b
+   0345 1A                  767 	ld	a,(de)
+   0346 4F                  768 	ld	c,a
+   0347 13                  769 	inc	de
+   0348 1A                  770 	ld	a,(de)
+   0349 47                  771 	ld	b,a
+   034A F8 02               772 	ldhl	sp,#2
+   034C 2A                  773 	ld	a,(hl+)
+   034D 66                  774 	ld	h,(hl)
+   034E 6F                  775 	ld	l,a
+   034F 09                  776 	add	hl,bc
+   0350 7D                  777 	ld	a,l
+   0351 54                  778 	ld	d,h
+   0352 F8 05               779 	ldhl	sp,#5
+   0354 22                  780 	ld	(hl+),a
+   0355 72                  781 	ld	(hl),d
+   0356 2B                  782 	dec	hl
+   0357 5E                  783 	ld	e,(hl)
+   0358 23                  784 	inc	hl
+   0359 56                  785 	ld	d,(hl)
+   035A 21 10 00            786 	ld	hl,#0x0010
+   035D 19                  787 	add	hl,de
+   035E 7D                  788 	ld	a,l
+   035F 54                  789 	ld	d,h
+   0360 F8 05               790 	ldhl	sp,#5
+   0362 22                  791 	ld	(hl+),a
+   0363 72                  792 	ld	(hl),d
+   0364 CB 21               793 	sla	c
+   0366 CB 10               794 	rl	b
+   0368 21 A0 00            795 	ld	hl,#0x00a0
+   036B 09                  796 	add	hl,bc
+   036C 4D                  797 	ld	c,l
+   036D 44                  798 	ld	b,h
+   036E F8 05               799 	ldhl	sp,#5
+   0370 79                  800 	ld	a,c
+   0371 96                  801 	sub	a, (hl)
+   0372 23                  802 	inc	hl
+   0373 78                  803 	ld	a,b
+   0374 9E                  804 	sbc	a, (hl)
+   0375 30 0C               805 	jr	NC,00115$
+   0377                     806 00108$:
+                            807 ;C:/gbdk/ZGB/common/src/Sprite.c:66: SpriteManagerRemove(THIS_IDX);
+   0377 21r00r00            808 	ld	hl,#_THIS_IDX
+   037A 4E                  809 	ld	c,(hl)
+   037B 06 00               810 	ld	b,#0x00
+   037D C5                  811 	push	bc
+   037E CDr00r00            812 	call	_SpriteManagerRemove
+   0381 E8 02               813 	add	sp, #2
+   0383                     814 00115$:
+   0383 E8 0D               815 	add	sp, #13
+   0385 C9                  816 	ret
+                            817 ;C:/gbdk/ZGB/common/src/Sprite.c:72: UINT8 TranslateSprite(struct Sprite* sprite, INT8 x, INT8 y) {
+                            818 ;	---------------------------------
+                            819 ; Function TranslateSprite
+                            820 ; ---------------------------------
+   0386                     821 _TranslateSprite::
+   0386 E8 E4               822 	add	sp, #-28
+                            823 ;C:/gbdk/ZGB/common/src/Sprite.c:75: UINT8 ret = 0;
+   0388 F8 11               824 	ldhl	sp,#17
+   038A 36 00               825 	ld	(hl),#0x00
+                            826 ;C:/gbdk/ZGB/common/src/Sprite.c:77: PUSH_BANK(scroll_bank);
+   038C 21r00r00            827 	ld	hl,#_scroll_bank
+   038F 7E                  828 	ld	a,(hl)
+   0390 F5                  829 	push	af
+   0391 33                  830 	inc	sp
+   0392 CDr00r00            831 	call	_PushBank
+   0395 33                  832 	inc	sp
+                            833 ;C:/gbdk/ZGB/common/src/Sprite.c:80: start_x = (sprite->x + sprite->coll_x + sprite->coll_w - 1 + x);
+   0396 F8 1E               834 	ldhl	sp,#(31 - 1)
+   0398 4E                  835 	ld	c,(hl)
+   0399 23                  836 	inc	hl
+   039A 46                  837 	ld	b,(hl)
+   039B 21 07 00            838 	ld	hl,#0x0007
+   039E 09                  839 	add	hl,bc
+   039F 7D                  840 	ld	a,l
+   03A0 54                  841 	ld	d,h
+   03A1 F8 18               842 	ldhl	sp,#24
+   03A3 22                  843 	ld	(hl+),a
+   03A4 72                  844 	ld	(hl),d
+                            845 ;C:/gbdk/ZGB/common/src/Sprite.c:81: start_y = (sprite->y + sprite->coll_y);
+   03A5 21 09 00            846 	ld	hl,#0x0009
+   03A8 09                  847 	add	hl,bc
+   03A9 7D                  848 	ld	a,l
+   03AA 54                  849 	ld	d,h
+   03AB F8 0B               850 	ldhl	sp,#11
+   03AD 22                  851 	ld	(hl+),a
+   03AE 72                  852 	ld	(hl),d
+                            853 ;C:/gbdk/ZGB/common/src/Sprite.c:78: if(scroll_map) {
+   03AF 21r01r00            854 	ld	hl,#_scroll_map + 1
+   03B2 3A                  855 	ld	a,(hl-)
+   03B3 B6                  856 	or	a,(hl)
+   03B4 CAr91r09            857 	jp	Z,00133$
+                            858 ;C:/gbdk/ZGB/common/src/Sprite.c:80: start_x = (sprite->x + sprite->coll_x + sprite->coll_w - 1 + x);
+   03B7 21 0C 00            859 	ld	hl,#0x000c
+   03BA 09                  860 	add	hl,bc
+   03BB 7D                  861 	ld	a,l
+   03BC 54                  862 	ld	d,h
+   03BD F8 0F               863 	ldhl	sp,#15
+   03BF 22                  864 	ld	(hl+),a
+   03C0 72                  865 	ld	(hl),d
+   03C1 21 0E 00            866 	ld	hl,#0x000e
+   03C4 09                  867 	add	hl,bc
+   03C5 7D                  868 	ld	a,l
+   03C6 54                  869 	ld	d,h
+   03C7 F8 14               870 	ldhl	sp,#20
+   03C9 22                  871 	ld	(hl+),a
+   03CA 72                  872 	ld	(hl),d
+                            873 ;C:/gbdk/ZGB/common/src/Sprite.c:81: start_y = (sprite->y + sprite->coll_y);
+   03CB 21 0D 00            874 	ld	hl,#0x000d
+   03CE 09                  875 	add	hl,bc
+   03CF 7D                  876 	ld	a,l
+   03D0 54                  877 	ld	d,h
+   03D1 F8 12               878 	ldhl	sp,#18
+   03D3 22                  879 	ld	(hl+),a
+   03D4 72                  880 	ld	(hl),d
+                            881 ;C:/gbdk/ZGB/common/src/Sprite.c:83: n_its = ((start_y + sprite->coll_h - 1u) >> 3) - (start_y >> 3) + 1u;
+   03D5 21 0F 00            882 	ld	hl,#0x000f
+   03D8 09                  883 	add	hl,bc
+   03D9 7D                  884 	ld	a,l
+   03DA 54                  885 	ld	d,h
+   03DB F8 0D               886 	ldhl	sp,#13
+   03DD 22                  887 	ld	(hl+),a
+   03DE 72                  888 	ld	(hl),d
+                            889 ;C:/gbdk/ZGB/common/src/Sprite.c:79: if(x > 0) {
+   03DF F8 20               890 	ldhl	sp,#32
+   03E1 7E                  891 	ld	a,(hl)
+   03E2 5F                  892 	ld	e,a
+   03E3 3E 00               893 	ld	a,#0x00
+   03E5 57                  894 	ld	d,a
+   03E6 AF                  895 	xor	a, a
+   03E7 96                  896 	sub	a, (hl)
+   03E8 CB 7B               897 	bit	7, e
+   03EA 28 07               898 	jr	Z,00240$
+   03EC CB 7A               899 	bit	7, d
+   03EE 20 08               900 	jr	NZ,00241$
+   03F0 BF                  901 	cp	a, a
+   03F1 18 05               902 	jr	00241$
+   03F3                     903 00240$:
+   03F3 CB 7A               904 	bit	7, d
+   03F5 28 01               905 	jr	Z,00241$
+   03F7 37                  906 	scf
+   03F8                     907 00241$:
+   03F8 D2r3Cr05            908 	jp	NC,00107$
+                            909 ;C:/gbdk/ZGB/common/src/Sprite.c:80: start_x = (sprite->x + sprite->coll_x + sprite->coll_w - 1 + x);
+   03FB F8 18               910 	ldhl	sp,#(25 - 1)
+   03FD 5E                  911 	ld	e,(hl)
+   03FE 23                  912 	inc	hl
+   03FF 56                  913 	ld	d,(hl)
+   0400 1A                  914 	ld	a,(de)
+   0401 F8 09               915 	ldhl	sp,#9
+   0403 22                  916 	ld	(hl+),a
+   0404 13                  917 	inc	de
+   0405 1A                  918 	ld	a,(de)
+   0406 77                  919 	ld	(hl),a
+   0407 F8 0F               920 	ldhl	sp,#(16 - 1)
+   0409 5E                  921 	ld	e,(hl)
+   040A 23                  922 	inc	hl
+   040B 56                  923 	ld	d,(hl)
+   040C 1A                  924 	ld	a,(de)
+   040D 4F                  925 	ld	c,a
+   040E 06 00               926 	ld	b,#0x00
+   0410 F8 09               927 	ldhl	sp,#9
+   0412 2A                  928 	ld	a,(hl+)
+   0413 66                  929 	ld	h,(hl)
+   0414 6F                  930 	ld	l,a
+   0415 09                  931 	add	hl,bc
+   0416 4D                  932 	ld	c,l
+   0417 44                  933 	ld	b,h
+   0418 F8 14               934 	ldhl	sp,#(21 - 1)
+   041A 5E                  935 	ld	e,(hl)
+   041B 23                  936 	inc	hl
+   041C 56                  937 	ld	d,(hl)
+   041D 1A                  938 	ld	a,(de)
+   041E 5F                  939 	ld	e,a
+   041F 16 00               940 	ld	d,#0x00
+   0421 F8 09               941 	ldhl	sp,#9
+   0423 73                  942 	ld	(hl),e
+   0424 23                  943 	inc	hl
+   0425 72                  944 	ld	(hl),d
+   0426 2B                  945 	dec	hl
+   0427 2A                  946 	ld	a,(hl+)
+   0428 66                  947 	ld	h,(hl)
+   0429 6F                  948 	ld	l,a
+   042A 09                  949 	add	hl,bc
+   042B 4D                  950 	ld	c,l
+   042C 44                  951 	ld	b,h
+   042D 0B                  952 	dec	bc
+   042E F8 20               953 	ldhl	sp,#32
+   0430 5E                  954 	ld	e,(hl)
+   0431 7E                  955 	ld	a,(hl)
+   0432 17                  956 	rla
+   0433 9F                  957 	sbc	a, a
+   0434 57                  958 	ld	d,a
+   0435 F8 09               959 	ldhl	sp,#9
+   0437 73                  960 	ld	(hl),e
+   0438 23                  961 	inc	hl
+   0439 72                  962 	ld	(hl),d
+   043A 2B                  963 	dec	hl
+   043B 2A                  964 	ld	a,(hl+)
+   043C 66                  965 	ld	h,(hl)
+   043D 6F                  966 	ld	l,a
+   043E 09                  967 	add	hl,bc
+   043F 7D                  968 	ld	a,l
+   0440 54                  969 	ld	d,h
+   0441 F8 09               970 	ldhl	sp,#9
+   0443 22                  971 	ld	(hl+),a
+   0444 72                  972 	ld	(hl),d
+                            973 ;C:/gbdk/ZGB/common/src/Sprite.c:81: start_y = (sprite->y + sprite->coll_y);
+   0445 23                  974 	inc	hl
+   0446 5E                  975 	ld	e,(hl)
+   0447 23                  976 	inc	hl
+   0448 56                  977 	ld	d,(hl)
+   0449 1A                  978 	ld	a,(de)
+   044A F8 1A               979 	ldhl	sp,#26
+   044C 22                  980 	ld	(hl+),a
+   044D 13                  981 	inc	de
+   044E 1A                  982 	ld	a,(de)
+   044F 77                  983 	ld	(hl),a
+   0450 F8 12               984 	ldhl	sp,#(19 - 1)
+   0452 5E                  985 	ld	e,(hl)
+   0453 23                  986 	inc	hl
+   0454 56                  987 	ld	d,(hl)
+   0455 1A                  988 	ld	a,(de)
+   0456 4F                  989 	ld	c,a
+   0457 06 00               990 	ld	b,#0x00
+   0459 F8 1A               991 	ldhl	sp,#26
+   045B 2A                  992 	ld	a,(hl+)
+   045C 66                  993 	ld	h,(hl)
+   045D 6F                  994 	ld	l,a
+   045E 09                  995 	add	hl,bc
+   045F 7D                  996 	ld	a,l
+   0460 54                  997 	ld	d,h
+   0461 F8 1A               998 	ldhl	sp,#26
+   0463 22                  999 	ld	(hl+),a
+   0464 72                 1000 	ld	(hl),d
+                           1001 ;C:/gbdk/ZGB/common/src/Sprite.c:82: if(((start_y & 0xF000) | (start_x & 0xF000)) == 0u) {
+   0465 0E 00              1002 	ld	c,#0x00
+   0467 7E                 1003 	ld	a,(hl)
+   0468 E6 F0              1004 	and	a, #0xf0
+   046A 47                 1005 	ld	b,a
+   046B 1E 00              1006 	ld	e,#0x00
+   046D F8 0A              1007 	ldhl	sp,#10
+   046F 7E                 1008 	ld	a,(hl)
+   0470 E6 F0              1009 	and	a, #0xf0
+   0472 57                 1010 	ld	d,a
+   0473 79                 1011 	ld	a,c
+   0474 B3                 1012 	or	a, e
+   0475 4F                 1013 	ld	c,a
+   0476 78                 1014 	ld	a,b
+   0477 B2                 1015 	or	a, d
+   0478 47                 1016 	ld	b,a
+   0479 B1                 1017 	or	a,c
+   047A C2r3Cr05           1018 	jp	NZ,00107$
+                           1019 ;C:/gbdk/ZGB/common/src/Sprite.c:83: n_its = ((start_y + sprite->coll_h - 1u) >> 3) - (start_y >> 3) + 1u;
+   047D F8 0D              1020 	ldhl	sp,#(14 - 1)
+   047F 5E                 1021 	ld	e,(hl)
+   0480 23                 1022 	inc	hl
+   0481 56                 1023 	ld	d,(hl)
+   0482 1A                 1024 	ld	a,(de)
+   0483 4F                 1025 	ld	c,a
+   0484 06 00              1026 	ld	b,#0x00
+   0486 F8 1A              1027 	ldhl	sp,#26
+   0488 2A                 1028 	ld	a,(hl+)
+   0489 66                 1029 	ld	h,(hl)
+   048A 6F                 1030 	ld	l,a
+   048B 09                 1031 	add	hl,bc
+   048C 4D                 1032 	ld	c,l
+   048D 44                 1033 	ld	b,h
+   048E 0B                 1034 	dec	bc
+   048F CB 38              1035 	srl	b
+   0491 CB 19              1036 	rr	c
+   0493 CB 38              1037 	srl	b
+   0495 CB 19              1038 	rr	c
+   0497 CB 38              1039 	srl	b
+   0499 CB 19              1040 	rr	c
+   049B F8 1B              1041 	ldhl	sp,#27
+   049D CB 3E              1042 	srl	(hl)
+   049F 2B                 1043 	dec	hl
+   04A0 CB 1E              1044 	rr	(hl)
+   04A2 23                 1045 	inc	hl
+   04A3 CB 3E              1046 	srl	(hl)
+   04A5 2B                 1047 	dec	hl
+   04A6 CB 1E              1048 	rr	(hl)
+   04A8 23                 1049 	inc	hl
+   04A9 CB 3E              1050 	srl	(hl)
+   04AB 2B                 1051 	dec	hl
+   04AC CB 1E              1052 	rr	(hl)
+   04AE 5E                 1053 	ld	e,(hl)
+   04AF 23                 1054 	inc	hl
+   04B0 56                 1055 	ld	d,(hl)
+   04B1 79                 1056 	ld	a,c
+   04B2 93                 1057 	sub	a,e
+   04B3 5F                 1058 	ld	e,a
+   04B4 78                 1059 	ld	a,b
+   04B5 9A                 1060 	sbc	a,d
+   04B6 47                 1061 	ld	b,a
+   04B7 4B                 1062 	ld	c,e
+   04B8 03                 1063 	inc	bc
+   04B9 F8 16              1064 	ldhl	sp,#22
+   04BB 71                 1065 	ld	(hl),c
+   04BC 23                 1066 	inc	hl
+   04BD 70                 1067 	ld	(hl),b
+                           1068 ;C:/gbdk/ZGB/common/src/Sprite.c:84: tile_coll = GetScrollTilePtr(start_x >> 3, start_y >> 3);
+   04BE F8 09              1069 	ldhl	sp,#(10 - 1)
+   04C0 4E                 1070 	ld	c,(hl)
+   04C1 23                 1071 	inc	hl
+   04C2 46                 1072 	ld	b,(hl)
+   04C3 CB 38              1073 	srl	b
+   04C5 CB 19              1074 	rr	c
+   04C7 CB 38              1075 	srl	b
+   04C9 CB 19              1076 	rr	c
+   04CB CB 38              1077 	srl	b
+   04CD CB 19              1078 	rr	c
+   04CF F8 1A              1079 	ldhl	sp,#26
+   04D1 2A                 1080 	ld	a,(hl+)
+   04D2 66                 1081 	ld	h,(hl)
+   04D3 6F                 1082 	ld	l,a
+   04D4 E5                 1083 	push	hl
+   04D5 C5                 1084 	push	bc
+   04D6 CDr00r00           1085 	call	_GetScrollTilePtr
+   04D9 E8 04              1086 	add	sp, #4
+   04DB 21r00r00           1087 	ld	hl,#_tile_coll
+   04DE 73                 1088 	ld	(hl),e
+   04DF 23                 1089 	inc	hl
+   04E0 72                 1090 	ld	(hl),d
+                           1091 ;C:/gbdk/ZGB/common/src/Sprite.c:86: for(i = 0u; i != n_its; ++i, tile_coll += scroll_tiles_w) {
+   04E1 0E 00              1092 	ld	c,#0x00
+   04E3                    1093 00135$:
+   04E3 41                 1094 	ld	b,c
+   04E4 1E 00              1095 	ld	e,#0x00
+   04E6 F8 16              1096 	ldhl	sp,#22
+   04E8 7E                 1097 	ld	a,(hl)
+   04E9 90                 1098 	sub	a, b
+   04EA 20 06              1099 	jr	NZ,00242$
+   04EC 23                 1100 	inc	hl
+   04ED 7E                 1101 	ld	a,(hl)
+   04EE 93                 1102 	sub	a, e
+   04EF CAr3Cr05           1103 	jp	Z,00107$
+   04F2                    1104 00242$:
+                           1105 ;C:/gbdk/ZGB/common/src/Sprite.c:87: if(scroll_collisions[*tile_coll] == 1u) {
+   04F2 21r01r00           1106 	ld	hl,#_tile_coll + 1
+   04F5 2B                 1107 	dec	hl
+   04F6 5E                 1108 	ld	e,(hl)
+   04F7 23                 1109 	inc	hl
+   04F8 56                 1110 	ld	d,(hl)
+   04F9 1A                 1111 	ld	a,(de)
+   04FA 47                 1112 	ld	b,a
+   04FB 11r00r00           1113 	ld	de,#_scroll_collisions
+   04FE 68                 1114 	ld	l,b
+   04FF 26 00              1115 	ld	h,#0x00
+   0501 19                 1116 	add	hl,de
+   0502 7D                 1117 	ld	a,l
+   0503 54                 1118 	ld	d,h
+   0504 F8 1A              1119 	ldhl	sp,#26
+   0506 22                 1120 	ld	(hl+),a
+   0507 72                 1121 	ld	(hl),d
+   0508 2B                 1122 	dec	hl
+   0509 5E                 1123 	ld	e,(hl)
+   050A 23                 1124 	inc	hl
+   050B 56                 1125 	ld	d,(hl)
+   050C 1A                 1126 	ld	a,(de)
+   050D 3D                 1127 	dec	a
+   050E 20 13              1128 	jr	NZ,00136$
+                           1129 ;C:/gbdk/ZGB/common/src/Sprite.c:88: x -= (start_x & (UINT16)7u) + 1;
+   0510 F8 09              1130 	ldhl	sp,#9
+   0512 7E                 1131 	ld	a,(hl)
+   0513 E6 07              1132 	and	a, #0x07
+   0515 4F                 1133 	ld	c,a
+   0516 1E 00              1134 	ld	e,#0x00
+   0518 0C                 1135 	inc	c
+   0519 F8 20              1136 	ldhl	sp,#32
+   051B 7E                 1137 	ld	a,(hl)
+   051C 91                 1138 	sub	a, c
+   051D 77                 1139 	ld	(hl),a
+                           1140 ;C:/gbdk/ZGB/common/src/Sprite.c:89: ret = *tile_coll;
+   051E F8 11              1141 	ldhl	sp,#17
+   0520 70                 1142 	ld	(hl),b
+                           1143 ;C:/gbdk/ZGB/common/src/Sprite.c:90: break;
+   0521 18 19              1144 	jr	00107$
+   0523                    1145 00136$:
+                           1146 ;C:/gbdk/ZGB/common/src/Sprite.c:86: for(i = 0u; i != n_its; ++i, tile_coll += scroll_tiles_w) {
+   0523 0C                 1147 	inc	c
+   0524 21r00r00           1148 	ld	hl,#_tile_coll
+   0527 7E                 1149 	ld	a,(hl)
+   0528 21r00r00           1150 	ld	hl,#_scroll_tiles_w
+   052B 86                 1151 	add	a, (hl)
+   052C 21r00r00           1152 	ld	hl,#_tile_coll
+   052F 22                 1153 	ld	(hl+),a
+   0530 7E                 1154 	ld	a,(hl)
+   0531 21r01r00           1155 	ld	hl,#_scroll_tiles_w + 1
+   0534 8E                 1156 	adc	a, (hl)
+   0535 21r01r00           1157 	ld	hl,#_tile_coll + 1
+   0538 77                 1158 	ld	(hl),a
+   0539 C3rE3r04           1159 	jp	00135$
+   053C                    1160 00107$:
+                           1161 ;C:/gbdk/ZGB/common/src/Sprite.c:95: if(x < 0) {
+   053C 3E 00              1162 	ld	a,#0x00
+   053E 5F                 1163 	ld	e,a
+   053F F8 20              1164 	ldhl	sp,#32
+   0541 7E                 1165 	ld	a,(hl)
+   0542 57                 1166 	ld	d,a
+   0543 7E                 1167 	ld	a,(hl)
+   0544 CB 7F              1168 	bit	7,a
+   0546 CAr87r06           1169 	jp	Z,00114$
+                           1170 ;C:/gbdk/ZGB/common/src/Sprite.c:96: start_x = (sprite->x + sprite->coll_x + (INT16)x);
+   0549 F8 18              1171 	ldhl	sp,#(25 - 1)
+   054B 5E                 1172 	ld	e,(hl)
+   054C 23                 1173 	inc	hl
+   054D 56                 1174 	ld	d,(hl)
+   054E 1A                 1175 	ld	a,(de)
+   054F F8 16              1176 	ldhl	sp,#22
+   0551 22                 1177 	ld	(hl+),a
+   0552 13                 1178 	inc	de
+   0553 1A                 1179 	ld	a,(de)
+   0554 77                 1180 	ld	(hl),a
+   0555 F8 0F              1181 	ldhl	sp,#(16 - 1)
+   0557 5E                 1182 	ld	e,(hl)
+   0558 23                 1183 	inc	hl
+   0559 56                 1184 	ld	d,(hl)
+   055A 1A                 1185 	ld	a,(de)
+   055B 4F                 1186 	ld	c,a
+   055C 06 00              1187 	ld	b,#0x00
+   055E F8 16              1188 	ldhl	sp,#22
+   0560 2A                 1189 	ld	a,(hl+)
+   0561 66                 1190 	ld	h,(hl)
+   0562 6F                 1191 	ld	l,a
+   0563 09                 1192 	add	hl,bc
+   0564 4D                 1193 	ld	c,l
+   0565 44                 1194 	ld	b,h
+   0566 F8 20              1195 	ldhl	sp,#32
+   0568 7E                 1196 	ld	a,(hl)
+   0569 F8 16              1197 	ldhl	sp,#22
+   056B 77                 1198 	ld	(hl),a
+   056C F8 20              1199 	ldhl	sp,#32
+   056E 7E                 1200 	ld	a,(hl)
+   056F 17                 1201 	rla
+   0570 9F                 1202 	sbc	a, a
+   0571 F8 17              1203 	ldhl	sp,#23
+   0573 32                 1204 	ld	(hl-),a
+   0574 2A                 1205 	ld	a,(hl+)
+   0575 5E                 1206 	ld	e, (hl)
+   0576 F8 1A              1207 	ldhl	sp,#26
+   0578 22                 1208 	ld	(hl+),a
+   0579 73                 1209 	ld	(hl),e
+   057A 2B                 1210 	dec	hl
+   057B 2A                 1211 	ld	a,(hl+)
+   057C 66                 1212 	ld	h,(hl)
+   057D 6F                 1213 	ld	l,a
+   057E 09                 1214 	add	hl,bc
+   057F 7D                 1215 	ld	a,l
+   0580 54                 1216 	ld	d,h
+   0581 F8 1A              1217 	ldhl	sp,#26
+   0583 22                 1218 	ld	(hl+),a
+   0584 72                 1219 	ld	(hl),d
+                           1220 ;C:/gbdk/ZGB/common/src/Sprite.c:97: start_y = (sprite->y + sprite->coll_y);
+   0585 F8 0B              1221 	ldhl	sp,#(12 - 1)
+   0587 5E                 1222 	ld	e,(hl)
+   0588 23                 1223 	inc	hl
+   0589 56                 1224 	ld	d,(hl)
+   058A 1A                 1225 	ld	a,(de)
+   058B F8 09              1226 	ldhl	sp,#9
+   058D 22                 1227 	ld	(hl+),a
+   058E 13                 1228 	inc	de
+   058F 1A                 1229 	ld	a,(de)
+   0590 77                 1230 	ld	(hl),a
+   0591 F8 12              1231 	ldhl	sp,#(19 - 1)
+   0593 5E                 1232 	ld	e,(hl)
+   0594 23                 1233 	inc	hl
+   0595 56                 1234 	ld	d,(hl)
+   0596 1A                 1235 	ld	a,(de)
+   0597 4F                 1236 	ld	c,a
+   0598 06 00              1237 	ld	b,#0x00
+   059A F8 09              1238 	ldhl	sp,#9
+   059C 2A                 1239 	ld	a,(hl+)
+   059D 66                 1240 	ld	h,(hl)
+   059E 6F                 1241 	ld	l,a
+   059F 09                 1242 	add	hl,bc
+   05A0 7D                 1243 	ld	a,l
+   05A1 54                 1244 	ld	d,h
+   05A2 F8 09              1245 	ldhl	sp,#9
+   05A4 22                 1246 	ld	(hl+),a
+   05A5 72                 1247 	ld	(hl),d
+                           1248 ;C:/gbdk/ZGB/common/src/Sprite.c:98: if(((start_y & 0xF000) | (start_x & 0xF000)) == 0u) {
+   05A6 0E 00              1249 	ld	c,#0x00
+   05A8 7E                 1250 	ld	a,(hl)
+   05A9 E6 F0              1251 	and	a, #0xf0
+   05AB 47                 1252 	ld	b,a
+   05AC 1E 00              1253 	ld	e,#0x00
+   05AE F8 1B              1254 	ldhl	sp,#27
+   05B0 7E                 1255 	ld	a,(hl)
+   05B1 E6 F0              1256 	and	a, #0xf0
+   05B3 57                 1257 	ld	d,a
+   05B4 79                 1258 	ld	a,c
+   05B5 B3                 1259 	or	a, e
+   05B6 4F                 1260 	ld	c,a
+   05B7 78                 1261 	ld	a,b
+   05B8 B2                 1262 	or	a, d
+   05B9 47                 1263 	ld	b,a
+   05BA B1                 1264 	or	a,c
+   05BB C2r87r06           1265 	jp	NZ,00114$
+                           1266 ;C:/gbdk/ZGB/common/src/Sprite.c:99: n_its = ((start_y + sprite->coll_h - 1u) >> 3) - (start_y >> 3) + 1u;
+   05BE F8 0D              1267 	ldhl	sp,#(14 - 1)
+   05C0 5E                 1268 	ld	e,(hl)
+   05C1 23                 1269 	inc	hl
+   05C2 56                 1270 	ld	d,(hl)
+   05C3 1A                 1271 	ld	a,(de)
+   05C4 4F                 1272 	ld	c,a
+   05C5 06 00              1273 	ld	b,#0x00
+   05C7 F8 09              1274 	ldhl	sp,#9
+   05C9 2A                 1275 	ld	a,(hl+)
+   05CA 66                 1276 	ld	h,(hl)
+   05CB 6F                 1277 	ld	l,a
+   05CC 09                 1278 	add	hl,bc
+   05CD 4D                 1279 	ld	c,l
+   05CE 44                 1280 	ld	b,h
+   05CF 0B                 1281 	dec	bc
+   05D0 CB 38              1282 	srl	b
+   05D2 CB 19              1283 	rr	c
+   05D4 CB 38              1284 	srl	b
+   05D6 CB 19              1285 	rr	c
+   05D8 CB 38              1286 	srl	b
+   05DA CB 19              1287 	rr	c
+   05DC F8 0A              1288 	ldhl	sp,#10
+   05DE CB 3E              1289 	srl	(hl)
+   05E0 2B                 1290 	dec	hl
+   05E1 CB 1E              1291 	rr	(hl)
+   05E3 23                 1292 	inc	hl
+   05E4 CB 3E              1293 	srl	(hl)
+   05E6 2B                 1294 	dec	hl
+   05E7 CB 1E              1295 	rr	(hl)
+   05E9 23                 1296 	inc	hl
+   05EA CB 3E              1297 	srl	(hl)
+   05EC 2B                 1298 	dec	hl
+   05ED CB 1E              1299 	rr	(hl)
+   05EF 5E                 1300 	ld	e,(hl)
+   05F0 23                 1301 	inc	hl
+   05F1 56                 1302 	ld	d,(hl)
+   05F2 79                 1303 	ld	a,c
+   05F3 93                 1304 	sub	a,e
+   05F4 5F                 1305 	ld	e,a
+   05F5 78                 1306 	ld	a,b
+   05F6 9A                 1307 	sbc	a,d
+   05F7 47                 1308 	ld	b,a
+   05F8 4B                 1309 	ld	c,e
+   05F9 03                 1310 	inc	bc
+   05FA F8 07              1311 	ldhl	sp,#7
+   05FC 71                 1312 	ld	(hl),c
+   05FD 23                 1313 	inc	hl
+   05FE 70                 1314 	ld	(hl),b
+                           1315 ;C:/gbdk/ZGB/common/src/Sprite.c:100: tile_coll = GetScrollTilePtr(start_x >> 3, start_y >> 3);
+   05FF F8 1A              1316 	ldhl	sp,#(27 - 1)
+   0601 4E                 1317 	ld	c,(hl)
+   0602 23                 1318 	inc	hl
+   0603 46                 1319 	ld	b,(hl)
+   0604 CB 38              1320 	srl	b
+   0606 CB 19              1321 	rr	c
+   0608 CB 38              1322 	srl	b
+   060A CB 19              1323 	rr	c
+   060C CB 38              1324 	srl	b
+   060E CB 19              1325 	rr	c
+   0610 F8 09              1326 	ldhl	sp,#9
+   0612 2A                 1327 	ld	a,(hl+)
+   0613 66                 1328 	ld	h,(hl)
+   0614 6F                 1329 	ld	l,a
+   0615 E5                 1330 	push	hl
+   0616 C5                 1331 	push	bc
+   0617 CDr00r00           1332 	call	_GetScrollTilePtr
+   061A E8 04              1333 	add	sp, #4
+   061C 21r00r00           1334 	ld	hl,#_tile_coll
+   061F 73                 1335 	ld	(hl),e
+   0620 23                 1336 	inc	hl
+   0621 72                 1337 	ld	(hl),d
+                           1338 ;C:/gbdk/ZGB/common/src/Sprite.c:102: for(i = 0u; i != n_its; ++i, tile_coll += scroll_tiles_w) {
+   0622 F8 02              1339 	ldhl	sp,#2
+   0624 36 00              1340 	ld	(hl),#0x00
+   0626                    1341 00138$:
+   0626 F8 02              1342 	ldhl	sp,#2
+   0628 4E                 1343 	ld	c,(hl)
+   0629 06 00              1344 	ld	b,#0x00
+   062B F8 07              1345 	ldhl	sp,#7
+   062D 7E                 1346 	ld	a,(hl)
+   062E 91                 1347 	sub	a, c
+   062F 20 06              1348 	jr	NZ,00245$
+   0631 23                 1349 	inc	hl
+   0632 7E                 1350 	ld	a,(hl)
+   0633 90                 1351 	sub	a, b
+   0634 CAr87r06           1352 	jp	Z,00114$
+   0637                    1353 00245$:
+                           1354 ;C:/gbdk/ZGB/common/src/Sprite.c:87: if(scroll_collisions[*tile_coll] == 1u) {
+   0637 21r01r00           1355 	ld	hl,#_tile_coll + 1
+   063A 2B                 1356 	dec	hl
+   063B 4E                 1357 	ld	c,(hl)
+   063C 23                 1358 	inc	hl
+   063D 46                 1359 	ld	b,(hl)
+   063E 0A                 1360 	ld	a,(bc)
+   063F F8 09              1361 	ldhl	sp,#9
+   0641 77                 1362 	ld	(hl),a
+                           1363 ;C:/gbdk/ZGB/common/src/Sprite.c:103: if(scroll_collisions[*tile_coll] == 1u) {
+   0642 11r00r00           1364 	ld	de,#_scroll_collisions
+   0645 6E                 1365 	ld	l,(hl)
+   0646 26 00              1366 	ld	h,#0x00
+   0648 19                 1367 	add	hl,de
+   0649 4D                 1368 	ld	c,l
+   064A 44                 1369 	ld	b,h
+   064B 0A                 1370 	ld	a,(bc)
+   064C 3D                 1371 	dec	a
+   064D 20 1D              1372 	jr	NZ,00139$
+                           1373 ;C:/gbdk/ZGB/common/src/Sprite.c:104: x = (INT16)x + (8u - (start_x & (UINT16)7u));
+   064F F8 16              1374 	ldhl	sp,#22
+   0651 4E                 1375 	ld	c,(hl)
+   0652 F8 1A              1376 	ldhl	sp,#26
+   0654 7E                 1377 	ld	a,(hl)
+   0655 E6 07              1378 	and	a, #0x07
+   0657 47                 1379 	ld	b,a
+   0658 1E 00              1380 	ld	e,#0x00
+   065A 3E 08              1381 	ld	a,#0x08
+   065C 90                 1382 	sub	a, b
+   065D 47                 1383 	ld	b, a
+   065E 81                 1384 	add	a,c
+   065F F8 20              1385 	ldhl	sp,#32
+   0661 77                 1386 	ld	(hl),a
+                           1387 ;C:/gbdk/ZGB/common/src/Sprite.c:105: ret = *tile_coll;
+   0662 E5                 1388 	push	hl
+   0663 F8 0B              1389 	ldhl	sp,#11
+   0665 7E                 1390 	ld	a,(hl)
+   0666 F8 13              1391 	ldhl	sp,#19
+   0668 77                 1392 	ld	(hl),a
+   0669 E1                 1393 	pop	hl
+                           1394 ;C:/gbdk/ZGB/common/src/Sprite.c:106: break;
+   066A 18 1B              1395 	jr	00114$
+   066C                    1396 00139$:
+                           1397 ;C:/gbdk/ZGB/common/src/Sprite.c:102: for(i = 0u; i != n_its; ++i, tile_coll += scroll_tiles_w) {
+   066C F8 02              1398 	ldhl	sp,#2
+   066E 34                 1399 	inc	(hl)
+   066F 21r00r00           1400 	ld	hl,#_tile_coll
+   0672 7E                 1401 	ld	a,(hl)
+   0673 21r00r00           1402 	ld	hl,#_scroll_tiles_w
+   0676 86                 1403 	add	a, (hl)
+   0677 21r00r00           1404 	ld	hl,#_tile_coll
+   067A 22                 1405 	ld	(hl+),a
+   067B 7E                 1406 	ld	a,(hl)
+   067C 21r01r00           1407 	ld	hl,#_scroll_tiles_w + 1
+   067F 8E                 1408 	adc	a, (hl)
+   0680 21r01r00           1409 	ld	hl,#_tile_coll + 1
+   0683 77                 1410 	ld	(hl),a
+   0684 C3r26r06           1411 	jp	00138$
+   0687                    1412 00114$:
+                           1413 ;C:/gbdk/ZGB/common/src/Sprite.c:111: if(y > 0) {
+   0687 F8 21              1414 	ldhl	sp,#33
+   0689 7E                 1415 	ld	a,(hl)
+   068A 5F                 1416 	ld	e,a
+   068B 3E 00              1417 	ld	a,#0x00
+   068D 57                 1418 	ld	d,a
+   068E AF                 1419 	xor	a, a
+   068F 96                 1420 	sub	a, (hl)
+   0690 CB 7B              1421 	bit	7, e
+   0692 28 07              1422 	jr	Z,00248$
+   0694 CB 7A              1423 	bit	7, d
+   0696 20 08              1424 	jr	NZ,00249$
+   0698 BF                 1425 	cp	a, a
+   0699 18 05              1426 	jr	00249$
+   069B                    1427 00248$:
+   069B CB 7A              1428 	bit	7, d
+   069D 28 01              1429 	jr	Z,00249$
+   069F 37                 1430 	scf
+   06A0                    1431 00249$:
+   06A0 D2r51r08           1432 	jp	NC,00124$
+                           1433 ;C:/gbdk/ZGB/common/src/Sprite.c:112: start_x = (sprite->x + sprite->coll_x);
+   06A3 F8 18              1434 	ldhl	sp,#(25 - 1)
+   06A5 5E                 1435 	ld	e,(hl)
+   06A6 23                 1436 	inc	hl
+   06A7 56                 1437 	ld	d,(hl)
+   06A8 1A                 1438 	ld	a,(de)
+   06A9 F8 07              1439 	ldhl	sp,#7
+   06AB 22                 1440 	ld	(hl+),a
+   06AC 13                 1441 	inc	de
+   06AD 1A                 1442 	ld	a,(de)
+   06AE 77                 1443 	ld	(hl),a
+   06AF F8 0F              1444 	ldhl	sp,#(16 - 1)
+   06B1 5E                 1445 	ld	e,(hl)
+   06B2 23                 1446 	inc	hl
+   06B3 56                 1447 	ld	d,(hl)
+   06B4 1A                 1448 	ld	a,(de)
+   06B5 4F                 1449 	ld	c,a
+   06B6 06 00              1450 	ld	b,#0x00
+   06B8 F8 07              1451 	ldhl	sp,#7
+   06BA 2A                 1452 	ld	a,(hl+)
+   06BB 66                 1453 	ld	h,(hl)
+   06BC 6F                 1454 	ld	l,a
+   06BD 09                 1455 	add	hl,bc
+   06BE 4D                 1456 	ld	c,l
+   06BF 44                 1457 	ld	b,h
+   06C0 F8 05              1458 	ldhl	sp,#5
+   06C2 71                 1459 	ld	(hl),c
+   06C3 23                 1460 	inc	hl
+   06C4 70                 1461 	ld	(hl),b
+                           1462 ;C:/gbdk/ZGB/common/src/Sprite.c:113: start_y = (sprite->y + sprite->coll_y + sprite->coll_h - 1 + y);
+   06C5 F8 0B              1463 	ldhl	sp,#(12 - 1)
+   06C7 5E                 1464 	ld	e,(hl)
+   06C8 23                 1465 	inc	hl
+   06C9 56                 1466 	ld	d,(hl)
+   06CA 1A                 1467 	ld	a,(de)
+   06CB F8 07              1468 	ldhl	sp,#7
+   06CD 22                 1469 	ld	(hl+),a
+   06CE 13                 1470 	inc	de
+   06CF 1A                 1471 	ld	a,(de)
+   06D0 77                 1472 	ld	(hl),a
+   06D1 F8 12              1473 	ldhl	sp,#(19 - 1)
+   06D3 5E                 1474 	ld	e,(hl)
+   06D4 23                 1475 	inc	hl
+   06D5 56                 1476 	ld	d,(hl)
+   06D6 1A                 1477 	ld	a,(de)
+   06D7 4F                 1478 	ld	c,a
+   06D8 06 00              1479 	ld	b,#0x00
+   06DA F8 07              1480 	ldhl	sp,#7
+   06DC 2A                 1481 	ld	a,(hl+)
+   06DD 66                 1482 	ld	h,(hl)
+   06DE 6F                 1483 	ld	l,a
+   06DF 09                 1484 	add	hl,bc
+   06E0 7D                 1485 	ld	a,l
+   06E1 54                 1486 	ld	d,h
+   06E2 F8 07              1487 	ldhl	sp,#7
+   06E4 22                 1488 	ld	(hl+),a
+   06E5 72                 1489 	ld	(hl),d
+   06E6 F8 0D              1490 	ldhl	sp,#(14 - 1)
+   06E8 5E                 1491 	ld	e,(hl)
+   06E9 23                 1492 	inc	hl
+   06EA 56                 1493 	ld	d,(hl)
+   06EB 1A                 1494 	ld	a,(de)
+   06EC 4F                 1495 	ld	c,a
+   06ED 06 00              1496 	ld	b,#0x00
+   06EF F8 07              1497 	ldhl	sp,#7
+   06F1 2A                 1498 	ld	a,(hl+)
+   06F2 66                 1499 	ld	h,(hl)
+   06F3 6F                 1500 	ld	l,a
+   06F4 09                 1501 	add	hl,bc
+   06F5 4D                 1502 	ld	c,l
+   06F6 44                 1503 	ld	b,h
+   06F7 0B                 1504 	dec	bc
+   06F8 F8 21              1505 	ldhl	sp,#33
+   06FA 5E                 1506 	ld	e,(hl)
+   06FB 7E                 1507 	ld	a,(hl)
+   06FC 17                 1508 	rla
+   06FD 9F                 1509 	sbc	a, a
+   06FE 57                 1510 	ld	d,a
+   06FF F8 07              1511 	ldhl	sp,#7
+   0701 73                 1512 	ld	(hl),e
+   0702 23                 1513 	inc	hl
+   0703 72                 1514 	ld	(hl),d
+   0704 2B                 1515 	dec	hl
+   0705 2A                 1516 	ld	a,(hl+)
+   0706 66                 1517 	ld	h,(hl)
+   0707 6F                 1518 	ld	l,a
+   0708 09                 1519 	add	hl,bc
+   0709 4D                 1520 	ld	c,l
+   070A 44                 1521 	ld	b,h
+   070B F8 03              1522 	ldhl	sp,#3
+   070D 71                 1523 	ld	(hl),c
+   070E 23                 1524 	inc	hl
+   070F 70                 1525 	ld	(hl),b
+                           1526 ;C:/gbdk/ZGB/common/src/Sprite.c:114: if(((start_y & 0xF000) | (start_x & 0xF000)) == 0u) {
+   0710 0E 00              1527 	ld	c,#0x00
+   0712 7E                 1528 	ld	a,(hl)
+   0713 E6 F0              1529 	and	a, #0xf0
+   0715 47                 1530 	ld	b,a
+   0716 1E 00              1531 	ld	e,#0x00
+   0718 23                 1532 	inc	hl
+   0719 23                 1533 	inc	hl
+   071A 7E                 1534 	ld	a,(hl)
+   071B E6 F0              1535 	and	a, #0xf0
+   071D 57                 1536 	ld	d,a
+   071E 79                 1537 	ld	a,c
+   071F B3                 1538 	or	a, e
+   0720 4F                 1539 	ld	c,a
+   0721 78                 1540 	ld	a,b
+   0722 B2                 1541 	or	a, d
+   0723 47                 1542 	ld	b,a
+   0724 B1                 1543 	or	a,c
+   0725 C2r51r08           1544 	jp	NZ,00124$
+                           1545 ;C:/gbdk/ZGB/common/src/Sprite.c:115: n_its = ((start_x + sprite->coll_w - 1u) >> 3) - (start_x >> 3) + 1u;
+   0728 F8 14              1546 	ldhl	sp,#(21 - 1)
+   072A 5E                 1547 	ld	e,(hl)
+   072B 23                 1548 	inc	hl
+   072C 56                 1549 	ld	d,(hl)
+   072D 1A                 1550 	ld	a,(de)
+   072E 4F                 1551 	ld	c,a
+   072F 06 00              1552 	ld	b,#0x00
+   0731 F8 05              1553 	ldhl	sp,#5
+   0733 2A                 1554 	ld	a,(hl+)
+   0734 66                 1555 	ld	h,(hl)
+   0735 6F                 1556 	ld	l,a
+   0736 09                 1557 	add	hl,bc
+   0737 4D                 1558 	ld	c,l
+   0738 44                 1559 	ld	b,h
+   0739 0B                 1560 	dec	bc
+   073A CB 38              1561 	srl	b
+   073C CB 19              1562 	rr	c
+   073E CB 38              1563 	srl	b
+   0740 CB 19              1564 	rr	c
+   0742 CB 38              1565 	srl	b
+   0744 CB 19              1566 	rr	c
+   0746 F8 05              1567 	ldhl	sp,#5
+   0748 7E                 1568 	ld	a,(hl)
+   0749 F8 16              1569 	ldhl	sp,#22
+   074B 77                 1570 	ld	(hl),a
+   074C F8 06              1571 	ldhl	sp,#6
+   074E 7E                 1572 	ld	a,(hl)
+   074F F8 17              1573 	ldhl	sp,#23
+   0751 77                 1574 	ld	(hl),a
+   0752 CB 3E              1575 	srl	(hl)
+   0754 2B                 1576 	dec	hl
+   0755 CB 1E              1577 	rr	(hl)
+   0757 23                 1578 	inc	hl
+   0758 CB 3E              1579 	srl	(hl)
+   075A 2B                 1580 	dec	hl
+   075B CB 1E              1581 	rr	(hl)
+   075D 23                 1582 	inc	hl
+   075E CB 3E              1583 	srl	(hl)
+   0760 2B                 1584 	dec	hl
+   0761 CB 1E              1585 	rr	(hl)
+   0763 5E                 1586 	ld	e,(hl)
+   0764 23                 1587 	inc	hl
+   0765 56                 1588 	ld	d,(hl)
+   0766 79                 1589 	ld	a,c
+   0767 93                 1590 	sub	a,e
+   0768 5F                 1591 	ld	e,a
+   0769 78                 1592 	ld	a,b
+   076A 9A                 1593 	sbc	a,d
+   076B 47                 1594 	ld	b,a
+   076C 4B                 1595 	ld	c,e
+   076D 03                 1596 	inc	bc
+   076E 33                 1597 	inc	sp
+   076F 33                 1598 	inc	sp
+   0770 C5                 1599 	push	bc
+                           1600 ;C:/gbdk/ZGB/common/src/Sprite.c:116: tile_coll = GetScrollTilePtr(start_x >> 3, start_y >> 3);
+   0771 F8 03              1601 	ldhl	sp,#(4 - 1)
+   0773 4E                 1602 	ld	c,(hl)
+   0774 23                 1603 	inc	hl
+   0775 46                 1604 	ld	b,(hl)
+   0776 CB 38              1605 	srl	b
+   0778 CB 19              1606 	rr	c
+   077A CB 38              1607 	srl	b
+   077C CB 19              1608 	rr	c
+   077E CB 38              1609 	srl	b
+   0780 CB 19              1610 	rr	c
+   0782 C5                 1611 	push	bc
+   0783 C5                 1612 	push	bc
+   0784 F8 1A              1613 	ldhl	sp,#26
+   0786 2A                 1614 	ld	a,(hl+)
+   0787 66                 1615 	ld	h,(hl)
+   0788 6F                 1616 	ld	l,a
+   0789 E5                 1617 	push	hl
+   078A CDr00r00           1618 	call	_GetScrollTilePtr
+   078D E8 04              1619 	add	sp, #4
+   078F C1                 1620 	pop	bc
+   0790 21r00r00           1621 	ld	hl,#_tile_coll
+   0793 73                 1622 	ld	(hl),e
+   0794 23                 1623 	inc	hl
+   0795 72                 1624 	ld	(hl),d
+                           1625 ;C:/gbdk/ZGB/common/src/Sprite.c:118: for(i = 0u; i != n_its; ++i, tile_coll += 1u) {
+   0796 F8 03              1626 	ldhl	sp,#(4 - 1)
+   0798 5E                 1627 	ld	e,(hl)
+   0799 23                 1628 	inc	hl
+   079A 56                 1629 	ld	d,(hl)
+   079B F8 07              1630 	ldhl	sp,#7
+   079D 2A                 1631 	ld	a,(hl+)
+   079E 66                 1632 	ld	h,(hl)
+   079F 6F                 1633 	ld	l,a
+   07A0 7B                 1634 	ld	a,e
+   07A1 95                 1635 	sub	a,l
+   07A2 5F                 1636 	ld	e,a
+   07A3 7A                 1637 	ld	a,d
+   07A4 9C                 1638 	sbc	a,h
+   07A5 F8 08              1639 	ldhl	sp,#8
+   07A7 32                 1640 	ld	(hl-),a
+   07A8 73                 1641 	ld	(hl),e
+   07A9 5E                 1642 	ld	e,(hl)
+   07AA 23                 1643 	inc	hl
+   07AB 56                 1644 	ld	d,(hl)
+   07AC CB 3A              1645 	srl	d
+   07AE CB 1B              1646 	rr	e
+   07B0 CB 3A              1647 	srl	d
+   07B2 CB 1B              1648 	rr	e
+   07B4 CB 3A              1649 	srl	d
+   07B6 CB 1B              1650 	rr	e
+   07B8 79                 1651 	ld	a,c
+   07B9 93                 1652 	sub	a, e
+   07BA 20 08              1653 	jr	NZ,00250$
+   07BC 78                 1654 	ld	a,b
+   07BD 92                 1655 	sub	a, d
+   07BE 20 04              1656 	jr	NZ,00250$
+   07C0 3E 01              1657 	ld	a,#0x01
+   07C2 18 01              1658 	jr	00251$
+   07C4                    1659 00250$:
+   07C4 AF                 1660 	xor	a,a
+   07C5                    1661 00251$:
+   07C5 F8 07              1662 	ldhl	sp,#7
+   07C7 77                 1663 	ld	(hl),a
+   07C8 F8 02              1664 	ldhl	sp,#2
+   07CA 36 00              1665 	ld	(hl),#0x00
+   07CC                    1666 00141$:
+   07CC F8 02              1667 	ldhl	sp,#2
+   07CE 4E                 1668 	ld	c,(hl)
+   07CF 06 00              1669 	ld	b,#0x00
+   07D1 2B                 1670 	dec	hl
+   07D2 2B                 1671 	dec	hl
+   07D3 7E                 1672 	ld	a,(hl)
+   07D4 91                 1673 	sub	a, c
+   07D5 20 06              1674 	jr	NZ,00252$
+   07D7 23                 1675 	inc	hl
+   07D8 7E                 1676 	ld	a,(hl)
+   07D9 90                 1677 	sub	a, b
+   07DA CAr51r08           1678 	jp	Z,00124$
+   07DD                    1679 00252$:
+                           1680 ;C:/gbdk/ZGB/common/src/Sprite.c:87: if(scroll_collisions[*tile_coll] == 1u) {
+   07DD 21r01r00           1681 	ld	hl,#_tile_coll + 1
+   07E0 2B                 1682 	dec	hl
+   07E1 4E                 1683 	ld	c,(hl)
+   07E2 23                 1684 	inc	hl
+   07E3 46                 1685 	ld	b,(hl)
+   07E4 0A                 1686 	ld	a,(bc)
+   07E5 F8 16              1687 	ldhl	sp,#22
+   07E7 77                 1688 	ld	(hl),a
+                           1689 ;C:/gbdk/ZGB/common/src/Sprite.c:119: if(scroll_collisions[*tile_coll] == 1u || 
+   07E8 11r00r00           1690 	ld	de,#_scroll_collisions
+   07EB 6E                 1691 	ld	l,(hl)
+   07EC 26 00              1692 	ld	h,#0x00
+   07EE 19                 1693 	add	hl,de
+   07EF 4D                 1694 	ld	c,l
+   07F0 44                 1695 	ld	b,h
+   07F1 0A                 1696 	ld	a,(bc)
+   07F2 3D                 1697 	dec	a
+   07F3 CAr2Ar08           1698 	jp	Z,00115$
+                           1699 ;C:/gbdk/ZGB/common/src/Sprite.c:120: (scroll_collisions_down[*tile_coll] == 1u && //Tile that only checks collisions when going down
+   07F6 11r00r00           1700 	ld	de,#_scroll_collisions_down
+   07F9 F8 16              1701 	ldhl	sp,#22
+   07FB 6E                 1702 	ld	l,(hl)
+   07FC 26 00              1703 	ld	h,#0x00
+   07FE 19                 1704 	add	hl,de
+   07FF 4D                 1705 	ld	c,l
+   0800 44                 1706 	ld	b,h
+   0801 0A                 1707 	ld	a,(bc)
+   0802 3D                 1708 	dec	a
+   0803 C2r42r08           1709 	jp	NZ,00142$
+                           1710 ;C:/gbdk/ZGB/common/src/Sprite.c:121: scroll_collisions_down[*(tile_coll - scroll_tiles_w)] == 0) &&  //The one above is not collidable (so we can crate a big block putting some of there together)
+   0806 21r01r00           1711 	ld	hl,#_scroll_tiles_w + 1
+   0809 2B                 1712 	dec	hl
+   080A 4E                 1713 	ld	c,(hl)
+   080B 23                 1714 	inc	hl
+   080C 46                 1715 	ld	b,(hl)
+   080D 21r00r00           1716 	ld	hl,#_tile_coll
+   0810 7E                 1717 	ld	a,(hl)
+   0811 91                 1718 	sub	a, c
+   0812 4F                 1719 	ld	c,a
+   0813 23                 1720 	inc	hl
+   0814 7E                 1721 	ld	a,(hl)
+   0815 98                 1722 	sbc	a, b
+   0816 47                 1723 	ld	b,a
+   0817 0A                 1724 	ld	a,(bc)
+   0818 C6r00              1725 	add	a,#<(_scroll_collisions_down)
+   081A 4F                 1726 	ld	c,a
+   081B 3Es00              1727 	ld	a,#>(_scroll_collisions_down)
+   081D CE 00              1728 	adc	a, #0x00
+   081F 47                 1729 	ld	b,a
+   0820 0A                 1730 	ld	a,(bc)
+   0821 B7                 1731 	or	a, a
+   0822 20 1E              1732 	jr	NZ,00142$
+                           1733 ;C:/gbdk/ZGB/common/src/Sprite.c:122: (((start_y - y) >> 3) != (start_y >> 3)) //The is entering the collidable tile in this moment
+   0824 F8 07              1734 	ldhl	sp,#7
+   0826 CB 46              1735 	bit	0,(hl)
+   0828 20 18              1736 	jr	NZ,00142$
+   082A                    1737 00115$:
+                           1738 ;C:/gbdk/ZGB/common/src/Sprite.c:124: y -= (start_y & (UINT16)7u) + 1;
+   082A F8 03              1739 	ldhl	sp,#3
+   082C 7E                 1740 	ld	a,(hl)
+   082D E6 07              1741 	and	a, #0x07
+   082F 4F                 1742 	ld	c,a
+   0830 06 00              1743 	ld	b,#0x00
+   0832 0C                 1744 	inc	c
+   0833 F8 21              1745 	ldhl	sp,#33
+   0835 7E                 1746 	ld	a,(hl)
+   0836 91                 1747 	sub	a, c
+   0837 77                 1748 	ld	(hl),a
+                           1749 ;C:/gbdk/ZGB/common/src/Sprite.c:125: ret = *tile_coll;
+   0838 E5                 1750 	push	hl
+   0839 F8 18              1751 	ldhl	sp,#24
+   083B 7E                 1752 	ld	a,(hl)
+   083C F8 13              1753 	ldhl	sp,#19
+   083E 77                 1754 	ld	(hl),a
+   083F E1                 1755 	pop	hl
+                           1756 ;C:/gbdk/ZGB/common/src/Sprite.c:126: break;
+   0840 18 0F              1757 	jr	00124$
+   0842                    1758 00142$:
+                           1759 ;C:/gbdk/ZGB/common/src/Sprite.c:118: for(i = 0u; i != n_its; ++i, tile_coll += 1u) {
+   0842 F8 02              1760 	ldhl	sp,#2
+   0844 34                 1761 	inc	(hl)
+   0845 21r00r00           1762 	ld	hl,#_tile_coll
+   0848 34                 1763 	inc	(hl)
+   0849 C2rCCr07           1764 	jp	NZ,00141$
+   084C 23                 1765 	inc	hl
+   084D 34                 1766 	inc	(hl)
+   084E C3rCCr07           1767 	jp	00141$
+   0851                    1768 00124$:
+                           1769 ;C:/gbdk/ZGB/common/src/Sprite.c:131: if(y < 0) {
+   0851 3E 00              1770 	ld	a,#0x00
+   0853 5F                 1771 	ld	e,a
+   0854 F8 21              1772 	ldhl	sp,#33
+   0856 7E                 1773 	ld	a,(hl)
+   0857 57                 1774 	ld	d,a
+   0858 7E                 1775 	ld	a,(hl)
+   0859 CB 7F              1776 	bit	7,a
+   085B CAr91r09           1777 	jp	Z,00133$
+                           1778 ;C:/gbdk/ZGB/common/src/Sprite.c:132: start_x = (sprite->x + sprite->coll_x);
+   085E F8 18              1779 	ldhl	sp,#(25 - 1)
+   0860 5E                 1780 	ld	e,(hl)
+   0861 23                 1781 	inc	hl
+   0862 56                 1782 	ld	d,(hl)
+   0863 1A                 1783 	ld	a,(de)
+   0864 F8 07              1784 	ldhl	sp,#7
+   0866 22                 1785 	ld	(hl+),a
+   0867 13                 1786 	inc	de
+   0868 1A                 1787 	ld	a,(de)
+   0869 77                 1788 	ld	(hl),a
+   086A F8 0F              1789 	ldhl	sp,#(16 - 1)
+   086C 5E                 1790 	ld	e,(hl)
+   086D 23                 1791 	inc	hl
+   086E 56                 1792 	ld	d,(hl)
+   086F 1A                 1793 	ld	a,(de)
+   0870 4F                 1794 	ld	c,a
+   0871 06 00              1795 	ld	b,#0x00
+   0873 F8 07              1796 	ldhl	sp,#7
+   0875 2A                 1797 	ld	a,(hl+)
+   0876 66                 1798 	ld	h,(hl)
+   0877 6F                 1799 	ld	l,a
+   0878 09                 1800 	add	hl,bc
+   0879 7D                 1801 	ld	a,l
+   087A 54                 1802 	ld	d,h
+   087B F8 07              1803 	ldhl	sp,#7
+   087D 22                 1804 	ld	(hl+),a
+   087E 72                 1805 	ld	(hl),d
+                           1806 ;C:/gbdk/ZGB/common/src/Sprite.c:133: start_y = (sprite->y + sprite->coll_y + (INT16)y);
+   087F F8 0B              1807 	ldhl	sp,#(12 - 1)
+   0881 5E                 1808 	ld	e,(hl)
+   0882 23                 1809 	inc	hl
+   0883 56                 1810 	ld	d,(hl)
+   0884 1A                 1811 	ld	a,(de)
+   0885 F8 16              1812 	ldhl	sp,#22
+   0887 22                 1813 	ld	(hl+),a
+   0888 13                 1814 	inc	de
+   0889 1A                 1815 	ld	a,(de)
+   088A 77                 1816 	ld	(hl),a
+   088B F8 12              1817 	ldhl	sp,#(19 - 1)
+   088D 5E                 1818 	ld	e,(hl)
+   088E 23                 1819 	inc	hl
+   088F 56                 1820 	ld	d,(hl)
+   0890 1A                 1821 	ld	a,(de)
+   0891 4F                 1822 	ld	c,a
+   0892 06 00              1823 	ld	b,#0x00
+   0894 F8 16              1824 	ldhl	sp,#22
+   0896 2A                 1825 	ld	a,(hl+)
+   0897 66                 1826 	ld	h,(hl)
+   0898 6F                 1827 	ld	l,a
+   0899 09                 1828 	add	hl,bc
+   089A 7D                 1829 	ld	a,l
+   089B 54                 1830 	ld	d,h
+   089C F8 16              1831 	ldhl	sp,#22
+   089E 22                 1832 	ld	(hl+),a
+   089F 72                 1833 	ld	(hl),d
+   08A0 F8 21              1834 	ldhl	sp,#33
+   08A2 7E                 1835 	ld	a,(hl)
+   08A3 F8 1A              1836 	ldhl	sp,#26
+   08A5 77                 1837 	ld	(hl),a
+   08A6 F8 21              1838 	ldhl	sp,#33
+   08A8 7E                 1839 	ld	a,(hl)
+   08A9 17                 1840 	rla
+   08AA 9F                 1841 	sbc	a, a
+   08AB F8 1B              1842 	ldhl	sp,#27
+   08AD 32                 1843 	ld	(hl-),a
+   08AE 4E                 1844 	ld	c,(hl)
+   08AF 23                 1845 	inc	hl
+   08B0 46                 1846 	ld	b,(hl)
+   08B1 F8 16              1847 	ldhl	sp,#22
+   08B3 2A                 1848 	ld	a,(hl+)
+   08B4 66                 1849 	ld	h,(hl)
+   08B5 6F                 1850 	ld	l,a
+   08B6 09                 1851 	add	hl,bc
+   08B7 7D                 1852 	ld	a,l
+   08B8 54                 1853 	ld	d,h
+   08B9 F8 16              1854 	ldhl	sp,#22
+   08BB 22                 1855 	ld	(hl+),a
+   08BC 72                 1856 	ld	(hl),d
+                           1857 ;C:/gbdk/ZGB/common/src/Sprite.c:134: if(((start_y & 0xF000) | (start_x & 0xF000)) == 0u) {
+   08BD 0E 00              1858 	ld	c,#0x00
+   08BF 7E                 1859 	ld	a,(hl)
+   08C0 E6 F0              1860 	and	a, #0xf0
+   08C2 47                 1861 	ld	b,a
+   08C3 1E 00              1862 	ld	e,#0x00
+   08C5 F8 08              1863 	ldhl	sp,#8
+   08C7 7E                 1864 	ld	a,(hl)
+   08C8 E6 F0              1865 	and	a, #0xf0
+   08CA 57                 1866 	ld	d,a
+   08CB 79                 1867 	ld	a,c
+   08CC B3                 1868 	or	a, e
+   08CD 4F                 1869 	ld	c,a
+   08CE 78                 1870 	ld	a,b
+   08CF B2                 1871 	or	a, d
+   08D0 47                 1872 	ld	b,a
+   08D1 B1                 1873 	or	a,c
+   08D2 C2r91r09           1874 	jp	NZ,00133$
+                           1875 ;C:/gbdk/ZGB/common/src/Sprite.c:135: n_its = ((start_x + sprite->coll_w - 1u) >> 3) - (start_x >> 3) + 1u;
+   08D5 F8 14              1876 	ldhl	sp,#(21 - 1)
+   08D7 5E                 1877 	ld	e,(hl)
+   08D8 23                 1878 	inc	hl
+   08D9 56                 1879 	ld	d,(hl)
+   08DA 1A                 1880 	ld	a,(de)
+   08DB 4F                 1881 	ld	c,a
+   08DC 06 00              1882 	ld	b,#0x00
+   08DE F8 07              1883 	ldhl	sp,#7
+   08E0 2A                 1884 	ld	a,(hl+)
+   08E1 66                 1885 	ld	h,(hl)
+   08E2 6F                 1886 	ld	l,a
+   08E3 09                 1887 	add	hl,bc
+   08E4 4D                 1888 	ld	c,l
+   08E5 44                 1889 	ld	b,h
+   08E6 0B                 1890 	dec	bc
+   08E7 CB 38              1891 	srl	b
+   08E9 CB 19              1892 	rr	c
+   08EB CB 38              1893 	srl	b
+   08ED CB 19              1894 	rr	c
+   08EF CB 38              1895 	srl	b
+   08F1 CB 19              1896 	rr	c
+   08F3 F8 08              1897 	ldhl	sp,#8
+   08F5 CB 3E              1898 	srl	(hl)
+   08F7 2B                 1899 	dec	hl
+   08F8 CB 1E              1900 	rr	(hl)
+   08FA 23                 1901 	inc	hl
+   08FB CB 3E              1902 	srl	(hl)
+   08FD 2B                 1903 	dec	hl
+   08FE CB 1E              1904 	rr	(hl)
+   0900 23                 1905 	inc	hl
+   0901 CB 3E              1906 	srl	(hl)
+   0903 2B                 1907 	dec	hl
+   0904 CB 1E              1908 	rr	(hl)
+   0906 5E                 1909 	ld	e,(hl)
+   0907 23                 1910 	inc	hl
+   0908 56                 1911 	ld	d,(hl)
+   0909 79                 1912 	ld	a,c
+   090A 93                 1913 	sub	a,e
+   090B 5F                 1914 	ld	e,a
+   090C 78                 1915 	ld	a,b
+   090D 9A                 1916 	sbc	a,d
+   090E 47                 1917 	ld	b,a
+   090F 4B                 1918 	ld	c,e
+   0910 03                 1919 	inc	bc
+   0911 23                 1920 	inc	hl
+   0912 71                 1921 	ld	(hl),c
+   0913 23                 1922 	inc	hl
+   0914 70                 1923 	ld	(hl),b
+                           1924 ;C:/gbdk/ZGB/common/src/Sprite.c:136: tile_coll = GetScrollTilePtr(start_x >> 3, start_y >> 3);
+   0915 F8 16              1925 	ldhl	sp,#(23 - 1)
+   0917 4E                 1926 	ld	c,(hl)
+   0918 23                 1927 	inc	hl
+   0919 46                 1928 	ld	b,(hl)
+   091A CB 38              1929 	srl	b
+   091C CB 19              1930 	rr	c
+   091E CB 38              1931 	srl	b
+   0920 CB 19              1932 	rr	c
+   0922 CB 38              1933 	srl	b
+   0924 CB 19              1934 	rr	c
+   0926 C5                 1935 	push	bc
+   0927 F8 09              1936 	ldhl	sp,#9
+   0929 2A                 1937 	ld	a,(hl+)
+   092A 66                 1938 	ld	h,(hl)
+   092B 6F                 1939 	ld	l,a
+   092C E5                 1940 	push	hl
+   092D CDr00r00           1941 	call	_GetScrollTilePtr
+   0930 E8 04              1942 	add	sp, #4
+   0932 21r00r00           1943 	ld	hl,#_tile_coll
+   0935 73                 1944 	ld	(hl),e
+   0936 23                 1945 	inc	hl
+   0937 72                 1946 	ld	(hl),d
+                           1947 ;C:/gbdk/ZGB/common/src/Sprite.c:138: for(i = 0u; i != n_its; ++i, tile_coll += 1u) {
+   0938 F8 02              1948 	ldhl	sp,#2
+   093A 36 00              1949 	ld	(hl),#0x00
+   093C                    1950 00144$:
+   093C F8 02              1951 	ldhl	sp,#2
+   093E 4E                 1952 	ld	c,(hl)
+   093F 06 00              1953 	ld	b,#0x00
+   0941 F8 09              1954 	ldhl	sp,#9
+   0943 7E                 1955 	ld	a,(hl)
+   0944 91                 1956 	sub	a, c
+   0945 20 06              1957 	jr	NZ,00257$
+   0947 23                 1958 	inc	hl
+   0948 7E                 1959 	ld	a,(hl)
+   0949 90                 1960 	sub	a, b
+   094A CAr91r09           1961 	jp	Z,00133$
+   094D                    1962 00257$:
+                           1963 ;C:/gbdk/ZGB/common/src/Sprite.c:87: if(scroll_collisions[*tile_coll] == 1u) {
+   094D 21r01r00           1964 	ld	hl,#_tile_coll + 1
+   0950 2B                 1965 	dec	hl
+   0951 4E                 1966 	ld	c,(hl)
+   0952 23                 1967 	inc	hl
+   0953 46                 1968 	ld	b,(hl)
+   0954 0A                 1969 	ld	a,(bc)
+   0955 F8 07              1970 	ldhl	sp,#7
+   0957 77                 1971 	ld	(hl),a
+                           1972 ;C:/gbdk/ZGB/common/src/Sprite.c:139: if(scroll_collisions[*tile_coll] == 1u) {
+   0958 11r00r00           1973 	ld	de,#_scroll_collisions
+   095B 6E                 1974 	ld	l,(hl)
+   095C 26 00              1975 	ld	h,#0x00
+   095E 19                 1976 	add	hl,de
+   095F 4D                 1977 	ld	c,l
+   0960 44                 1978 	ld	b,h
+   0961 0A                 1979 	ld	a,(bc)
+   0962 3D                 1980 	dec	a
+   0963 20 1D              1981 	jr	NZ,00145$
+                           1982 ;C:/gbdk/ZGB/common/src/Sprite.c:140: y = (INT16)y + (8u - (start_y & (UINT16)7u));
+   0965 F8 1A              1983 	ldhl	sp,#26
+   0967 4E                 1984 	ld	c,(hl)
+   0968 F8 16              1985 	ldhl	sp,#22
+   096A 7E                 1986 	ld	a,(hl)
+   096B E6 07              1987 	and	a, #0x07
+   096D 47                 1988 	ld	b,a
+   096E 1E 00              1989 	ld	e,#0x00
+   0970 3E 08              1990 	ld	a,#0x08
+   0972 90                 1991 	sub	a, b
+   0973 5F                 1992 	ld	e, a
+   0974 81                 1993 	add	a,c
+   0975 F8 21              1994 	ldhl	sp,#33
+   0977 77                 1995 	ld	(hl),a
+                           1996 ;C:/gbdk/ZGB/common/src/Sprite.c:141: ret = *tile_coll;
+   0978 E5                 1997 	push	hl
+   0979 F8 09              1998 	ldhl	sp,#9
+   097B 7E                 1999 	ld	a,(hl)
+   097C F8 13              2000 	ldhl	sp,#19
+   097E 77                 2001 	ld	(hl),a
+   097F E1                 2002 	pop	hl
+                           2003 ;C:/gbdk/ZGB/common/src/Sprite.c:142: break;
+   0980 18 0F              2004 	jr	00133$
+   0982                    2005 00145$:
+                           2006 ;C:/gbdk/ZGB/common/src/Sprite.c:138: for(i = 0u; i != n_its; ++i, tile_coll += 1u) {
+   0982 F8 02              2007 	ldhl	sp,#2
+   0984 34                 2008 	inc	(hl)
+   0985 21r00r00           2009 	ld	hl,#_tile_coll
+   0988 34                 2010 	inc	(hl)
+   0989 C2r3Cr09           2011 	jp	NZ,00144$
+   098C 23                 2012 	inc	hl
+   098D 34                 2013 	inc	(hl)
+   098E C3r3Cr09           2014 	jp	00144$
+   0991                    2015 00133$:
+                           2016 ;C:/gbdk/ZGB/common/src/Sprite.c:148: POP_BANK;
+   0991 CDr00r00           2017 	call	_PopBank
+                           2018 ;C:/gbdk/ZGB/common/src/Sprite.c:150: sprite->x += (INT16)x;
+   0994 F8 18              2019 	ldhl	sp,#(25 - 1)
+   0996 5E                 2020 	ld	e,(hl)
+   0997 23                 2021 	inc	hl
+   0998 56                 2022 	ld	d,(hl)
+   0999 1A                 2023 	ld	a,(de)
+   099A F8 07              2024 	ldhl	sp,#7
+   099C 22                 2025 	ld	(hl+),a
+   099D 13                 2026 	inc	de
+   099E 1A                 2027 	ld	a,(de)
+   099F 77                 2028 	ld	(hl),a
+   09A0 F8 20              2029 	ldhl	sp,#32
+   09A2 4E                 2030 	ld	c,(hl)
+   09A3 7E                 2031 	ld	a,(hl)
+   09A4 17                 2032 	rla
+   09A5 9F                 2033 	sbc	a, a
+   09A6 47                 2034 	ld	b,a
+   09A7 F8 07              2035 	ldhl	sp,#7
+   09A9 2A                 2036 	ld	a,(hl+)
+   09AA 66                 2037 	ld	h,(hl)
+   09AB 6F                 2038 	ld	l,a
+   09AC 09                 2039 	add	hl,bc
+   09AD 4D                 2040 	ld	c,l
+   09AE 44                 2041 	ld	b,h
+   09AF F8 18              2042 	ldhl	sp,#24
+   09B1 2A                 2043 	ld	a,(hl+)
+   09B2 66                 2044 	ld	h,(hl)
+   09B3 6F                 2045 	ld	l,a
+   09B4 71                 2046 	ld	(hl),c
+   09B5 23                 2047 	inc	hl
+   09B6 70                 2048 	ld	(hl),b
+                           2049 ;C:/gbdk/ZGB/common/src/Sprite.c:151: sprite->y += (INT16)y;
+   09B7 F8 0B              2050 	ldhl	sp,#(12 - 1)
+   09B9 5E                 2051 	ld	e,(hl)
+   09BA 23                 2052 	inc	hl
+   09BB 56                 2053 	ld	d,(hl)
+   09BC 1A                 2054 	ld	a,(de)
+   09BD F8 07              2055 	ldhl	sp,#7
+   09BF 22                 2056 	ld	(hl+),a
+   09C0 13                 2057 	inc	de
+   09C1 1A                 2058 	ld	a,(de)
+   09C2 77                 2059 	ld	(hl),a
+   09C3 F8 21              2060 	ldhl	sp,#33
+   09C5 4E                 2061 	ld	c,(hl)
+   09C6 7E                 2062 	ld	a,(hl)
+   09C7 17                 2063 	rla
+   09C8 9F                 2064 	sbc	a, a
+   09C9 47                 2065 	ld	b,a
+   09CA F8 07              2066 	ldhl	sp,#7
+   09CC 2A                 2067 	ld	a,(hl+)
+   09CD 66                 2068 	ld	h,(hl)
+   09CE 6F                 2069 	ld	l,a
+   09CF 09                 2070 	add	hl,bc
+   09D0 4D                 2071 	ld	c,l
+   09D1 44                 2072 	ld	b,h
+   09D2 F8 0B              2073 	ldhl	sp,#11
+   09D4 2A                 2074 	ld	a,(hl+)
+   09D5 66                 2075 	ld	h,(hl)
+   09D6 6F                 2076 	ld	l,a
+   09D7 71                 2077 	ld	(hl),c
+   09D8 23                 2078 	inc	hl
+   09D9 70                 2079 	ld	(hl),b
+                           2080 ;C:/gbdk/ZGB/common/src/Sprite.c:152: return ret;
+   09DA F8 11              2081 	ldhl	sp,#17
+   09DC 5E                 2082 	ld	e,(hl)
+   09DD E8 1C              2083 	add	sp, #28
+   09DF C9                 2084 	ret
+                           2085 ;C:/gbdk/ZGB/common/src/Sprite.c:155: UINT8 CheckCollision(struct Sprite* sprite1, struct Sprite* sprite2) {
+                           2086 ;	---------------------------------
+                           2087 ; Function CheckCollision
+                           2088 ; ---------------------------------
+   09E0                    2089 _CheckCollision::
+   09E0 E8 F6              2090 	add	sp, #-10
+                           2091 ;C:/gbdk/ZGB/common/src/Sprite.c:156: if( (sprite1->x + sprite1->coll_x + sprite1->coll_w < sprite2->x + sprite2->coll_x) ||
+   09E2 F8 0C              2092 	ldhl	sp,#12
+   09E4 2A                 2093 	ld	a,(hl+)
+   09E5 5E                 2094 	ld	e, (hl)
+   09E6 F8 04              2095 	ldhl	sp,#4
+   09E8 22                 2096 	ld	(hl+),a
+   09E9 73                 2097 	ld	(hl),e
+   09EA 2B                 2098 	dec	hl
+   09EB 5E                 2099 	ld	e,(hl)
+   09EC 23                 2100 	inc	hl
+   09ED 56                 2101 	ld	d,(hl)
+   09EE 21 07 00           2102 	ld	hl,#0x0007
+   09F1 19                 2103 	add	hl,de
+   09F2 4D                 2104 	ld	c,l
+   09F3 44                 2105 	ld	b,h
+   09F4 59                 2106 	ld	e, c
+   09F5 50                 2107 	ld	d, b
+   09F6 1A                 2108 	ld	a,(de)
+   09F7 F8 06              2109 	ldhl	sp,#6
+   09F9 22                 2110 	ld	(hl+),a
+   09FA 13                 2111 	inc	de
+   09FB 1A                 2112 	ld	a,(de)
+   09FC 32                 2113 	ld	(hl-),a
+   09FD 2B                 2114 	dec	hl
+   09FE 2B                 2115 	dec	hl
+   09FF 5E                 2116 	ld	e,(hl)
+   0A00 23                 2117 	inc	hl
+   0A01 56                 2118 	ld	d,(hl)
+   0A02 21 0C 00           2119 	ld	hl,#0x000c
+   0A05 19                 2120 	add	hl,de
+   0A06 4D                 2121 	ld	c,l
+   0A07 44                 2122 	ld	b,h
+   0A08 0A                 2123 	ld	a,(bc)
+   0A09 4F                 2124 	ld	c,a
+   0A0A 06 00              2125 	ld	b,#0x00
+   0A0C F8 06              2126 	ldhl	sp,#6
+   0A0E 2A                 2127 	ld	a,(hl+)
+   0A0F 66                 2128 	ld	h,(hl)
+   0A10 6F                 2129 	ld	l,a
+   0A11 09                 2130 	add	hl,bc
+   0A12 7D                 2131 	ld	a,l
+   0A13 54                 2132 	ld	d,h
+   0A14 F8 06              2133 	ldhl	sp,#6
+   0A16 22                 2134 	ld	(hl+),a
+   0A17 72                 2135 	ld	(hl),d
+   0A18 2B                 2136 	dec	hl
+   0A19 2B                 2137 	dec	hl
+   0A1A 2B                 2138 	dec	hl
+   0A1B 5E                 2139 	ld	e,(hl)
+   0A1C 23                 2140 	inc	hl
+   0A1D 56                 2141 	ld	d,(hl)
+   0A1E 21 0E 00           2142 	ld	hl,#0x000e
+   0A21 19                 2143 	add	hl,de
+   0A22 4D                 2144 	ld	c,l
+   0A23 44                 2145 	ld	b,h
+   0A24 0A                 2146 	ld	a,(bc)
+   0A25 4F                 2147 	ld	c,a
+   0A26 06 00              2148 	ld	b,#0x00
+   0A28 F8 06              2149 	ldhl	sp,#6
+   0A2A 2A                 2150 	ld	a,(hl+)
+   0A2B 66                 2151 	ld	h,(hl)
+   0A2C 6F                 2152 	ld	l,a
+   0A2D 09                 2153 	add	hl,bc
+   0A2E 33                 2154 	inc	sp
+   0A2F 33                 2155 	inc	sp
+   0A30 E5                 2156 	push	hl
+   0A31 F8 0E              2157 	ldhl	sp,#14
+   0A33 2A                 2158 	ld	a,(hl+)
+   0A34 5E                 2159 	ld	e, (hl)
+   0A35 F8 02              2160 	ldhl	sp,#2
+   0A37 22                 2161 	ld	(hl+),a
+   0A38 73                 2162 	ld	(hl),e
+   0A39 2B                 2163 	dec	hl
+   0A3A 5E                 2164 	ld	e,(hl)
+   0A3B 23                 2165 	inc	hl
+   0A3C 56                 2166 	ld	d,(hl)
+   0A3D 21 07 00           2167 	ld	hl,#0x0007
+   0A40 19                 2168 	add	hl,de
+   0A41 4D                 2169 	ld	c,l
+   0A42 44                 2170 	ld	b,h
+   0A43 59                 2171 	ld	e, c
+   0A44 50                 2172 	ld	d, b
+   0A45 1A                 2173 	ld	a,(de)
+   0A46 F8 08              2174 	ldhl	sp,#8
+   0A48 22                 2175 	ld	(hl+),a
+   0A49 13                 2176 	inc	de
+   0A4A 1A                 2177 	ld	a,(de)
+   0A4B 77                 2178 	ld	(hl),a
+   0A4C F8 02              2179 	ldhl	sp,#(3 - 1)
+   0A4E 5E                 2180 	ld	e,(hl)
+   0A4F 23                 2181 	inc	hl
+   0A50 56                 2182 	ld	d,(hl)
+   0A51 21 0C 00           2183 	ld	hl,#0x000c
+   0A54 19                 2184 	add	hl,de
+   0A55 4D                 2185 	ld	c,l
+   0A56 44                 2186 	ld	b,h
+   0A57 0A                 2187 	ld	a,(bc)
+   0A58 4F                 2188 	ld	c,a
+   0A59 06 00              2189 	ld	b,#0x00
+   0A5B F8 08              2190 	ldhl	sp,#8
+   0A5D 2A                 2191 	ld	a,(hl+)
+   0A5E 66                 2192 	ld	h,(hl)
+   0A5F 6F                 2193 	ld	l,a
+   0A60 09                 2194 	add	hl,bc
+   0A61 7D                 2195 	ld	a,l
+   0A62 54                 2196 	ld	d,h
+   0A63 F8 08              2197 	ldhl	sp,#8
+   0A65 22                 2198 	ld	(hl+),a
+   0A66 72                 2199 	ld	(hl),d
+   0A67 F8 00              2200 	ldhl	sp,#0
+   0A69 54                 2201 	ld	d, h
+   0A6A 5D                 2202 	ld	e, l
+   0A6B F8 08              2203 	ldhl	sp,#8
+   0A6D 1A                 2204 	ld	a, (de)
+   0A6E 96                 2205 	sub	a, (hl)
+   0A6F 23                 2206 	inc	hl
+   0A70 13                 2207 	inc	de
+   0A71 1A                 2208 	ld	a, (de)
+   0A72 9E                 2209 	sbc	a, (hl)
+   0A73 DAr3Br0B           2210 	jp	C,00101$
+                           2211 ;C:/gbdk/ZGB/common/src/Sprite.c:157: (sprite2->x + sprite2->coll_x + sprite2->coll_w < sprite1->x + sprite1->coll_x) ||
+   0A76 F8 02              2212 	ldhl	sp,#(3 - 1)
+   0A78 5E                 2213 	ld	e,(hl)
+   0A79 23                 2214 	inc	hl
+   0A7A 56                 2215 	ld	d,(hl)
+   0A7B 21 0E 00           2216 	ld	hl,#0x000e
+   0A7E 19                 2217 	add	hl,de
+   0A7F 4D                 2218 	ld	c,l
+   0A80 44                 2219 	ld	b,h
+   0A81 0A                 2220 	ld	a,(bc)
+   0A82 4F                 2221 	ld	c,a
+   0A83 06 00              2222 	ld	b,#0x00
+   0A85 F8 08              2223 	ldhl	sp,#8
+   0A87 2A                 2224 	ld	a,(hl+)
+   0A88 66                 2225 	ld	h,(hl)
+   0A89 6F                 2226 	ld	l,a
+   0A8A 09                 2227 	add	hl,bc
+   0A8B 4D                 2228 	ld	c,l
+   0A8C 44                 2229 	ld	b,h
+   0A8D F8 06              2230 	ldhl	sp,#6
+   0A8F 79                 2231 	ld	a,c
+   0A90 96                 2232 	sub	a, (hl)
+   0A91 23                 2233 	inc	hl
+   0A92 78                 2234 	ld	a,b
+   0A93 9E                 2235 	sbc	a, (hl)
+   0A94 DAr3Br0B           2236 	jp	C,00101$
+                           2237 ;C:/gbdk/ZGB/common/src/Sprite.c:158: (sprite1->y + sprite1->coll_y + sprite1->coll_h < sprite2->y + sprite2->coll_y) ||
+   0A97 F8 04              2238 	ldhl	sp,#(5 - 1)
+   0A99 5E                 2239 	ld	e,(hl)
+   0A9A 23                 2240 	inc	hl
+   0A9B 56                 2241 	ld	d,(hl)
+   0A9C 21 09 00           2242 	ld	hl,#0x0009
+   0A9F 19                 2243 	add	hl,de
+   0AA0 4D                 2244 	ld	c,l
+   0AA1 44                 2245 	ld	b,h
+   0AA2 59                 2246 	ld	e, c
+   0AA3 50                 2247 	ld	d, b
+   0AA4 1A                 2248 	ld	a,(de)
+   0AA5 F8 08              2249 	ldhl	sp,#8
+   0AA7 22                 2250 	ld	(hl+),a
+   0AA8 13                 2251 	inc	de
+   0AA9 1A                 2252 	ld	a,(de)
+   0AAA 77                 2253 	ld	(hl),a
+   0AAB F8 04              2254 	ldhl	sp,#(5 - 1)
+   0AAD 5E                 2255 	ld	e,(hl)
+   0AAE 23                 2256 	inc	hl
+   0AAF 56                 2257 	ld	d,(hl)
+   0AB0 21 0D 00           2258 	ld	hl,#0x000d
+   0AB3 19                 2259 	add	hl,de
+   0AB4 4D                 2260 	ld	c,l
+   0AB5 44                 2261 	ld	b,h
+   0AB6 0A                 2262 	ld	a,(bc)
+   0AB7 4F                 2263 	ld	c,a
+   0AB8 06 00              2264 	ld	b,#0x00
+   0ABA F8 08              2265 	ldhl	sp,#8
+   0ABC 2A                 2266 	ld	a,(hl+)
+   0ABD 66                 2267 	ld	h,(hl)
+   0ABE 6F                 2268 	ld	l,a
+   0ABF 09                 2269 	add	hl,bc
+   0AC0 7D                 2270 	ld	a,l
+   0AC1 54                 2271 	ld	d,h
+   0AC2 F8 08              2272 	ldhl	sp,#8
+   0AC4 22                 2273 	ld	(hl+),a
+   0AC5 72                 2274 	ld	(hl),d
+   0AC6 F8 04              2275 	ldhl	sp,#(5 - 1)
+   0AC8 5E                 2276 	ld	e,(hl)
+   0AC9 23                 2277 	inc	hl
+   0ACA 56                 2278 	ld	d,(hl)
+   0ACB 21 0F 00           2279 	ld	hl,#0x000f
+   0ACE 19                 2280 	add	hl,de
+   0ACF 4D                 2281 	ld	c,l
+   0AD0 44                 2282 	ld	b,h
+   0AD1 0A                 2283 	ld	a,(bc)
+   0AD2 4F                 2284 	ld	c,a
+   0AD3 06 00              2285 	ld	b,#0x00
+   0AD5 F8 08              2286 	ldhl	sp,#8
+   0AD7 2A                 2287 	ld	a,(hl+)
+   0AD8 66                 2288 	ld	h,(hl)
+   0AD9 6F                 2289 	ld	l,a
+   0ADA 09                 2290 	add	hl,bc
+   0ADB 33                 2291 	inc	sp
+   0ADC 33                 2292 	inc	sp
+   0ADD E5                 2293 	push	hl
+   0ADE F8 02              2294 	ldhl	sp,#(3 - 1)
+   0AE0 5E                 2295 	ld	e,(hl)
+   0AE1 23                 2296 	inc	hl
+   0AE2 56                 2297 	ld	d,(hl)
+   0AE3 21 09 00           2298 	ld	hl,#0x0009
+   0AE6 19                 2299 	add	hl,de
+   0AE7 4D                 2300 	ld	c,l
+   0AE8 44                 2301 	ld	b,h
+   0AE9 59                 2302 	ld	e, c
+   0AEA 50                 2303 	ld	d, b
+   0AEB 1A                 2304 	ld	a,(de)
+   0AEC F8 06              2305 	ldhl	sp,#6
+   0AEE 22                 2306 	ld	(hl+),a
+   0AEF 13                 2307 	inc	de
+   0AF0 1A                 2308 	ld	a,(de)
+   0AF1 77                 2309 	ld	(hl),a
+   0AF2 F8 02              2310 	ldhl	sp,#(3 - 1)
+   0AF4 5E                 2311 	ld	e,(hl)
+   0AF5 23                 2312 	inc	hl
+   0AF6 56                 2313 	ld	d,(hl)
+   0AF7 21 0D 00           2314 	ld	hl,#0x000d
+   0AFA 19                 2315 	add	hl,de
+   0AFB 4D                 2316 	ld	c,l
+   0AFC 44                 2317 	ld	b,h
+   0AFD 0A                 2318 	ld	a,(bc)
+   0AFE 4F                 2319 	ld	c,a
+   0AFF 06 00              2320 	ld	b,#0x00
+   0B01 F8 06              2321 	ldhl	sp,#6
+   0B03 2A                 2322 	ld	a,(hl+)
+   0B04 66                 2323 	ld	h,(hl)
+   0B05 6F                 2324 	ld	l,a
+   0B06 09                 2325 	add	hl,bc
+   0B07 7D                 2326 	ld	a,l
+   0B08 54                 2327 	ld	d,h
+   0B09 F8 06              2328 	ldhl	sp,#6
+   0B0B 22                 2329 	ld	(hl+),a
+   0B0C 72                 2330 	ld	(hl),d
+   0B0D F8 00              2331 	ldhl	sp,#0
+   0B0F 54                 2332 	ld	d, h
+   0B10 5D                 2333 	ld	e, l
+   0B11 F8 06              2334 	ldhl	sp,#6
+   0B13 1A                 2335 	ld	a, (de)
+   0B14 96                 2336 	sub	a, (hl)
+   0B15 23                 2337 	inc	hl
+   0B16 13                 2338 	inc	de
+   0B17 1A                 2339 	ld	a, (de)
+   0B18 9E                 2340 	sbc	a, (hl)
+   0B19 38 20              2341 	jr	C,00101$
+                           2342 ;C:/gbdk/ZGB/common/src/Sprite.c:159: (sprite2->y + sprite2->coll_y + sprite2->coll_h < sprite1->y + sprite1->coll_y)
+   0B1B F8 02              2343 	ldhl	sp,#(3 - 1)
+   0B1D 5E                 2344 	ld	e,(hl)
+   0B1E 23                 2345 	inc	hl
+   0B1F 56                 2346 	ld	d,(hl)
+   0B20 21 0F 00           2347 	ld	hl,#0x000f
+   0B23 19                 2348 	add	hl,de
+   0B24 4D                 2349 	ld	c,l
+   0B25 44                 2350 	ld	b,h
+   0B26 0A                 2351 	ld	a,(bc)
+   0B27 4F                 2352 	ld	c,a
+   0B28 06 00              2353 	ld	b,#0x00
+   0B2A F8 06              2354 	ldhl	sp,#6
+   0B2C 2A                 2355 	ld	a,(hl+)
+   0B2D 66                 2356 	ld	h,(hl)
+   0B2E 6F                 2357 	ld	l,a
+   0B2F 09                 2358 	add	hl,bc
+   0B30 4D                 2359 	ld	c,l
+   0B31 44                 2360 	ld	b,h
+   0B32 F8 08              2361 	ldhl	sp,#8
+   0B34 79                 2362 	ld	a,c
+   0B35 96                 2363 	sub	a, (hl)
+   0B36 23                 2364 	inc	hl
+   0B37 78                 2365 	ld	a,b
+   0B38 9E                 2366 	sbc	a, (hl)
+   0B39 30 04              2367 	jr	NC,00102$
+   0B3B                    2368 00101$:
+                           2369 ;C:/gbdk/ZGB/common/src/Sprite.c:161: return 0;
+   0B3B 1E 00              2370 	ld	e,#0x00
+   0B3D 18 02              2371 	jr	00107$
+   0B3F                    2372 00102$:
+                           2373 ;C:/gbdk/ZGB/common/src/Sprite.c:163: return 1;
+   0B3F 1E 01              2374 	ld	e,#0x01
+   0B41                    2375 00107$:
+   0B41 E8 0A              2376 	add	sp, #10
+   0B43 C9                 2377 	ret
+                           2378 	.area _CODE
+                           2379 	.area _CABS (ABS)

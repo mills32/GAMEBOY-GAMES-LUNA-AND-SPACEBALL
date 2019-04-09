@@ -1,0 +1,536 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module StateLevel1
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _Update_STATE_LEVEL1
+                             12 	.globl _Start_STATE_LEVEL1
+                             13 	.globl _CP_LoadMusic
+                             14 	.globl _TILE_ANIMATE
+                             15 	.globl _LOAD_TILE_ANIM
+                             16 	.globl _SpriteManagerAdd
+                             17 	.globl _SpriteManagerLoad
+                             18 	.globl _Move_Parallax
+                             19 	.globl _Set_Parallax
+                             20 	.globl _InitWindow
+                             21 	.globl _InitScroll
+                             22 	.globl _ZInitScrollTilesColor
+                             23 	.globl _SetPalette
+                             24 	.globl _SetState
+                             25 	.globl _Level
+                             26 	.globl _bank_STATE_LEVEL1
+                             27 	.globl _playerPAL
+                             28 	.globl _tiles_level1PAL
+                             29 ;--------------------------------------------------------
+                             30 ; ram data
+                             31 ;--------------------------------------------------------
+                             32 	.area _DATA
+   0000                      33 _bank_STATE_LEVEL1::
+   0000                      34 	.ds 1
+   0001                      35 _Level::
+   0001                      36 	.ds 1
+                             37 ;--------------------------------------------------------
+                             38 ; absolute external ram data
+                             39 ;--------------------------------------------------------
+                             40 	.area _DABS (ABS)
+                             41 ;--------------------------------------------------------
+                             42 ; global & static initialisations
+                             43 ;--------------------------------------------------------
+                             44 	.area _HOME
+                             45 	.area _GSINIT
+                             46 	.area _GSFINAL
+                             47 	.area _GSINIT
+                             48 ;StateLevel1.c:6: UINT8 bank_STATE_LEVEL1 = 4;
+   0000 21r00r00             49 	ld	hl,#_bank_STATE_LEVEL1
+   0003 36 04                50 	ld	(hl),#0x04
+                             51 ;StateLevel1.c:33: UINT8 Level = 0;
+   0005 21r01r00             52 	ld	hl,#_Level
+   0008 36 00                53 	ld	(hl),#0x00
+                             54 ;--------------------------------------------------------
+                             55 ; Home
+                             56 ;--------------------------------------------------------
+                             57 	.area _HOME
+                             58 	.area _HOME
+                             59 ;--------------------------------------------------------
+                             60 ; code
+                             61 ;--------------------------------------------------------
+                             62 	.area _CODE_4
+                             63 ;StateLevel1.c:41: void Start_STATE_LEVEL1() {
+                             64 ;	---------------------------------
+                             65 ; Function Start_STATE_LEVEL1
+                             66 ; ---------------------------------
+   0000                      67 _Start_STATE_LEVEL1::
+   0000 E8 ED                68 	add	sp, #-19
+                             69 ;StateLevel1.c:43: const UINT8 collision_tiles[] = {1,2,3,4,5,6,7,8,9,10,11,12,36,37,38,39,0};
+   0002 F8 00                70 	ldhl	sp,#0
+   0004 7D                   71 	ld	a,l
+   0005 54                   72 	ld	d,h
+   0006 F8 11                73 	ldhl	sp,#17
+   0008 22                   74 	ld	(hl+),a
+   0009 72                   75 	ld	(hl),d
+   000A 2B                   76 	dec	hl
+   000B 2A                   77 	ld	a,(hl+)
+   000C 66                   78 	ld	h,(hl)
+   000D 6F                   79 	ld	l,a
+   000E 36 01                80 	ld	(hl),#0x01
+   0010 F8 11                81 	ldhl	sp,#(18 - 1)
+   0012 4E                   82 	ld	c,(hl)
+   0013 23                   83 	inc	hl
+   0014 46                   84 	ld	b,(hl)
+   0015 03                   85 	inc	bc
+   0016 3E 02                86 	ld	a,#0x02
+   0018 02                   87 	ld	(bc),a
+   0019 2B                   88 	dec	hl
+   001A 4E                   89 	ld	c,(hl)
+   001B 23                   90 	inc	hl
+   001C 46                   91 	ld	b,(hl)
+   001D 03                   92 	inc	bc
+   001E 03                   93 	inc	bc
+   001F 3E 03                94 	ld	a,#0x03
+   0021 02                   95 	ld	(bc),a
+   0022 2B                   96 	dec	hl
+   0023 4E                   97 	ld	c,(hl)
+   0024 23                   98 	inc	hl
+   0025 46                   99 	ld	b,(hl)
+   0026 03                  100 	inc	bc
+   0027 03                  101 	inc	bc
+   0028 03                  102 	inc	bc
+   0029 3E 04               103 	ld	a,#0x04
+   002B 02                  104 	ld	(bc),a
+   002C 2B                  105 	dec	hl
+   002D 5E                  106 	ld	e,(hl)
+   002E 23                  107 	inc	hl
+   002F 56                  108 	ld	d,(hl)
+   0030 21 04 00            109 	ld	hl,#0x0004
+   0033 19                  110 	add	hl,de
+   0034 4D                  111 	ld	c,l
+   0035 44                  112 	ld	b,h
+   0036 3E 05               113 	ld	a,#0x05
+   0038 02                  114 	ld	(bc),a
+   0039 F8 11               115 	ldhl	sp,#(18 - 1)
+   003B 5E                  116 	ld	e,(hl)
+   003C 23                  117 	inc	hl
+   003D 56                  118 	ld	d,(hl)
+   003E 21 05 00            119 	ld	hl,#0x0005
+   0041 19                  120 	add	hl,de
+   0042 4D                  121 	ld	c,l
+   0043 44                  122 	ld	b,h
+   0044 3E 06               123 	ld	a,#0x06
+   0046 02                  124 	ld	(bc),a
+   0047 F8 11               125 	ldhl	sp,#(18 - 1)
+   0049 5E                  126 	ld	e,(hl)
+   004A 23                  127 	inc	hl
+   004B 56                  128 	ld	d,(hl)
+   004C 21 06 00            129 	ld	hl,#0x0006
+   004F 19                  130 	add	hl,de
+   0050 4D                  131 	ld	c,l
+   0051 44                  132 	ld	b,h
+   0052 3E 07               133 	ld	a,#0x07
+   0054 02                  134 	ld	(bc),a
+   0055 F8 11               135 	ldhl	sp,#(18 - 1)
+   0057 5E                  136 	ld	e,(hl)
+   0058 23                  137 	inc	hl
+   0059 56                  138 	ld	d,(hl)
+   005A 21 07 00            139 	ld	hl,#0x0007
+   005D 19                  140 	add	hl,de
+   005E 4D                  141 	ld	c,l
+   005F 44                  142 	ld	b,h
+   0060 3E 08               143 	ld	a,#0x08
+   0062 02                  144 	ld	(bc),a
+   0063 F8 11               145 	ldhl	sp,#(18 - 1)
+   0065 5E                  146 	ld	e,(hl)
+   0066 23                  147 	inc	hl
+   0067 56                  148 	ld	d,(hl)
+   0068 21 08 00            149 	ld	hl,#0x0008
+   006B 19                  150 	add	hl,de
+   006C 4D                  151 	ld	c,l
+   006D 44                  152 	ld	b,h
+   006E 3E 09               153 	ld	a,#0x09
+   0070 02                  154 	ld	(bc),a
+   0071 F8 11               155 	ldhl	sp,#(18 - 1)
+   0073 5E                  156 	ld	e,(hl)
+   0074 23                  157 	inc	hl
+   0075 56                  158 	ld	d,(hl)
+   0076 21 09 00            159 	ld	hl,#0x0009
+   0079 19                  160 	add	hl,de
+   007A 4D                  161 	ld	c,l
+   007B 44                  162 	ld	b,h
+   007C 3E 0A               163 	ld	a,#0x0a
+   007E 02                  164 	ld	(bc),a
+   007F F8 11               165 	ldhl	sp,#(18 - 1)
+   0081 5E                  166 	ld	e,(hl)
+   0082 23                  167 	inc	hl
+   0083 56                  168 	ld	d,(hl)
+   0084 21 0A 00            169 	ld	hl,#0x000a
+   0087 19                  170 	add	hl,de
+   0088 4D                  171 	ld	c,l
+   0089 44                  172 	ld	b,h
+   008A 3E 0B               173 	ld	a,#0x0b
+   008C 02                  174 	ld	(bc),a
+   008D F8 11               175 	ldhl	sp,#(18 - 1)
+   008F 5E                  176 	ld	e,(hl)
+   0090 23                  177 	inc	hl
+   0091 56                  178 	ld	d,(hl)
+   0092 21 0B 00            179 	ld	hl,#0x000b
+   0095 19                  180 	add	hl,de
+   0096 4D                  181 	ld	c,l
+   0097 44                  182 	ld	b,h
+   0098 3E 0C               183 	ld	a,#0x0c
+   009A 02                  184 	ld	(bc),a
+   009B F8 11               185 	ldhl	sp,#(18 - 1)
+   009D 5E                  186 	ld	e,(hl)
+   009E 23                  187 	inc	hl
+   009F 56                  188 	ld	d,(hl)
+   00A0 21 0C 00            189 	ld	hl,#0x000c
+   00A3 19                  190 	add	hl,de
+   00A4 4D                  191 	ld	c,l
+   00A5 44                  192 	ld	b,h
+   00A6 3E 24               193 	ld	a,#0x24
+   00A8 02                  194 	ld	(bc),a
+   00A9 F8 11               195 	ldhl	sp,#(18 - 1)
+   00AB 5E                  196 	ld	e,(hl)
+   00AC 23                  197 	inc	hl
+   00AD 56                  198 	ld	d,(hl)
+   00AE 21 0D 00            199 	ld	hl,#0x000d
+   00B1 19                  200 	add	hl,de
+   00B2 4D                  201 	ld	c,l
+   00B3 44                  202 	ld	b,h
+   00B4 3E 25               203 	ld	a,#0x25
+   00B6 02                  204 	ld	(bc),a
+   00B7 F8 11               205 	ldhl	sp,#(18 - 1)
+   00B9 5E                  206 	ld	e,(hl)
+   00BA 23                  207 	inc	hl
+   00BB 56                  208 	ld	d,(hl)
+   00BC 21 0E 00            209 	ld	hl,#0x000e
+   00BF 19                  210 	add	hl,de
+   00C0 4D                  211 	ld	c,l
+   00C1 44                  212 	ld	b,h
+   00C2 3E 26               213 	ld	a,#0x26
+   00C4 02                  214 	ld	(bc),a
+   00C5 F8 11               215 	ldhl	sp,#(18 - 1)
+   00C7 5E                  216 	ld	e,(hl)
+   00C8 23                  217 	inc	hl
+   00C9 56                  218 	ld	d,(hl)
+   00CA 21 0F 00            219 	ld	hl,#0x000f
+   00CD 19                  220 	add	hl,de
+   00CE 4D                  221 	ld	c,l
+   00CF 44                  222 	ld	b,h
+   00D0 3E 27               223 	ld	a,#0x27
+   00D2 02                  224 	ld	(bc),a
+   00D3 F8 11               225 	ldhl	sp,#(18 - 1)
+   00D5 5E                  226 	ld	e,(hl)
+   00D6 23                  227 	inc	hl
+   00D7 56                  228 	ld	d,(hl)
+   00D8 21 10 00            229 	ld	hl,#0x0010
+   00DB 19                  230 	add	hl,de
+   00DC 4D                  231 	ld	c,l
+   00DD 44                  232 	ld	b,h
+   00DE AF                  233 	xor	a, a
+   00DF 02                  234 	ld	(bc),a
+                            235 ;StateLevel1.c:45: CP_LoadMusic(6,2);
+   00E0 21 06 02            236 	ld	hl,#0x0206
+   00E3 E5                  237 	push	hl
+   00E4 CDr00r00            238 	call	_CP_LoadMusic
+   00E7 E8 02               239 	add	sp, #2
+                            240 ;StateLevel1.c:46: ZGB_Parallax = 1;
+   00E9 21r00r00            241 	ld	hl,#_ZGB_Parallax
+   00EC 36 01               242 	ld	(hl),#0x01
+                            243 ;StateLevel1.c:47: SPRITES_8x16;
+   00EE 11 40 FF            244 	ld	de,#0xff40
+   00F1 1A                  245 	ld	a,(de)
+   00F2 4F                  246 	ld	c,a
+   00F3 06 00               247 	ld	b,#0x00
+   00F5 79                  248 	ld	a,c
+   00F6 CB D7               249 	set	2, a
+   00F8 4F                  250 	ld	c,a
+   00F9 21 40 FF            251 	ld	hl,#0xff40
+   00FC 71                  252 	ld	(hl),c
+                            253 ;StateLevel1.c:48: for(i = 0; i != N_SPRITE_TYPES; ++ i) {
+   00FD 06 00               254 	ld	b,#0x00
+   00FF                     255 00102$:
+                            256 ;StateLevel1.c:49: SpriteManagerLoad(i);
+   00FF C5                  257 	push	bc
+   0100 C5                  258 	push	bc
+   0101 33                  259 	inc	sp
+   0102 CDr00r00            260 	call	_SpriteManagerLoad
+   0105 33                  261 	inc	sp
+   0106 C1                  262 	pop	bc
+                            263 ;StateLevel1.c:48: for(i = 0; i != N_SPRITE_TYPES; ++ i) {
+   0107 04                  264 	inc	b
+   0108 78                  265 	ld	a,b
+   0109 D6 06               266 	sub	a, #0x06
+   010B 20 F2               267 	jr	NZ,00102$
+                            268 ;StateLevel1.c:51: SHOW_SPRITES;
+   010D 11 40 FF            269 	ld	de,#0xff40
+   0110 1A                  270 	ld	a,(de)
+   0111 4F                  271 	ld	c,a
+   0112 06 00               272 	ld	b,#0x00
+   0114 79                  273 	ld	a,c
+   0115 CB CF               274 	set	1, a
+   0117 4F                  275 	ld	c,a
+   0118 21 40 FF            276 	ld	hl,#0xff40
+   011B 71                  277 	ld	(hl),c
+                            278 ;StateLevel1.c:53: scroll_target = SpriteManagerAdd(SPRITE_PLAYER, 35*8,42*8);//58*8, 58*8);
+   011C 21 50 01            279 	ld	hl,#0x0150
+   011F E5                  280 	push	hl
+   0120 2E 18               281 	ld	l, #0x18
+   0122 E5                  282 	push	hl
+   0123 AF                  283 	xor	a, a
+   0124 F5                  284 	push	af
+   0125 33                  285 	inc	sp
+   0126 CDr00r00            286 	call	_SpriteManagerAdd
+   0129 E8 05               287 	add	sp, #5
+   012B 21r00r00            288 	ld	hl,#_scroll_target
+   012E 73                  289 	ld	(hl),e
+   012F 23                  290 	inc	hl
+   0130 72                  291 	ld	(hl),d
+                            292 ;StateLevel1.c:55: InitScrollTiles(0, 255, tiles_level1, 4);
+   0131 21 00 00            293 	ld	hl,#0x0000
+   0134 E5                  294 	push	hl
+   0135 3E 04               295 	ld	a,#0x04
+   0137 F5                  296 	push	af
+   0138 33                  297 	inc	sp
+   0139 21r00r00            298 	ld	hl,#_tiles_level1
+   013C E5                  299 	push	hl
+   013D 21 00 FF            300 	ld	hl,#0xff00
+   0140 E5                  301 	push	hl
+   0141 CDr00r00            302 	call	_ZInitScrollTilesColor
+   0144 E8 07               303 	add	sp, #7
+                            304 ;StateLevel1.c:56: InitScroll(map_level0Width, map_level0Height, map_level0PLN0, collision_tiles, 0, 5,map_level0PLN1);
+   0146 11r00r00            305 	ld	de,#_map_level0PLN1+0
+   0149 F8 11               306 	ldhl	sp,#(18 - 1)
+   014B 4E                  307 	ld	c,(hl)
+   014C 23                  308 	inc	hl
+   014D 46                  309 	ld	b,(hl)
+   014E D5                  310 	push	de
+   014F 3E 05               311 	ld	a,#0x05
+   0151 F5                  312 	push	af
+   0152 33                  313 	inc	sp
+   0153 21 00 00            314 	ld	hl,#0x0000
+   0156 E5                  315 	push	hl
+   0157 C5                  316 	push	bc
+   0158 21r00r00            317 	ld	hl,#_map_level0PLN0
+   015B E5                  318 	push	hl
+   015C 21 30 00            319 	ld	hl,#0x0030
+   015F E5                  320 	push	hl
+   0160 2E 30               321 	ld	l, #0x30
+   0162 E5                  322 	push	hl
+   0163 CDr00r00            323 	call	_InitScroll
+   0166 E8 0D               324 	add	sp, #13
+                            325 ;StateLevel1.c:58: SetPalette(tiles_level1PAL,playerPAL,4);
+   0168 3E 04               326 	ld	a,#0x04
+   016A F5                  327 	push	af
+   016B 33                  328 	inc	sp
+   016C 21r5Cr02            329 	ld	hl,#_playerPAL
+   016F E5                  330 	push	hl
+   0170 21r1Cr02            331 	ld	hl,#_tiles_level1PAL
+   0173 E5                  332 	push	hl
+   0174 CDr00r00            333 	call	_SetPalette
+   0177 E8 05               334 	add	sp, #5
+                            335 ;StateLevel1.c:60: InitWindow(0, 0, win_level1Width, win_level1Height, win_level1PLN0, 4, win_level1PLN1);
+   0179 21r00r00            336 	ld	hl,#_win_level1PLN1
+   017C E5                  337 	push	hl
+   017D 3E 04               338 	ld	a,#0x04
+   017F F5                  339 	push	af
+   0180 33                  340 	inc	sp
+   0181 21r00r00            341 	ld	hl,#_win_level1PLN0
+   0184 E5                  342 	push	hl
+   0185 21 14 03            343 	ld	hl,#0x0314
+   0188 E5                  344 	push	hl
+   0189 21 00 00            345 	ld	hl,#0x0000
+   018C E5                  346 	push	hl
+   018D CDr00r00            347 	call	_InitWindow
+   0190 E8 09               348 	add	sp, #9
+                            349 ;StateLevel1.c:61: WY_REG = 16*8;
+   0192 21 4A FF            350 	ld	hl,#0xff4a
+   0195 36 80               351 	ld	(hl),#0x80
+                            352 ;StateLevel1.c:62: SHOW_BKG;
+   0197 11 40 FF            353 	ld	de,#0xff40
+   019A 1A                  354 	ld	a,(de)
+   019B 4F                  355 	ld	c,a
+   019C 06 00               356 	ld	b,#0x00
+   019E 79                  357 	ld	a,c
+   019F CB C7               358 	set	0, a
+   01A1 4F                  359 	ld	c,a
+   01A2 2E 40               360 	ld	l, #0x40
+   01A4 71                  361 	ld	(hl),c
+                            362 ;StateLevel1.c:63: SHOW_WIN;
+   01A5 11 40 FF            363 	ld	de,#0xff40
+   01A8 1A                  364 	ld	a,(de)
+   01A9 4F                  365 	ld	c,a
+   01AA 06 00               366 	ld	b,#0x00
+   01AC 79                  367 	ld	a,c
+   01AD CB EF               368 	set	5, a
+   01AF 4F                  369 	ld	c,a
+   01B0 2E 40               370 	ld	l, #0x40
+   01B2 71                  371 	ld	(hl),c
+                            372 ;StateLevel1.c:65: INIT_FONT(font, 3, PRINT_WIN);
+   01B3 21 00 00            373 	ld	hl,#0x0000
+   01B6 E5                  374 	push	hl
+   01B7 3E 03               375 	ld	a,#0x03
+   01B9 F5                  376 	push	af
+   01BA 33                  377 	inc	sp
+   01BB 21r00r00            378 	ld	hl,#_font
+   01BE E5                  379 	push	hl
+   01BF 21 D2 2D            380 	ld	hl,#0x2dd2
+   01C2 E5                  381 	push	hl
+   01C3 CDr00r00            382 	call	_ZInitScrollTilesColor
+   01C6 E8 07               383 	add	sp, #7
+   01C8 21r00r00            384 	ld	hl,#_font_idx
+   01CB 36 D2               385 	ld	(hl),#0xd2
+   01CD 21r00r00            386 	ld	hl,#_print_target
+   01D0 36 01               387 	ld	(hl),#0x01
+                            388 ;StateLevel1.c:67: LOAD_TILE_ANIM(&Tile_items[0], 1, 8, level_anim_hconv, 3);
+   01D2 3E 03               389 	ld	a,#0x03
+   01D4 F5                  390 	push	af
+   01D5 33                  391 	inc	sp
+   01D6 21r00r00            392 	ld	hl,#_level_anim_hconv
+   01D9 E5                  393 	push	hl
+   01DA 21 01 08            394 	ld	hl,#0x0801
+   01DD E5                  395 	push	hl
+   01DE 21r00r00            396 	ld	hl,#_Tile_items
+   01E1 E5                  397 	push	hl
+   01E2 CDr00r00            398 	call	_LOAD_TILE_ANIM
+   01E5 E8 07               399 	add	sp, #7
+                            400 ;StateLevel1.c:68: LOAD_TILE_ANIM(&Tile_items[1], 1, 8, level_anim_vconv, 3);	
+   01E7 3E 03               401 	ld	a,#0x03
+   01E9 F5                  402 	push	af
+   01EA 33                  403 	inc	sp
+   01EB 21r00r00            404 	ld	hl,#_level_anim_vconv
+   01EE E5                  405 	push	hl
+   01EF 21 01 08            406 	ld	hl,#0x0801
+   01F2 E5                  407 	push	hl
+   01F3 21r0Ar00            408 	ld	hl,#(_Tile_items + 0x000a)
+   01F6 E5                  409 	push	hl
+   01F7 CDr00r00            410 	call	_LOAD_TILE_ANIM
+   01FA E8 07               411 	add	sp, #7
+                            412 ;StateLevel1.c:69: SpriteManagerAdd(SPRITE_POINTER, 0, 0);
+   01FC 21 00 00            413 	ld	hl,#0x0000
+   01FF E5                  414 	push	hl
+   0200 2E 00               415 	ld	l, #0x00
+   0202 E5                  416 	push	hl
+   0203 3E 01               417 	ld	a,#0x01
+   0205 F5                  418 	push	af
+   0206 33                  419 	inc	sp
+   0207 CDr00r00            420 	call	_SpriteManagerAdd
+   020A E8 05               421 	add	sp, #5
+                            422 ;StateLevel1.c:70: Set_Parallax(level1_parallaxtiles,7);
+   020C 3E 07               423 	ld	a,#0x07
+   020E F5                  424 	push	af
+   020F 33                  425 	inc	sp
+   0210 21r00r00            426 	ld	hl,#_level1_parallaxtiles
+   0213 E5                  427 	push	hl
+   0214 CDr00r00            428 	call	_Set_Parallax
+   0217 E8 03               429 	add	sp, #3
+   0219 E8 13               430 	add	sp, #19
+   021B C9                  431 	ret
+   021C                     432 _tiles_level1PAL:
+   021C 42 7C               433 	.dw #0x7c42
+   021E 5A 7B               434 	.dw #0x7b5a
+   0220 D0 79               435 	.dw #0x79d0
+   0222 03 5C               436 	.dw #0x5c03
+   0224 5E 7B               437 	.dw #0x7b5e
+   0226 3F 71               438 	.dw #0x713f
+   0228 12 4C               439 	.dw #0x4c12
+   022A 00 00               440 	.dw #0x0000
+   022C D5 53               441 	.dw #0x53d5
+   022E 82 03               442 	.dw #0x0382
+   0230 61 05               443 	.dw #0x0561
+   0232 81 04               444 	.dw #0x0481
+   0234 39 67               445 	.dw #0x6739
+   0236 EA 23               446 	.dw #0x23ea
+   0238 C1 05               447 	.dw #0x05c1
+   023A 4A 29               448 	.dw #0x294a
+   023C DD 7F               449 	.dw #0x7fdd
+   023E 3E 3B               450 	.dw #0x3b3e
+   0240 7F 01               451 	.dw #0x017f
+   0242 00 00               452 	.dw #0x0000
+   0244 B6 7B               453 	.dw #0x7bb6
+   0246 82 7F               454 	.dw #0x7f82
+   0248 20 5E               455 	.dw #0x5e20
+   024A 00 00               456 	.dw #0x0000
+   024C 42 7C               457 	.dw #0x7c42
+   024E 7B 7B               458 	.dw #0x7b7b
+   0250 1F 20               459 	.dw #0x201f
+   0252 21 10               460 	.dw #0x1021
+   0254 5E 7B               461 	.dw #0x7b5e
+   0256 86 7F               462 	.dw #0x7f86
+   0258 12 4C               463 	.dw #0x4c12
+   025A 00 00               464 	.dw #0x0000
+   025C                     465 _playerPAL:
+   025C FF 7F               466 	.dw #0x7fff
+   025E FF 7F               467 	.dw #0x7fff
+   0260 D6 5A               468 	.dw #0x5ad6
+   0262 00 00               469 	.dw #0x0000
+   0264 21 40               470 	.dw #0x4021
+   0266 3F 04               471 	.dw #0x043f
+   0268 52 00               472 	.dw #0x0052
+   026A 00 00               473 	.dw #0x0000
+   026C 21 40               474 	.dw #0x4021
+   026E E9 23               475 	.dw #0x23e9
+   0270 20 06               476 	.dw #0x0620
+   0272 00 00               477 	.dw #0x0000
+   0274 21 40               478 	.dw #0x4021
+   0276 FD 23               479 	.dw #0x23fd
+   0278 D4 02               480 	.dw #0x02d4
+   027A 00 00               481 	.dw #0x0000
+   027C 21 40               482 	.dw #0x4021
+   027E 09 7F               483 	.dw #0x7f09
+   0280 FE 17               484 	.dw #0x17fe
+   0282 00 00               485 	.dw #0x0000
+   0284 21 40               486 	.dw #0x4021
+   0286 09 7F               487 	.dw #0x7f09
+   0288 3F 04               488 	.dw #0x043f
+   028A 00 00               489 	.dw #0x0000
+   028C 21 40               490 	.dw #0x4021
+   028E 09 7F               491 	.dw #0x7f09
+   0290 5F 7C               492 	.dw #0x7c5f
+   0292 00 00               493 	.dw #0x0000
+   0294 21 44               494 	.dw #0x4421
+   0296 FF 7F               495 	.dw #0x7fff
+   0298 DF 00               496 	.dw #0x00df
+   029A 00 00               497 	.dw #0x0000
+                            498 ;StateLevel1.c:73: void Update_STATE_LEVEL1() {
+                            499 ;	---------------------------------
+                            500 ; Function Update_STATE_LEVEL1
+                            501 ; ---------------------------------
+   029C                     502 _Update_STATE_LEVEL1::
+                            503 ;StateLevel1.c:74: Move_Parallax();
+   029C CDr00r00            504 	call	_Move_Parallax
+                            505 ;StateLevel1.c:75: TILE_ANIMATE(&Tile_items[0], 40, 3);
+   029F 21 28 03            506 	ld	hl,#0x0328
+   02A2 E5                  507 	push	hl
+   02A3 21r00r00            508 	ld	hl,#_Tile_items
+   02A6 E5                  509 	push	hl
+   02A7 CDr00r00            510 	call	_TILE_ANIMATE
+   02AA E8 04               511 	add	sp, #4
+                            512 ;StateLevel1.c:76: TILE_ANIMATE(&Tile_items[1], 42, 3);	
+   02AC 21 2A 03            513 	ld	hl,#0x032a
+   02AF E5                  514 	push	hl
+   02B0 21r0Ar00            515 	ld	hl,#(_Tile_items + 0x000a)
+   02B3 E5                  516 	push	hl
+   02B4 CDr00r00            517 	call	_TILE_ANIMATE
+   02B7 E8 04               518 	add	sp, #4
+                            519 ;StateLevel1.c:78: if (KEY_PRESSED(J_SELECT)) {
+   02B9 21r00r00            520 	ld	hl,#_keys
+   02BC 4E                  521 	ld	c,(hl)
+   02BD 06 00               522 	ld	b,#0x00
+   02BF CB 71               523 	bit	6, c
+   02C1 C8                  524 	ret	Z
+                            525 ;StateLevel1.c:79: Menu_Mode = 2;
+   02C2 21r00r00            526 	ld	hl,#_Menu_Mode
+   02C5 36 02               527 	ld	(hl),#0x02
+                            528 ;StateLevel1.c:80: SetState(STATE_MENU);
+   02C7 AF                  529 	xor	a, a
+   02C8 F5                  530 	push	af
+   02C9 33                  531 	inc	sp
+   02CA CDr00r00            532 	call	_SetState
+   02CD 33                  533 	inc	sp
+   02CE C9                  534 	ret
+                            535 	.area _CODE_4
+                            536 	.area _CABS (ABS)

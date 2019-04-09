@@ -1,0 +1,59 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 1.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+    .__.$$$.                                                    =  2710 L
+    .__.ABS.                                                    =  0000 G
+    .__.CPU.                                                    =  0000 L
+    .__.H$L.                                                    =  0000 L
+    _CP_LoadMusic                                                  **** GX
+    _InitScroll                                                    **** GX
+    _InitWindow                                                    **** GX
+    _LOAD_TILE_ANIM                                                **** GX
+  1 _Level                                                         0001 GR
+    _Menu_Mode                                                     **** GX
+    _Move_Parallax                                                 **** GX
+    _SetPalette                                                    **** GX
+    _SetState                                                      **** GX
+    _Set_Parallax                                                  **** GX
+    _SpriteManagerAdd                                              **** GX
+    _SpriteManagerLoad                                             **** GX
+  6 _Start_STATE_LEVEL1                                            0000 GR
+    _TILE_ANIMATE                                                  **** GX
+    _Tile_items                                                    **** GX
+  6 _Update_STATE_LEVEL1                                           029C GR
+    _ZGB_Parallax                                                  **** GX
+    _ZInitScrollTilesColor                                         **** GX
+  1 _bank_STATE_LEVEL1                                             0000 GR
+    _font                                                          **** GX
+    _font_idx                                                      **** GX
+    _keys                                                          **** GX
+    _level1_parallaxtiles                                          **** GX
+    _level_anim_hconv                                              **** GX
+    _level_anim_vconv                                              **** GX
+    _map_level0PLN0                                                **** GX
+    _map_level0PLN1                                                **** GX
+  6 _playerPAL                                                     025C GR
+    _print_target                                                  **** GX
+    _scroll_target                                                 **** GX
+    _tiles_level1                                                  **** GX
+  6 _tiles_level1PAL                                               021C GR
+    _win_level1PLN0                                                **** GX
+    _win_level1PLN1                                                **** GX
+
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 2.
+Hexadecimal [16-Bits]
+
+Area Table
+
+   0 _CODE                                      size    0   flags    0
+   1 _DATA                                      size    2   flags    0
+   2 _DABS                                      size    0   flags    8
+   3 _HOME                                      size    0   flags    0
+   4 _GSINIT                                    size    A   flags    0
+   5 _GSFINAL                                   size    0   flags    0
+   6 _CODE_4                                    size  2CF   flags    0
+   7 _CABS                                      size    0   flags    8
+

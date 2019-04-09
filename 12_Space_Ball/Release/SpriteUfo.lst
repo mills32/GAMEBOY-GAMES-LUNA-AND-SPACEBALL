@@ -1,0 +1,154 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module SpriteUfo
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _Destroy_SPRITE_UFO
+                             12 	.globl _Update_SPRITE_UFO
+                             13 	.globl _Start_SPRITE_UFO
+                             14 	.globl _SetSpriteAnim
+                             15 	.globl _bank_SPRITE_UFO
+                             16 	.globl _anim_ufo
+                             17 ;--------------------------------------------------------
+                             18 ; ram data
+                             19 ;--------------------------------------------------------
+                             20 	.area _DATA
+   0000                      21 _bank_SPRITE_UFO::
+   0000                      22 	.ds 1
+                             23 ;--------------------------------------------------------
+                             24 ; absolute external ram data
+                             25 ;--------------------------------------------------------
+                             26 	.area _DABS (ABS)
+                             27 ;--------------------------------------------------------
+                             28 ; global & static initialisations
+                             29 ;--------------------------------------------------------
+                             30 	.area _HOME
+                             31 	.area _GSINIT
+                             32 	.area _GSFINAL
+                             33 	.area _GSINIT
+                             34 ;SpriteUfo.c:5: UINT8 bank_SPRITE_UFO = 2;
+   0000 21r00r00             35 	ld	hl,#_bank_SPRITE_UFO
+   0003 36 02                36 	ld	(hl),#0x02
+                             37 ;--------------------------------------------------------
+                             38 ; Home
+                             39 ;--------------------------------------------------------
+                             40 	.area _HOME
+                             41 	.area _HOME
+                             42 ;--------------------------------------------------------
+                             43 ; code
+                             44 ;--------------------------------------------------------
+                             45 	.area _CODE_2
+                             46 ;SpriteUfo.c:11: void Start_SPRITE_UFO() {
+                             47 ;	---------------------------------
+                             48 ; Function Start_SPRITE_UFO
+                             49 ; ---------------------------------
+   0000                      50 _Start_SPRITE_UFO::
+                             51 ;SpriteUfo.c:14: SetSpriteAnim(THIS, anim_ufo, 14);
+   0000 3E 0E                52 	ld	a,#0x0e
+   0002 F5                   53 	push	af
+   0003 33                   54 	inc	sp
+   0004 21r25r00             55 	ld	hl,#_anim_ufo
+   0007 E5                   56 	push	hl
+   0008 21r00r00             57 	ld	hl,#_THIS
+   000B 2A                   58 	ld	a,(hl+)
+   000C 66                   59 	ld	h,(hl)
+   000D 6F                   60 	ld	l,a
+   000E E5                   61 	push	hl
+   000F CDr00r00             62 	call	_SetSpriteAnim
+   0012 E8 05                63 	add	sp, #5
+                             64 ;SpriteUfo.c:15: THIS->flags = 0x84;
+   0014 21r01r00             65 	ld	hl,#_THIS + 1
+   0017 2B                   66 	dec	hl
+   0018 4E                   67 	ld	c,(hl)
+   0019 23                   68 	inc	hl
+   001A 46                   69 	ld	b,(hl)
+   001B 21 0B 00             70 	ld	hl,#0x000b
+   001E 09                   71 	add	hl,bc
+   001F 4D                   72 	ld	c,l
+   0020 44                   73 	ld	b,h
+   0021 3E 84                74 	ld	a,#0x84
+   0023 02                   75 	ld	(bc),a
+   0024 C9                   76 	ret
+   0025                      77 _anim_ufo:
+   0025 04                   78 	.db #0x04	; 4
+   0026 00                   79 	.db #0x00	; 0
+   0027 01                   80 	.db #0x01	; 1
+   0028 02                   81 	.db #0x02	; 2
+   0029 03                   82 	.db #0x03	; 3
+                             83 ;SpriteUfo.c:20: void Update_SPRITE_UFO() {
+                             84 ;	---------------------------------
+                             85 ; Function Update_SPRITE_UFO
+                             86 ; ---------------------------------
+   002A                      87 _Update_SPRITE_UFO::
+   002A E8 FE                88 	add	sp, #-2
+                             89 ;SpriteUfo.c:21: if (THIS->x == 180) THIS->x = -30;
+   002C 21r01r00             90 	ld	hl,#_THIS + 1
+   002F 2B                   91 	dec	hl
+   0030 4E                   92 	ld	c,(hl)
+   0031 23                   93 	inc	hl
+   0032 46                   94 	ld	b,(hl)
+   0033 21 07 00             95 	ld	hl,#0x0007
+   0036 09                   96 	add	hl,bc
+   0037 4D                   97 	ld	c,l
+   0038 44                   98 	ld	b,h
+   0039 59                   99 	ld	e, c
+   003A 50                  100 	ld	d, b
+   003B 1A                  101 	ld	a,(de)
+   003C F8 00               102 	ldhl	sp,#0
+   003E 22                  103 	ld	(hl+),a
+   003F 13                  104 	inc	de
+   0040 1A                  105 	ld	a,(de)
+   0041 32                  106 	ld	(hl-),a
+   0042 7E                  107 	ld	a,(hl)
+   0043 D6 B4               108 	sub	a, #0xb4
+   0045 20 0C               109 	jr	NZ,00102$
+   0047 23                  110 	inc	hl
+   0048 7E                  111 	ld	a,(hl)
+   0049 B7                  112 	or	a, a
+   004A 20 07               113 	jr	NZ,00102$
+   004C 3E E2               114 	ld	a,#0xe2
+   004E 02                  115 	ld	(bc),a
+   004F 03                  116 	inc	bc
+   0050 3E FF               117 	ld	a,#0xff
+   0052 02                  118 	ld	(bc),a
+   0053                     119 00102$:
+                            120 ;SpriteUfo.c:22: THIS->x ++;
+   0053 21r01r00            121 	ld	hl,#_THIS + 1
+   0056 2B                  122 	dec	hl
+   0057 4E                  123 	ld	c,(hl)
+   0058 23                  124 	inc	hl
+   0059 46                  125 	ld	b,(hl)
+   005A 21 07 00            126 	ld	hl,#0x0007
+   005D 09                  127 	add	hl,bc
+   005E 33                  128 	inc	sp
+   005F 33                  129 	inc	sp
+   0060 E5                  130 	push	hl
+   0061 D1                  131 	pop	de
+   0062 D5                  132 	push	de
+   0063 1A                  133 	ld	a,(de)
+   0064 4F                  134 	ld	c,a
+   0065 13                  135 	inc	de
+   0066 1A                  136 	ld	a,(de)
+   0067 47                  137 	ld	b,a
+   0068 03                  138 	inc	bc
+   0069 E1                  139 	pop	hl
+   006A E5                  140 	push	hl
+   006B 71                  141 	ld	(hl),c
+   006C 23                  142 	inc	hl
+   006D 70                  143 	ld	(hl),b
+   006E E8 02               144 	add	sp, #2
+   0070 C9                  145 	ret
+                            146 ;SpriteUfo.c:26: void Destroy_SPRITE_UFO() {
+                            147 ;	---------------------------------
+                            148 ; Function Destroy_SPRITE_UFO
+                            149 ; ---------------------------------
+   0071                     150 _Destroy_SPRITE_UFO::
+                            151 ;SpriteUfo.c:27: }
+   0071 C9                  152 	ret
+                            153 	.area _CODE_2
+                            154 	.area _CABS (ABS)

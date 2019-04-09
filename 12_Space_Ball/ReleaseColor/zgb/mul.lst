@@ -1,0 +1,158 @@
+                              1 ;--------------------------------------------------------------------------
+                              2 ;  mul.s
+                              3 ;
+                              4 ;  Copyright (C) 2000, Michael Hope
+                              5 ;
+                              6 ;  This library is free software; you can redistribute it and/or modify it
+                              7 ;  under the terms of the GNU General Public License as published by the
+                              8 ;  Free Software Foundation; either version 2, or (at your option) any
+                              9 ;  later version.
+                             10 ;
+                             11 ;  This library is distributed in the hope that it will be useful,
+                             12 ;  but WITHOUT ANY WARRANTY; without even the implied warranty of
+                             13 ;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+                             14 ;  GNU General Public License for more details.
+                             15 ;
+                             16 ;  You should have received a copy of the GNU General Public License 
+                             17 ;  along with this library; see the file COPYING. If not, write to the
+                             18 ;  Free Software Foundation, 51 Franklin Street, Fifth Floor, Boston,
+                             19 ;   MA 02110-1301, USA.
+                             20 ;
+                             21 ;  As a special exception, if you link this library with other files,
+                             22 ;  some of which are compiled with SDCC, to produce an executable,
+                             23 ;  this library does not by itself cause the resulting executable to
+                             24 ;  be covered by the GNU General Public License. This exception does
+                             25 ;  not however invalidate any other reasons why the executable file
+                             26 ;   might be covered by the GNU General Public License.
+                             27 ;--------------------------------------------------------------------------
+                             28 
+                             29         ;; Originally from GBDK by Pascal Felber.
+                             30 
+                             31         .area   _CODE
+                             32 
+                             33 .globl	__mulsuchar
+                             34 .globl	__muluschar
+                             35 .globl	__mulschar
+                             36 .globl	__muluchar
+                             37 .globl	__mulint
+                             38 
+                             39 ; operands have different sign
+                             40 
+   0000                      41 __mulsuchar:
+   0000 21 03 00             42         ld      hl,#2+1
+   0003 44                   43         ld      b, h
+   0004 39                   44         add     hl,sp
+                             45 
+   0005 5E                   46         ld      e,(hl)
+   0006 2B                   47         dec     hl
+   0007 4E                   48         ld      c,(hl)
+   0008 18 16                49         jr      signexte
+                             50 
+   000A                      51 __muluschar:
+   000A 21 02 00             52         ld      hl,#2
+   000D 44                   53         ld      b, h
+   000E 39                   54         add     hl,sp
+                             55 
+   000F 5E                   56         ld      e,(hl)
+   0010 23                   57         inc     hl
+   0011 4E                   58         ld      c,(hl)
+   0012 18 0C                59         jr      signexte
+                             60 
+   0014                      61 __mulschar:
+   0014 21 02 00             62         ld      hl,#2
+   0017 39                   63         add     hl,sp
+                             64 
+   0018 5E                   65         ld      e,(hl)
+   0019 23                   66         inc     hl
+   001A 6E                   67         ld      l,(hl)
+                             68 
+                             69         ;; Need to sign extend before going in.
+   001B 4D                   70         ld      c,l
+                             71 
+   001C 7D                   72         ld      a,l
+   001D 17                   73         rla
+   001E 9F                   74         sbc     a,a
+   001F 47                   75         ld      b,a
+   0020                      76 signexte:
+   0020 7B                   77         ld      a,e
+   0021 17                   78         rla
+   0022 9F                   79         sbc     a,a
+   0023 57                   80         ld      d,a
+                             81 
+   0024 C3r42r00             82         jp      .mul16
+                             83 
+   0027                      84 __muluchar:
+   0027 21 02 00             85         ld      hl,#2
+   002A 39                   86         add     hl,sp
+                             87 
+   002B 5E                   88         ld      e,(hl)
+                             89 
+   002C 23                   90         inc     hl
+   002D 4E                   91         ld      c,(hl)
+                             92 
+                             93         ;; Clear the top
+   002E AF                   94         xor     a
+   002F 57                   95         ld      d,a
+   0030 47                   96         ld      b,a
+                             97 
+   0031 C3r42r00             98         jp      .mul16
+                             99 
+   0034                     100 __mulint:
+   0034 21 02 00            101         ld      hl,#2
+   0037 39                  102         add     hl,sp
+                            103 
+   0038 5E                  104         ld      e,(hl)
+   0039 23                  105         inc     hl
+   003A 56                  106         ld      d,(hl)
+   003B 23                  107         inc     hl
+   003C 7E                  108         ld      a,(hl)
+   003D 23                  109         inc     hl
+   003E 66                  110         ld      h,(hl)
+   003F 6F                  111         ld      l,a
+                            112 
+                            113         ;; Parameters:
+                            114         ;;      HL, DE (left, right irrelivent)
+   0040 44                  115         ld      b,h
+   0041 4D                  116         ld      c,l
+                            117 
+                            118         ;; 16-bit multiplication
+                            119         ;;
+                            120         ;; Entry conditions
+                            121         ;;   BC = multiplicand
+                            122         ;;   DE = multiplier
+                            123         ;;
+                            124         ;; Exit conditions
+                            125         ;;   DE = less significant word of product
+                            126         ;;
+                            127         ;; Register used: AF,BC,DE,HL
+   0042                     128 .mul16:
+   0042 21 00 00            129         ld      hl,#0
+   0045 78                  130         ld      a,b
+                            131         ; ld c,c
+   0046 06 10               132         ld      b,#16
+                            133 
+                            134         ;; Optimise for the case when this side has 8 bits of data or
+                            135         ;; less.  This is often the case with support address calls.
+   0048 B7                  136         or      a
+   0049 C2r4Fr00            137         jp      NZ,1$
+                            138 
+   004C 06 08               139         ld      b,#8
+   004E 79                  140         ld      a,c
+   004F                     141 1$:
+                            142         ;; Taken from z88dk, which originally borrowed from the
+                            143         ;; Spectrum rom.
+   004F 29                  144         add     hl,hl
+   0050 CB 11               145         rl      c
+   0052 17                  146         rla                     ;DLE 27/11/98
+   0053 D2r57r00            147         jp      NC,2$
+   0056 19                  148         add     hl,de
+   0057                     149 2$:
+   0057 05                  150         dec     b
+   0058 20 F5               151         jr      NZ,1$
+                            152 
+                            153         ;; Return in DE
+   005A 5D                  154         ld      e,l
+   005B 54                  155         ld      d,h
+                            156 
+   005C C9                  157         ret
+                            158 

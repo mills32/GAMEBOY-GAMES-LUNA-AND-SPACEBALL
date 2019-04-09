@@ -1,0 +1,42 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 1.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+    .__.$$$.                                                    =  2710 L
+    .__.ABS.                                                    =  0000 G
+    .__.CPU.                                                    =  0000 L
+    .__.H$L.                                                    =  0000 L
+  0 _BKG_COLLECT_ITEM                                              0328 GR
+  0 _BKG_EDIT_TILE                                                 02F8 GR
+  0 _LOAD_MAP_ANIM                                                 0000 GR
+  0 _LOAD_TILE_ANIM                                                0197 GR
+  0 _MAP_ANIMATE                                                   006A GR
+  1 _NULL_TILE                                                     0000 GR
+    _PopBank                                                       **** GX
+    _PushBank                                                      **** GX
+  0 _TILE_ANIMATE                                                  01F1 GR
+  0 _WIN_EDIT_TILE                                                 0310 GR
+    __muluchar                                                     **** GX
+  0 _c0                                                            034F GR
+  0 _c1                                                            03CF GR
+  0 _c2                                                            044F GR
+  0 _c3                                                            04CF GR
+    _set_bkg_data                                                  **** GX
+    _set_bkg_tiles                                                 **** GX
+    _set_win_tiles                                                 **** GX
+
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 2.
+Hexadecimal [16-Bits]
+
+Area Table
+
+   0 _CODE                                      size  54F   flags    0
+   1 _DATA                                      size    A   flags    0
+   2 _DABS                                      size    0   flags    8
+   3 _HOME                                      size    0   flags    0
+   4 _GSINIT                                    size   28   flags    0
+   5 _GSFINAL                                   size    0   flags    0
+   6 _CABS                                      size    0   flags    8
+

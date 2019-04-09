@@ -1,0 +1,20 @@
+XL2
+H 8 areas 2 global symbols
+M map_menu_anim_ball_b3
+O -mgbz80
+S .__.ABS. Def0000
+A _CODE size 0 flags 0 addr 0
+A _DATA size 0 flags 0 addr 0
+A _DABS size 0 flags 8 addr 0
+A _HOME size 0 flags 0 addr 0
+A _GSINIT size 0 flags 0 addr 0
+A _GSFINAL size 0 flags 0 addr 0
+A _CODE_3 size 18 flags 0 addr 0
+S _map_menu_anim_ball Def0000
+A _CABS size 0 flags 8 addr 0
+T 00 00
+R 00 00 06 00
+T 00 00 89 8A 8B 8C 8D 8E 83 84 85 86 87 88 7D 7E
+R 00 00 06 00
+T 0E 00 7F 80 81 82 83 84 85 86 87 88
+R 00 00 06 00

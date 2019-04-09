@@ -1,0 +1,612 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module SpriteArrow
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _Destroy_SPRITE_ARROW
+                             12 	.globl _Update_SPRITE_ARROW
+                             13 	.globl _Start_SPRITE_ARROW
+                             14 	.globl _SetState
+                             15 	.globl _SetSpriteAnim
+                             16 	.globl _delay
+                             17 	.globl _bank_SPRITE_ARROW
+                             18 	.globl _arrow_WRONG
+                             19 	.globl _arrow_OK
+                             20 	.globl _arrow_idle
+                             21 ;--------------------------------------------------------
+                             22 ; ram data
+                             23 ;--------------------------------------------------------
+                             24 	.area _DATA
+   0000                      25 _bank_SPRITE_ARROW::
+   0000                      26 	.ds 1
+                             27 ;--------------------------------------------------------
+                             28 ; absolute external ram data
+                             29 ;--------------------------------------------------------
+                             30 	.area _DABS (ABS)
+                             31 ;--------------------------------------------------------
+                             32 ; global & static initialisations
+                             33 ;--------------------------------------------------------
+                             34 	.area _HOME
+                             35 	.area _GSINIT
+                             36 	.area _GSFINAL
+                             37 	.area _GSINIT
+                             38 ;SpriteArrow.c:3: UINT8 bank_SPRITE_ARROW = 2;
+   0000 21r00r00             39 	ld	hl,#_bank_SPRITE_ARROW
+   0003 36 02                40 	ld	(hl),#0x02
+                             41 ;--------------------------------------------------------
+                             42 ; Home
+                             43 ;--------------------------------------------------------
+                             44 	.area _HOME
+                             45 	.area _HOME
+                             46 ;--------------------------------------------------------
+                             47 ; code
+                             48 ;--------------------------------------------------------
+                             49 	.area _CODE_2
+                             50 ;SpriteArrow.c:19: void Start_SPRITE_ARROW() {
+                             51 ;	---------------------------------
+                             52 ; Function Start_SPRITE_ARROW
+                             53 ; ---------------------------------
+   0000                      54 _Start_SPRITE_ARROW::
+                             55 ;SpriteArrow.c:20: struct ArrowInfo* data = (struct ArrowInfo*)THIS->custom_data;
+   0000 21r01r00             56 	ld	hl,#_THIS + 1
+   0003 2B                   57 	dec	hl
+   0004 4E                   58 	ld	c,(hl)
+   0005 23                   59 	inc	hl
+   0006 46                   60 	ld	b,(hl)
+   0007 21 18 00             61 	ld	hl,#0x0018
+   000A 09                   62 	add	hl,bc
+   000B 4D                   63 	ld	c,l
+   000C 44                   64 	ld	b,h
+                             65 ;SpriteArrow.c:21: data->state = 0;
+   000D 03                   66 	inc	bc
+   000E 03                   67 	inc	bc
+   000F AF                   68 	xor	a, a
+   0010 02                   69 	ld	(bc),a
+                             70 ;SpriteArrow.c:22: THIS->flags = 0x00;
+   0011 21r01r00             71 	ld	hl,#_THIS + 1
+   0014 2B                   72 	dec	hl
+   0015 4E                   73 	ld	c,(hl)
+   0016 23                   74 	inc	hl
+   0017 46                   75 	ld	b,(hl)
+   0018 21 0B 00             76 	ld	hl,#0x000b
+   001B 09                   77 	add	hl,bc
+   001C 4D                   78 	ld	c,l
+   001D 44                   79 	ld	b,h
+   001E AF                   80 	xor	a, a
+   001F 02                   81 	ld	(bc),a
+   0020 C9                   82 	ret
+   0021                      83 _arrow_idle:
+   0021 01                   84 	.db #0x01	; 1
+   0022 00                   85 	.db #0x00	; 0
+   0023                      86 _arrow_OK:
+   0023 01                   87 	.db #0x01	; 1
+   0024 01                   88 	.db #0x01	; 1
+   0025                      89 _arrow_WRONG:
+   0025 01                   90 	.db #0x01	; 1
+   0026 02                   91 	.db #0x02	; 2
+                             92 ;SpriteArrow.c:25: void Update_SPRITE_ARROW() {
+                             93 ;	---------------------------------
+                             94 ; Function Update_SPRITE_ARROW
+                             95 ; ---------------------------------
+   0027                      96 _Update_SPRITE_ARROW::
+   0027 E8 FE                97 	add	sp, #-2
+                             98 ;SpriteArrow.c:28: if ((THIS->x < 150) && (KEY_PRESSED(J_RIGHT))) THIS->x ++;
+   0029 21r01r00             99 	ld	hl,#_THIS + 1
+   002C 2B                  100 	dec	hl
+   002D 4E                  101 	ld	c,(hl)
+   002E 23                  102 	inc	hl
+   002F 46                  103 	ld	b,(hl)
+   0030 21 07 00            104 	ld	hl,#0x0007
+   0033 09                  105 	add	hl,bc
+   0034 33                  106 	inc	sp
+   0035 33                  107 	inc	sp
+   0036 E5                  108 	push	hl
+   0037 D1                  109 	pop	de
+   0038 D5                  110 	push	de
+   0039 1A                  111 	ld	a,(de)
+   003A 4F                  112 	ld	c,a
+   003B 13                  113 	inc	de
+   003C 1A                  114 	ld	a,(de)
+   003D 47                  115 	ld	b,a
+   003E 79                  116 	ld	a,c
+   003F D6 96               117 	sub	a, #0x96
+   0041 78                  118 	ld	a,b
+   0042 DE 00               119 	sbc	a, #0x00
+   0044 30 10               120 	jr	NC,00102$
+   0046 21r00r00            121 	ld	hl,#_keys
+   0049 5E                  122 	ld	e,(hl)
+   004A 16 00               123 	ld	d,#0x00
+   004C CB 43               124 	bit	0, e
+   004E 28 06               125 	jr	Z,00102$
+   0050 03                  126 	inc	bc
+   0051 E1                  127 	pop	hl
+   0052 E5                  128 	push	hl
+   0053 71                  129 	ld	(hl),c
+   0054 23                  130 	inc	hl
+   0055 70                  131 	ld	(hl),b
+   0056                     132 00102$:
+   0056 21r01r00            133 	ld	hl,#_THIS + 1
+   0059 2B                  134 	dec	hl
+   005A 4E                  135 	ld	c,(hl)
+   005B 23                  136 	inc	hl
+   005C 46                  137 	ld	b,(hl)
+   005D 21 07 00            138 	ld	hl,#0x0007
+   0060 09                  139 	add	hl,bc
+   0061 33                  140 	inc	sp
+   0062 33                  141 	inc	sp
+   0063 E5                  142 	push	hl
+   0064 D1                  143 	pop	de
+   0065 D5                  144 	push	de
+   0066 1A                  145 	ld	a,(de)
+   0067 4F                  146 	ld	c,a
+   0068 13                  147 	inc	de
+   0069 1A                  148 	ld	a,(de)
+   006A 47                  149 	ld	b,a
+                            150 ;SpriteArrow.c:29: if ((THIS->x > 10) && (KEY_PRESSED(J_LEFT)))   THIS->x --;
+   006B 3E 0A               151 	ld	a,#0x0a
+   006D B9                  152 	cp	a, c
+   006E 3E 00               153 	ld	a,#0x00
+   0070 98                  154 	sbc	a, b
+   0071 30 10               155 	jr	NC,00105$
+   0073 21r00r00            156 	ld	hl,#_keys
+   0076 5E                  157 	ld	e,(hl)
+   0077 16 00               158 	ld	d,#0x00
+   0079 CB 4B               159 	bit	1, e
+   007B 28 06               160 	jr	Z,00105$
+   007D 0B                  161 	dec	bc
+   007E E1                  162 	pop	hl
+   007F E5                  163 	push	hl
+   0080 71                  164 	ld	(hl),c
+   0081 23                  165 	inc	hl
+   0082 70                  166 	ld	(hl),b
+   0083                     167 00105$:
+                            168 ;SpriteArrow.c:28: if ((THIS->x < 150) && (KEY_PRESSED(J_RIGHT))) THIS->x ++;
+   0083 21r01r00            169 	ld	hl,#_THIS + 1
+   0086 2B                  170 	dec	hl
+   0087 4E                  171 	ld	c,(hl)
+   0088 23                  172 	inc	hl
+   0089 46                  173 	ld	b,(hl)
+                            174 ;SpriteArrow.c:30: if ((THIS->y > 10) && (KEY_PRESSED(J_UP)))     THIS->y --;
+   008A 21 09 00            175 	ld	hl,#0x0009
+   008D 09                  176 	add	hl,bc
+   008E 33                  177 	inc	sp
+   008F 33                  178 	inc	sp
+   0090 E5                  179 	push	hl
+   0091 D1                  180 	pop	de
+   0092 D5                  181 	push	de
+   0093 1A                  182 	ld	a,(de)
+   0094 4F                  183 	ld	c,a
+   0095 13                  184 	inc	de
+   0096 1A                  185 	ld	a,(de)
+   0097 47                  186 	ld	b,a
+   0098 3E 0A               187 	ld	a,#0x0a
+   009A B9                  188 	cp	a, c
+   009B 3E 00               189 	ld	a,#0x00
+   009D 98                  190 	sbc	a, b
+   009E 30 10               191 	jr	NC,00108$
+   00A0 21r00r00            192 	ld	hl,#_keys
+   00A3 5E                  193 	ld	e,(hl)
+   00A4 16 00               194 	ld	d,#0x00
+   00A6 CB 53               195 	bit	2, e
+   00A8 28 06               196 	jr	Z,00108$
+   00AA 0B                  197 	dec	bc
+   00AB E1                  198 	pop	hl
+   00AC E5                  199 	push	hl
+   00AD 71                  200 	ld	(hl),c
+   00AE 23                  201 	inc	hl
+   00AF 70                  202 	ld	(hl),b
+   00B0                     203 00108$:
+                            204 ;SpriteArrow.c:28: if ((THIS->x < 150) && (KEY_PRESSED(J_RIGHT))) THIS->x ++;
+   00B0 21r01r00            205 	ld	hl,#_THIS + 1
+   00B3 2B                  206 	dec	hl
+   00B4 4E                  207 	ld	c,(hl)
+   00B5 23                  208 	inc	hl
+   00B6 46                  209 	ld	b,(hl)
+                            210 ;SpriteArrow.c:30: if ((THIS->y > 10) && (KEY_PRESSED(J_UP)))     THIS->y --;
+   00B7 21 09 00            211 	ld	hl,#0x0009
+   00BA 09                  212 	add	hl,bc
+   00BB 33                  213 	inc	sp
+   00BC 33                  214 	inc	sp
+   00BD E5                  215 	push	hl
+   00BE D1                  216 	pop	de
+   00BF D5                  217 	push	de
+   00C0 1A                  218 	ld	a,(de)
+   00C1 4F                  219 	ld	c,a
+   00C2 13                  220 	inc	de
+   00C3 1A                  221 	ld	a,(de)
+   00C4 47                  222 	ld	b,a
+                            223 ;SpriteArrow.c:31: if ((THIS->y < 140) && (KEY_PRESSED(J_DOWN)))  THIS->y ++;
+   00C5 79                  224 	ld	a,c
+   00C6 D6 8C               225 	sub	a, #0x8c
+   00C8 78                  226 	ld	a,b
+   00C9 DE 00               227 	sbc	a, #0x00
+   00CB 30 10               228 	jr	NC,00111$
+   00CD 21r00r00            229 	ld	hl,#_keys
+   00D0 5E                  230 	ld	e,(hl)
+   00D1 16 00               231 	ld	d,#0x00
+   00D3 CB 5B               232 	bit	3, e
+   00D5 28 06               233 	jr	Z,00111$
+   00D7 03                  234 	inc	bc
+   00D8 E1                  235 	pop	hl
+   00D9 E5                  236 	push	hl
+   00DA 71                  237 	ld	(hl),c
+   00DB 23                  238 	inc	hl
+   00DC 70                  239 	ld	(hl),b
+   00DD                     240 00111$:
+                            241 ;SpriteArrow.c:34: SetSpriteAnim(THIS, arrow_idle, 15);
+   00DD 3E 0F               242 	ld	a,#0x0f
+   00DF F5                  243 	push	af
+   00E0 33                  244 	inc	sp
+   00E1 21r21r00            245 	ld	hl,#_arrow_idle
+   00E4 E5                  246 	push	hl
+   00E5 21r00r00            247 	ld	hl,#_THIS
+   00E8 2A                  248 	ld	a,(hl+)
+   00E9 66                  249 	ld	h,(hl)
+   00EA 6F                  250 	ld	l,a
+   00EB E5                  251 	push	hl
+   00EC CDr00r00            252 	call	_SetSpriteAnim
+   00EF E8 05               253 	add	sp, #5
+                            254 ;SpriteArrow.c:35: THIS->flags = 0x00;
+   00F1 21r01r00            255 	ld	hl,#_THIS + 1
+   00F4 2B                  256 	dec	hl
+   00F5 4E                  257 	ld	c,(hl)
+   00F6 23                  258 	inc	hl
+   00F7 46                  259 	ld	b,(hl)
+   00F8 21 0B 00            260 	ld	hl,#0x000b
+   00FB 09                  261 	add	hl,bc
+   00FC 4D                  262 	ld	c,l
+   00FD 44                  263 	ld	b,h
+   00FE AF                  264 	xor	a, a
+   00FF 02                  265 	ld	(bc),a
+                            266 ;SpriteArrow.c:28: if ((THIS->x < 150) && (KEY_PRESSED(J_RIGHT))) THIS->x ++;
+   0100 21r00r00            267 	ld	hl,#_THIS
+   0103 2A                  268 	ld	a,(hl+)
+   0104 5E                  269 	ld	e, (hl)
+   0105 F8 00               270 	ldhl	sp,#0
+   0107 22                  271 	ld	(hl+),a
+   0108 73                  272 	ld	(hl),e
+   0109 D1                  273 	pop	de
+   010A D5                  274 	push	de
+   010B 21 07 00            275 	ld	hl,#0x0007
+   010E 19                  276 	add	hl,de
+   010F 4D                  277 	ld	c,l
+   0110 44                  278 	ld	b,h
+   0111 59                  279 	ld	e, c
+   0112 50                  280 	ld	d, b
+   0113 1A                  281 	ld	a,(de)
+   0114 4F                  282 	ld	c,a
+   0115 13                  283 	inc	de
+   0116 1A                  284 	ld	a,(de)
+   0117 47                  285 	ld	b,a
+                            286 ;SpriteArrow.c:37: if ((THIS->x > 3*8) && (THIS->x < 8*8) && (THIS->y > 3*8) && (THIS->y < 8*8))
+   0118 3E 18               287 	ld	a,#0x18
+   011A B9                  288 	cp	a, c
+   011B 3E 00               289 	ld	a,#0x00
+   011D 98                  290 	sbc	a, b
+   011E D2r7Cr01            291 	jp	NC,00116$
+   0121 79                  292 	ld	a,c
+   0122 D6 40               293 	sub	a, #0x40
+   0124 78                  294 	ld	a,b
+   0125 DE 00               295 	sbc	a, #0x00
+   0127 D2r7Cr01            296 	jp	NC,00116$
+                            297 ;SpriteArrow.c:30: if ((THIS->y > 10) && (KEY_PRESSED(J_UP)))     THIS->y --;
+   012A D1                  298 	pop	de
+   012B D5                  299 	push	de
+   012C 21 09 00            300 	ld	hl,#0x0009
+   012F 19                  301 	add	hl,de
+   0130 4D                  302 	ld	c,l
+   0131 44                  303 	ld	b,h
+   0132 59                  304 	ld	e, c
+   0133 50                  305 	ld	d, b
+   0134 1A                  306 	ld	a,(de)
+   0135 4F                  307 	ld	c,a
+   0136 13                  308 	inc	de
+   0137 1A                  309 	ld	a,(de)
+   0138 47                  310 	ld	b,a
+                            311 ;SpriteArrow.c:37: if ((THIS->x > 3*8) && (THIS->x < 8*8) && (THIS->y > 3*8) && (THIS->y < 8*8))
+   0139 3E 18               312 	ld	a,#0x18
+   013B B9                  313 	cp	a, c
+   013C 3E 00               314 	ld	a,#0x00
+   013E 98                  315 	sbc	a, b
+   013F D2r7Cr01            316 	jp	NC,00116$
+   0142 79                  317 	ld	a,c
+   0143 D6 40               318 	sub	a, #0x40
+   0145 78                  319 	ld	a,b
+   0146 DE 00               320 	sbc	a, #0x00
+   0148 D2r7Cr01            321 	jp	NC,00116$
+                            322 ;SpriteArrow.c:39: THIS->flags = 0x02;
+   014B D1                  323 	pop	de
+   014C D5                  324 	push	de
+   014D 21 0B 00            325 	ld	hl,#0x000b
+   0150 19                  326 	add	hl,de
+   0151 4D                  327 	ld	c,l
+   0152 44                  328 	ld	b,h
+   0153 3E 02               329 	ld	a,#0x02
+   0155 02                  330 	ld	(bc),a
+                            331 ;SpriteArrow.c:40: SetSpriteAnim(THIS, arrow_OK, 15);
+   0156 3E 0F               332 	ld	a,#0x0f
+   0158 F5                  333 	push	af
+   0159 33                  334 	inc	sp
+   015A 21r23r00            335 	ld	hl,#_arrow_OK
+   015D E5                  336 	push	hl
+   015E 21r00r00            337 	ld	hl,#_THIS
+   0161 2A                  338 	ld	a,(hl+)
+   0162 66                  339 	ld	h,(hl)
+   0163 6F                  340 	ld	l,a
+   0164 E5                  341 	push	hl
+   0165 CDr00r00            342 	call	_SetSpriteAnim
+   0168 E8 05               343 	add	sp, #5
+                            344 ;SpriteArrow.c:41: if (KEY_PRESSED(J_A)) SetState(STATE_LEVEL1);
+   016A 21r00r00            345 	ld	hl,#_keys
+   016D 4E                  346 	ld	c,(hl)
+   016E 06 00               347 	ld	b,#0x00
+   0170 CB 61               348 	bit	4, c
+   0172 28 08               349 	jr	Z,00116$
+   0174 3E 03               350 	ld	a,#0x03
+   0176 F5                  351 	push	af
+   0177 33                  352 	inc	sp
+   0178 CDr00r00            353 	call	_SetState
+   017B 33                  354 	inc	sp
+   017C                     355 00116$:
+                            356 ;SpriteArrow.c:28: if ((THIS->x < 150) && (KEY_PRESSED(J_RIGHT))) THIS->x ++;
+   017C 21r00r00            357 	ld	hl,#_THIS
+   017F 2A                  358 	ld	a,(hl+)
+   0180 5E                  359 	ld	e, (hl)
+   0181 F8 00               360 	ldhl	sp,#0
+   0183 22                  361 	ld	(hl+),a
+   0184 73                  362 	ld	(hl),e
+   0185 D1                  363 	pop	de
+   0186 D5                  364 	push	de
+   0187 21 07 00            365 	ld	hl,#0x0007
+   018A 19                  366 	add	hl,de
+   018B 4D                  367 	ld	c,l
+   018C 44                  368 	ld	b,h
+   018D 59                  369 	ld	e, c
+   018E 50                  370 	ld	d, b
+   018F 1A                  371 	ld	a,(de)
+   0190 4F                  372 	ld	c,a
+   0191 13                  373 	inc	de
+   0192 1A                  374 	ld	a,(de)
+   0193 47                  375 	ld	b,a
+                            376 ;SpriteArrow.c:44: if ((THIS->x > 13*8) && (THIS->x < 17*8) && (THIS->y > 9*8) && (THIS->y < 13*8))
+   0194 3E 68               377 	ld	a,#0x68
+   0196 B9                  378 	cp	a, c
+   0197 3E 00               379 	ld	a,#0x00
+   0199 98                  380 	sbc	a, b
+   019A D2r27r02            381 	jp	NC,00123$
+   019D 79                  382 	ld	a,c
+   019E D6 88               383 	sub	a, #0x88
+   01A0 78                  384 	ld	a,b
+   01A1 DE 00               385 	sbc	a, #0x00
+   01A3 D2r27r02            386 	jp	NC,00123$
+                            387 ;SpriteArrow.c:30: if ((THIS->y > 10) && (KEY_PRESSED(J_UP)))     THIS->y --;
+   01A6 D1                  388 	pop	de
+   01A7 D5                  389 	push	de
+   01A8 21 09 00            390 	ld	hl,#0x0009
+   01AB 19                  391 	add	hl,de
+   01AC 4D                  392 	ld	c,l
+   01AD 44                  393 	ld	b,h
+   01AE 59                  394 	ld	e, c
+   01AF 50                  395 	ld	d, b
+   01B0 1A                  396 	ld	a,(de)
+   01B1 4F                  397 	ld	c,a
+   01B2 13                  398 	inc	de
+   01B3 1A                  399 	ld	a,(de)
+   01B4 47                  400 	ld	b,a
+                            401 ;SpriteArrow.c:44: if ((THIS->x > 13*8) && (THIS->x < 17*8) && (THIS->y > 9*8) && (THIS->y < 13*8))
+   01B5 3E 48               402 	ld	a,#0x48
+   01B7 B9                  403 	cp	a, c
+   01B8 3E 00               404 	ld	a,#0x00
+   01BA 98                  405 	sbc	a, b
+   01BB D2r27r02            406 	jp	NC,00123$
+   01BE 79                  407 	ld	a,c
+   01BF D6 68               408 	sub	a, #0x68
+   01C1 78                  409 	ld	a,b
+   01C2 DE 00               410 	sbc	a, #0x00
+   01C4 D2r27r02            411 	jp	NC,00123$
+                            412 ;SpriteArrow.c:46: THIS->flags = 0x02;
+   01C7 D1                  413 	pop	de
+   01C8 D5                  414 	push	de
+   01C9 21 0B 00            415 	ld	hl,#0x000b
+   01CC 19                  416 	add	hl,de
+   01CD 4D                  417 	ld	c,l
+   01CE 44                  418 	ld	b,h
+   01CF 3E 02               419 	ld	a,#0x02
+   01D1 02                  420 	ld	(bc),a
+                            421 ;SpriteArrow.c:47: SetSpriteAnim(THIS, arrow_OK, 15);
+   01D2 3E 0F               422 	ld	a,#0x0f
+   01D4 F5                  423 	push	af
+   01D5 33                  424 	inc	sp
+   01D6 21r23r00            425 	ld	hl,#_arrow_OK
+   01D9 E5                  426 	push	hl
+   01DA 21r00r00            427 	ld	hl,#_THIS
+   01DD 2A                  428 	ld	a,(hl+)
+   01DE 66                  429 	ld	h,(hl)
+   01DF 6F                  430 	ld	l,a
+   01E0 E5                  431 	push	hl
+   01E1 CDr00r00            432 	call	_SetSpriteAnim
+   01E4 E8 05               433 	add	sp, #5
+                            434 ;SpriteArrow.c:48: if (KEY_PRESSED(J_A)) {
+   01E6 21r00r00            435 	ld	hl,#_keys
+   01E9 4E                  436 	ld	c,(hl)
+   01EA 06 00               437 	ld	b,#0x00
+   01EC CB 61               438 	bit	4, c
+   01EE CAr27r02            439 	jp	Z,00123$
+                            440 ;SpriteArrow.c:49: Menu_Mode = 4;
+   01F1 21r00r00            441 	ld	hl,#_Menu_Mode
+   01F4 36 04               442 	ld	(hl),#0x04
+                            443 ;SpriteArrow.c:50: delay(20);
+   01F6 21 14 00            444 	ld	hl,#0x0014
+   01F9 E5                  445 	push	hl
+   01FA CDr00r00            446 	call	_delay
+   01FD E8 02               447 	add	sp, #2
+                            448 ;SpriteArrow.c:51: THIS->x = 200;
+   01FF 21r01r00            449 	ld	hl,#_THIS + 1
+   0202 2B                  450 	dec	hl
+   0203 4E                  451 	ld	c,(hl)
+   0204 23                  452 	inc	hl
+   0205 46                  453 	ld	b,(hl)
+   0206 21 07 00            454 	ld	hl,#0x0007
+   0209 09                  455 	add	hl,bc
+   020A 4D                  456 	ld	c,l
+   020B 44                  457 	ld	b,h
+   020C 3E C8               458 	ld	a,#0xc8
+   020E 02                  459 	ld	(bc),a
+   020F 03                  460 	inc	bc
+   0210 3E 00               461 	ld	a,#0x00
+   0212 02                  462 	ld	(bc),a
+                            463 ;SpriteArrow.c:52: THIS->y = 200;
+   0213 21r01r00            464 	ld	hl,#_THIS + 1
+   0216 2B                  465 	dec	hl
+   0217 4E                  466 	ld	c,(hl)
+   0218 23                  467 	inc	hl
+   0219 46                  468 	ld	b,(hl)
+   021A 21 09 00            469 	ld	hl,#0x0009
+   021D 09                  470 	add	hl,bc
+   021E 4D                  471 	ld	c,l
+   021F 44                  472 	ld	b,h
+   0220 3E C8               473 	ld	a,#0xc8
+   0222 02                  474 	ld	(bc),a
+   0223 03                  475 	inc	bc
+   0224 3E 00               476 	ld	a,#0x00
+   0226 02                  477 	ld	(bc),a
+   0227                     478 00123$:
+                            479 ;SpriteArrow.c:28: if ((THIS->x < 150) && (KEY_PRESSED(J_RIGHT))) THIS->x ++;
+   0227 21r00r00            480 	ld	hl,#_THIS
+   022A 2A                  481 	ld	a,(hl+)
+   022B 5E                  482 	ld	e, (hl)
+   022C F8 00               483 	ldhl	sp,#0
+   022E 22                  484 	ld	(hl+),a
+   022F 73                  485 	ld	(hl),e
+   0230 D1                  486 	pop	de
+   0231 D5                  487 	push	de
+   0232 21 07 00            488 	ld	hl,#0x0007
+   0235 19                  489 	add	hl,de
+   0236 4D                  490 	ld	c,l
+   0237 44                  491 	ld	b,h
+   0238 59                  492 	ld	e, c
+   0239 50                  493 	ld	d, b
+   023A 1A                  494 	ld	a,(de)
+   023B 4F                  495 	ld	c,a
+   023C 13                  496 	inc	de
+   023D 1A                  497 	ld	a,(de)
+   023E 47                  498 	ld	b,a
+                            499 ;SpriteArrow.c:56: if ((THIS->x > 2*8) && (THIS->x < 7*8) && (THIS->y > 11*8) && (THIS->y < 16*8))
+   023F 3E 10               500 	ld	a,#0x10
+   0241 B9                  501 	cp	a, c
+   0242 3E 00               502 	ld	a,#0x00
+   0244 98                  503 	sbc	a, b
+   0245 D2rD2r02            504 	jp	NC,00134$
+   0248 79                  505 	ld	a,c
+   0249 D6 38               506 	sub	a, #0x38
+   024B 78                  507 	ld	a,b
+   024C DE 00               508 	sbc	a, #0x00
+   024E D2rD2r02            509 	jp	NC,00134$
+                            510 ;SpriteArrow.c:30: if ((THIS->y > 10) && (KEY_PRESSED(J_UP)))     THIS->y --;
+   0251 D1                  511 	pop	de
+   0252 D5                  512 	push	de
+   0253 21 09 00            513 	ld	hl,#0x0009
+   0256 19                  514 	add	hl,de
+   0257 4D                  515 	ld	c,l
+   0258 44                  516 	ld	b,h
+   0259 59                  517 	ld	e, c
+   025A 50                  518 	ld	d, b
+   025B 1A                  519 	ld	a,(de)
+   025C 4F                  520 	ld	c,a
+   025D 13                  521 	inc	de
+   025E 1A                  522 	ld	a,(de)
+   025F 47                  523 	ld	b,a
+                            524 ;SpriteArrow.c:56: if ((THIS->x > 2*8) && (THIS->x < 7*8) && (THIS->y > 11*8) && (THIS->y < 16*8))
+   0260 3E 58               525 	ld	a,#0x58
+   0262 B9                  526 	cp	a, c
+   0263 3E 00               527 	ld	a,#0x00
+   0265 98                  528 	sbc	a, b
+   0266 D2rD2r02            529 	jp	NC,00134$
+   0269 79                  530 	ld	a,c
+   026A D6 80               531 	sub	a, #0x80
+   026C 78                  532 	ld	a,b
+   026D DE 00               533 	sbc	a, #0x00
+   026F D2rD2r02            534 	jp	NC,00134$
+                            535 ;SpriteArrow.c:58: THIS->flags = 0x02;
+   0272 D1                  536 	pop	de
+   0273 D5                  537 	push	de
+   0274 21 0B 00            538 	ld	hl,#0x000b
+   0277 19                  539 	add	hl,de
+   0278 4D                  540 	ld	c,l
+   0279 44                  541 	ld	b,h
+   027A 3E 02               542 	ld	a,#0x02
+   027C 02                  543 	ld	(bc),a
+                            544 ;SpriteArrow.c:59: SetSpriteAnim(THIS, arrow_OK, 15);
+   027D 3E 0F               545 	ld	a,#0x0f
+   027F F5                  546 	push	af
+   0280 33                  547 	inc	sp
+   0281 21r23r00            548 	ld	hl,#_arrow_OK
+   0284 E5                  549 	push	hl
+   0285 21r00r00            550 	ld	hl,#_THIS
+   0288 2A                  551 	ld	a,(hl+)
+   0289 66                  552 	ld	h,(hl)
+   028A 6F                  553 	ld	l,a
+   028B E5                  554 	push	hl
+   028C CDr00r00            555 	call	_SetSpriteAnim
+   028F E8 05               556 	add	sp, #5
+                            557 ;SpriteArrow.c:60: if (KEY_PRESSED(J_A)) {
+   0291 21r00r00            558 	ld	hl,#_keys
+   0294 4E                  559 	ld	c,(hl)
+   0295 06 00               560 	ld	b,#0x00
+   0297 CB 61               561 	bit	4, c
+   0299 CArD2r02            562 	jp	Z,00134$
+                            563 ;SpriteArrow.c:61: Menu_Mode = 7;
+   029C 21r00r00            564 	ld	hl,#_Menu_Mode
+   029F 36 07               565 	ld	(hl),#0x07
+                            566 ;SpriteArrow.c:62: delay(20);
+   02A1 21 14 00            567 	ld	hl,#0x0014
+   02A4 E5                  568 	push	hl
+   02A5 CDr00r00            569 	call	_delay
+   02A8 E8 02               570 	add	sp, #2
+                            571 ;SpriteArrow.c:63: THIS->x = 200;
+   02AA 21r01r00            572 	ld	hl,#_THIS + 1
+   02AD 2B                  573 	dec	hl
+   02AE 4E                  574 	ld	c,(hl)
+   02AF 23                  575 	inc	hl
+   02B0 46                  576 	ld	b,(hl)
+   02B1 21 07 00            577 	ld	hl,#0x0007
+   02B4 09                  578 	add	hl,bc
+   02B5 4D                  579 	ld	c,l
+   02B6 44                  580 	ld	b,h
+   02B7 3E C8               581 	ld	a,#0xc8
+   02B9 02                  582 	ld	(bc),a
+   02BA 03                  583 	inc	bc
+   02BB 3E 00               584 	ld	a,#0x00
+   02BD 02                  585 	ld	(bc),a
+                            586 ;SpriteArrow.c:64: THIS->y = 200;
+   02BE 21r01r00            587 	ld	hl,#_THIS + 1
+   02C1 2B                  588 	dec	hl
+   02C2 4E                  589 	ld	c,(hl)
+   02C3 23                  590 	inc	hl
+   02C4 46                  591 	ld	b,(hl)
+   02C5 21 09 00            592 	ld	hl,#0x0009
+   02C8 09                  593 	add	hl,bc
+   02C9 4D                  594 	ld	c,l
+   02CA 44                  595 	ld	b,h
+   02CB 3E C8               596 	ld	a,#0xc8
+   02CD 02                  597 	ld	(bc),a
+   02CE 03                  598 	inc	bc
+   02CF 3E 00               599 	ld	a,#0x00
+   02D1 02                  600 	ld	(bc),a
+   02D2                     601 00134$:
+   02D2 E8 02               602 	add	sp, #2
+   02D4 C9                  603 	ret
+                            604 ;SpriteArrow.c:69: void Destroy_SPRITE_ARROW() {
+                            605 ;	---------------------------------
+                            606 ; Function Destroy_SPRITE_ARROW
+                            607 ; ---------------------------------
+   02D5                     608 _Destroy_SPRITE_ARROW::
+                            609 ;SpriteArrow.c:70: }
+   02D5 C9                  610 	ret
+                            611 	.area _CODE_2
+                            612 	.area _CABS (ABS)

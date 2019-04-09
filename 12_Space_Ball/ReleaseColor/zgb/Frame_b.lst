@@ -1,0 +1,451 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module Frame_b
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _DrawFrame32x32
+                             12 	.globl _DrawOAMSprite
+                             13 ;--------------------------------------------------------
+                             14 ; ram data
+                             15 ;--------------------------------------------------------
+                             16 	.area _DATA
+                             17 ;--------------------------------------------------------
+                             18 ; absolute external ram data
+                             19 ;--------------------------------------------------------
+                             20 	.area _DABS (ABS)
+                             21 ;--------------------------------------------------------
+                             22 ; global & static initialisations
+                             23 ;--------------------------------------------------------
+                             24 	.area _HOME
+                             25 	.area _GSINIT
+                             26 	.area _GSFINAL
+                             27 	.area _GSINIT
+                             28 ;--------------------------------------------------------
+                             29 ; Home
+                             30 ;--------------------------------------------------------
+                             31 	.area _HOME
+                             32 	.area _HOME
+                             33 ;--------------------------------------------------------
+                             34 ; code
+                             35 ;--------------------------------------------------------
+                             36 	.area _CODE_1
+                             37 ;C:/gbdk/ZGB/common/src/Frame_b.c:5: void DrawFrame32x32(int idx, UINT8 x, UINT8 y, UINT8 flags) {
+                             38 ;	---------------------------------
+                             39 ; Function DrawFrame32x32
+                             40 ; ---------------------------------
+   0000                      41 _DrawFrame32x32::
+   0000 E8 F6                42 	add	sp, #-10
+                             43 ;C:/gbdk/ZGB/common/src/Frame_b.c:7: DrawOAMSprite(y + 16u, x +  8u, idx + 10u, flags);
+   0002 F8 0C                44 	ldhl	sp,#12
+   0004 46                   45 	ld	b,(hl)
+   0005 23                   46 	inc	hl
+   0006 23                   47 	inc	hl
+   0007 7E                   48 	ld	a,(hl)
+   0008 C6 08                49 	add	a, #0x08
+   000A 4F                   50 	ld	c,a
+   000B 23                   51 	inc	hl
+   000C 7E                   52 	ld	a,(hl)
+   000D C6 10                53 	add	a, #0x10
+   000F 5F                   54 	ld	e,a
+                             55 ;C:/gbdk/ZGB/common/src/Frame_b.c:8: DrawOAMSprite(y + 16u, x + 16u, idx +  8u, flags);
+   0010 2B                   56 	dec	hl
+   0011 7E                   57 	ld	a,(hl)
+   0012 C6 10                58 	add	a, #0x10
+   0014 F8 06                59 	ldhl	sp,#6
+   0016 77                   60 	ld	(hl),a
+                             61 ;C:/gbdk/ZGB/common/src/Frame_b.c:9: DrawOAMSprite(y + 32u, x +  8u, idx + 14u, flags);
+   0017 F8 0F                62 	ldhl	sp,#15
+   0019 7E                   63 	ld	a,(hl)
+   001A C6 20                64 	add	a, #0x20
+   001C 57                   65 	ld	d,a
+                             66 ;C:/gbdk/ZGB/common/src/Frame_b.c:11: DrawOAMSprite(y + 16u, x + 24u, idx +  2u, flags);
+   001D 2B                   67 	dec	hl
+   001E 7E                   68 	ld	a,(hl)
+   001F C6 18                69 	add	a, #0x18
+   0021 F8 09                70 	ldhl	sp,#9
+   0023 77                   71 	ld	(hl),a
+                             72 ;C:/gbdk/ZGB/common/src/Frame_b.c:12: DrawOAMSprite(y + 16u, x + 32u, idx      , flags);
+   0024 E5                   73 	push	hl
+   0025 F8 0E                74 	ldhl	sp,#14
+   0027 7E                   75 	ld	a,(hl)
+   0028 F8 0A                76 	ldhl	sp,#10
+   002A 77                   77 	ld	(hl),a
+   002B E1                   78 	pop	hl
+   002C F8 0E                79 	ldhl	sp,#14
+   002E 7E                   80 	ld	a,(hl)
+   002F C6 20                81 	add	a, #0x20
+   0031 F8 05                82 	ldhl	sp,#5
+   0033 77                   83 	ld	(hl),a
+                             84 ;C:/gbdk/ZGB/common/src/Frame_b.c:7: DrawOAMSprite(y + 16u, x +  8u, idx + 10u, flags);
+   0034 78                   85 	ld	a,b
+   0035 C6 0A                86 	add	a, #0x0a
+   0037 23                   87 	inc	hl
+   0038 23                   88 	inc	hl
+   0039 77                   89 	ld	(hl),a
+                             90 ;C:/gbdk/ZGB/common/src/Frame_b.c:8: DrawOAMSprite(y + 16u, x + 16u, idx +  8u, flags);
+   003A 78                   91 	ld	a,b
+   003B C6 08                92 	add	a, #0x08
+   003D F8 03                93 	ldhl	sp,#3
+   003F 77                   94 	ld	(hl),a
+                             95 ;C:/gbdk/ZGB/common/src/Frame_b.c:9: DrawOAMSprite(y + 32u, x +  8u, idx + 14u, flags);
+   0040 78                   96 	ld	a,b
+   0041 C6 0E                97 	add	a, #0x0e
+   0043 2B                   98 	dec	hl
+   0044 77                   99 	ld	(hl),a
+                            100 ;C:/gbdk/ZGB/common/src/Frame_b.c:10: DrawOAMSprite(y + 32u, x + 16u, idx + 12u, flags);
+   0045 78                  101 	ld	a,b
+   0046 C6 0C               102 	add	a, #0x0c
+   0048 2B                  103 	dec	hl
+   0049 2B                  104 	dec	hl
+   004A 77                  105 	ld	(hl),a
+                            106 ;C:/gbdk/ZGB/common/src/Frame_b.c:11: DrawOAMSprite(y + 16u, x + 24u, idx +  2u, flags);
+   004B 78                  107 	ld	a,b
+   004C C6 02               108 	add	a, #0x02
+   004E F8 04               109 	ldhl	sp,#4
+   0050 77                  110 	ld	(hl),a
+                            111 ;C:/gbdk/ZGB/common/src/Frame_b.c:13: DrawOAMSprite(y + 32u, x + 24u, idx +  6u, flags);
+   0051 78                  112 	ld	a,b
+   0052 C6 06               113 	add	a, #0x06
+   0054 F8 01               114 	ldhl	sp,#1
+   0056 77                  115 	ld	(hl),a
+                            116 ;C:/gbdk/ZGB/common/src/Frame_b.c:14: DrawOAMSprite(y + 32u, x + 32u, idx +  4u, flags);
+   0057 04                  117 	inc	b
+   0058 04                  118 	inc	b
+   0059 04                  119 	inc	b
+   005A 04                  120 	inc	b
+                            121 ;C:/gbdk/ZGB/common/src/Frame_b.c:6: if(flags & 32){
+   005B F8 10               122 	ldhl	sp,#16
+   005D CB 6E               123 	bit	5, (hl)
+   005F CAr2Er01            124 	jp	Z,00102$
+                            125 ;C:/gbdk/ZGB/common/src/Frame_b.c:7: DrawOAMSprite(y + 16u, x +  8u, idx + 10u, flags);
+   0062 C5                  126 	push	bc
+   0063 D5                  127 	push	de
+   0064 F8 14               128 	ldhl	sp,#20
+   0066 7E                  129 	ld	a,(hl)
+   0067 F5                  130 	push	af
+   0068 33                  131 	inc	sp
+   0069 F8 0C               132 	ldhl	sp,#12
+   006B 7E                  133 	ld	a,(hl)
+   006C F5                  134 	push	af
+   006D 33                  135 	inc	sp
+   006E 79                  136 	ld	a,c
+   006F F5                  137 	push	af
+   0070 33                  138 	inc	sp
+   0071 7B                  139 	ld	a,e
+   0072 F5                  140 	push	af
+   0073 33                  141 	inc	sp
+   0074 CDr00r00            142 	call	_DrawOAMSprite
+   0077 E8 04               143 	add	sp, #4
+   0079 D1                  144 	pop	de
+   007A C1                  145 	pop	bc
+                            146 ;C:/gbdk/ZGB/common/src/Frame_b.c:8: DrawOAMSprite(y + 16u, x + 16u, idx +  8u, flags);
+   007B C5                  147 	push	bc
+   007C D5                  148 	push	de
+   007D F8 14               149 	ldhl	sp,#20
+   007F 7E                  150 	ld	a,(hl)
+   0080 F5                  151 	push	af
+   0081 33                  152 	inc	sp
+   0082 F8 08               153 	ldhl	sp,#8
+   0084 7E                  154 	ld	a,(hl)
+   0085 F5                  155 	push	af
+   0086 33                  156 	inc	sp
+   0087 F8 0C               157 	ldhl	sp,#12
+   0089 7E                  158 	ld	a,(hl)
+   008A F5                  159 	push	af
+   008B 33                  160 	inc	sp
+   008C 7B                  161 	ld	a,e
+   008D F5                  162 	push	af
+   008E 33                  163 	inc	sp
+   008F CDr00r00            164 	call	_DrawOAMSprite
+   0092 E8 04               165 	add	sp, #4
+   0094 D1                  166 	pop	de
+   0095 C1                  167 	pop	bc
+                            168 ;C:/gbdk/ZGB/common/src/Frame_b.c:9: DrawOAMSprite(y + 32u, x +  8u, idx + 14u, flags);
+   0096 C5                  169 	push	bc
+   0097 D5                  170 	push	de
+   0098 F8 14               171 	ldhl	sp,#20
+   009A 7E                  172 	ld	a,(hl)
+   009B F5                  173 	push	af
+   009C 33                  174 	inc	sp
+   009D F8 07               175 	ldhl	sp,#7
+   009F 7E                  176 	ld	a,(hl)
+   00A0 F5                  177 	push	af
+   00A1 33                  178 	inc	sp
+   00A2 79                  179 	ld	a,c
+   00A3 F5                  180 	push	af
+   00A4 33                  181 	inc	sp
+   00A5 D5                  182 	push	de
+   00A6 33                  183 	inc	sp
+   00A7 CDr00r00            184 	call	_DrawOAMSprite
+   00AA E8 04               185 	add	sp, #4
+   00AC D1                  186 	pop	de
+   00AD C1                  187 	pop	bc
+                            188 ;C:/gbdk/ZGB/common/src/Frame_b.c:10: DrawOAMSprite(y + 32u, x + 16u, idx + 12u, flags);
+   00AE C5                  189 	push	bc
+   00AF D5                  190 	push	de
+   00B0 F8 14               191 	ldhl	sp,#20
+   00B2 7E                  192 	ld	a,(hl)
+   00B3 F5                  193 	push	af
+   00B4 33                  194 	inc	sp
+   00B5 F8 05               195 	ldhl	sp,#5
+   00B7 7E                  196 	ld	a,(hl)
+   00B8 F5                  197 	push	af
+   00B9 33                  198 	inc	sp
+   00BA F8 0C               199 	ldhl	sp,#12
+   00BC 7E                  200 	ld	a,(hl)
+   00BD F5                  201 	push	af
+   00BE 33                  202 	inc	sp
+   00BF D5                  203 	push	de
+   00C0 33                  204 	inc	sp
+   00C1 CDr00r00            205 	call	_DrawOAMSprite
+   00C4 E8 04               206 	add	sp, #4
+   00C6 D1                  207 	pop	de
+   00C7 C1                  208 	pop	bc
+                            209 ;C:/gbdk/ZGB/common/src/Frame_b.c:11: DrawOAMSprite(y + 16u, x + 24u, idx +  2u, flags);
+   00C8 C5                  210 	push	bc
+   00C9 D5                  211 	push	de
+   00CA F8 14               212 	ldhl	sp,#20
+   00CC 7E                  213 	ld	a,(hl)
+   00CD F5                  214 	push	af
+   00CE 33                  215 	inc	sp
+   00CF F8 09               216 	ldhl	sp,#9
+   00D1 7E                  217 	ld	a,(hl)
+   00D2 F5                  218 	push	af
+   00D3 33                  219 	inc	sp
+   00D4 F8 0F               220 	ldhl	sp,#15
+   00D6 7E                  221 	ld	a,(hl)
+   00D7 F5                  222 	push	af
+   00D8 33                  223 	inc	sp
+   00D9 7B                  224 	ld	a,e
+   00DA F5                  225 	push	af
+   00DB 33                  226 	inc	sp
+   00DC CDr00r00            227 	call	_DrawOAMSprite
+   00DF E8 04               228 	add	sp, #4
+   00E1 D1                  229 	pop	de
+   00E2 C1                  230 	pop	bc
+                            231 ;C:/gbdk/ZGB/common/src/Frame_b.c:12: DrawOAMSprite(y + 16u, x + 32u, idx      , flags);
+   00E3 C5                  232 	push	bc
+   00E4 D5                  233 	push	de
+   00E5 F8 14               234 	ldhl	sp,#20
+   00E7 7E                  235 	ld	a,(hl)
+   00E8 F5                  236 	push	af
+   00E9 33                  237 	inc	sp
+   00EA F8 0D               238 	ldhl	sp,#13
+   00EC 7E                  239 	ld	a,(hl)
+   00ED F5                  240 	push	af
+   00EE 33                  241 	inc	sp
+   00EF F8 0B               242 	ldhl	sp,#11
+   00F1 7E                  243 	ld	a,(hl)
+   00F2 F5                  244 	push	af
+   00F3 33                  245 	inc	sp
+   00F4 7B                  246 	ld	a,e
+   00F5 F5                  247 	push	af
+   00F6 33                  248 	inc	sp
+   00F7 CDr00r00            249 	call	_DrawOAMSprite
+   00FA E8 04               250 	add	sp, #4
+   00FC D1                  251 	pop	de
+   00FD C1                  252 	pop	bc
+                            253 ;C:/gbdk/ZGB/common/src/Frame_b.c:13: DrawOAMSprite(y + 32u, x + 24u, idx +  6u, flags);
+   00FE C5                  254 	push	bc
+   00FF D5                  255 	push	de
+   0100 F8 14               256 	ldhl	sp,#20
+   0102 7E                  257 	ld	a,(hl)
+   0103 F5                  258 	push	af
+   0104 33                  259 	inc	sp
+   0105 F8 06               260 	ldhl	sp,#6
+   0107 7E                  261 	ld	a,(hl)
+   0108 F5                  262 	push	af
+   0109 33                  263 	inc	sp
+   010A F8 0F               264 	ldhl	sp,#15
+   010C 7E                  265 	ld	a,(hl)
+   010D F5                  266 	push	af
+   010E 33                  267 	inc	sp
+   010F D5                  268 	push	de
+   0110 33                  269 	inc	sp
+   0111 CDr00r00            270 	call	_DrawOAMSprite
+   0114 E8 04               271 	add	sp, #4
+   0116 D1                  272 	pop	de
+   0117 C1                  273 	pop	bc
+                            274 ;C:/gbdk/ZGB/common/src/Frame_b.c:14: DrawOAMSprite(y + 32u, x + 32u, idx +  4u, flags);
+   0118 F8 10               275 	ldhl	sp,#16
+   011A 7E                  276 	ld	a,(hl)
+   011B F5                  277 	push	af
+   011C 33                  278 	inc	sp
+   011D C5                  279 	push	bc
+   011E 33                  280 	inc	sp
+   011F F8 07               281 	ldhl	sp,#7
+   0121 7E                  282 	ld	a,(hl)
+   0122 F5                  283 	push	af
+   0123 33                  284 	inc	sp
+   0124 D5                  285 	push	de
+   0125 33                  286 	inc	sp
+   0126 CDr00r00            287 	call	_DrawOAMSprite
+   0129 E8 04               288 	add	sp, #4
+   012B C3rEDr01            289 	jp	00104$
+   012E                     290 00102$:
+                            291 ;C:/gbdk/ZGB/common/src/Frame_b.c:16: DrawOAMSprite(y + 16u, x +  8u, idx,       flags);
+   012E C5                  292 	push	bc
+   012F D5                  293 	push	de
+   0130 F8 14               294 	ldhl	sp,#20
+   0132 7E                  295 	ld	a,(hl)
+   0133 F5                  296 	push	af
+   0134 33                  297 	inc	sp
+   0135 F8 0D               298 	ldhl	sp,#13
+   0137 7E                  299 	ld	a,(hl)
+   0138 F5                  300 	push	af
+   0139 33                  301 	inc	sp
+   013A 79                  302 	ld	a,c
+   013B F5                  303 	push	af
+   013C 33                  304 	inc	sp
+   013D 7B                  305 	ld	a,e
+   013E F5                  306 	push	af
+   013F 33                  307 	inc	sp
+   0140 CDr00r00            308 	call	_DrawOAMSprite
+   0143 E8 04               309 	add	sp, #4
+   0145 D1                  310 	pop	de
+   0146 C1                  311 	pop	bc
+                            312 ;C:/gbdk/ZGB/common/src/Frame_b.c:17: DrawOAMSprite(y + 16u, x + 16u, idx +  2u, flags);
+   0147 C5                  313 	push	bc
+   0148 D5                  314 	push	de
+   0149 F8 14               315 	ldhl	sp,#20
+   014B 7E                  316 	ld	a,(hl)
+   014C F5                  317 	push	af
+   014D 33                  318 	inc	sp
+   014E F8 09               319 	ldhl	sp,#9
+   0150 7E                  320 	ld	a,(hl)
+   0151 F5                  321 	push	af
+   0152 33                  322 	inc	sp
+   0153 23                  323 	inc	hl
+   0154 23                  324 	inc	hl
+   0155 7E                  325 	ld	a,(hl)
+   0156 F5                  326 	push	af
+   0157 33                  327 	inc	sp
+   0158 7B                  328 	ld	a,e
+   0159 F5                  329 	push	af
+   015A 33                  330 	inc	sp
+   015B CDr00r00            331 	call	_DrawOAMSprite
+   015E E8 04               332 	add	sp, #4
+   0160 D1                  333 	pop	de
+   0161 C1                  334 	pop	bc
+                            335 ;C:/gbdk/ZGB/common/src/Frame_b.c:18: DrawOAMSprite(y + 32u, x +  8u, idx +  4u, flags);
+   0162 D5                  336 	push	de
+   0163 F8 12               337 	ldhl	sp,#18
+   0165 7E                  338 	ld	a,(hl)
+   0166 F5                  339 	push	af
+   0167 33                  340 	inc	sp
+   0168 C5                  341 	push	bc
+   0169 33                  342 	inc	sp
+   016A 79                  343 	ld	a,c
+   016B F5                  344 	push	af
+   016C 33                  345 	inc	sp
+   016D D5                  346 	push	de
+   016E 33                  347 	inc	sp
+   016F CDr00r00            348 	call	_DrawOAMSprite
+   0172 E8 04               349 	add	sp, #4
+   0174 D1                  350 	pop	de
+                            351 ;C:/gbdk/ZGB/common/src/Frame_b.c:19: DrawOAMSprite(y + 32u, x + 16u, idx +  6u, flags);
+   0175 D5                  352 	push	de
+   0176 F8 12               353 	ldhl	sp,#18
+   0178 7E                  354 	ld	a,(hl)
+   0179 F5                  355 	push	af
+   017A 33                  356 	inc	sp
+   017B F8 04               357 	ldhl	sp,#4
+   017D 7E                  358 	ld	a,(hl)
+   017E F5                  359 	push	af
+   017F 33                  360 	inc	sp
+   0180 F8 0A               361 	ldhl	sp,#10
+   0182 7E                  362 	ld	a,(hl)
+   0183 F5                  363 	push	af
+   0184 33                  364 	inc	sp
+   0185 D5                  365 	push	de
+   0186 33                  366 	inc	sp
+   0187 CDr00r00            367 	call	_DrawOAMSprite
+   018A E8 04               368 	add	sp, #4
+   018C D1                  369 	pop	de
+                            370 ;C:/gbdk/ZGB/common/src/Frame_b.c:20: DrawOAMSprite(y + 16u, x + 24u, idx +  8u, flags);
+   018D D5                  371 	push	de
+   018E F8 12               372 	ldhl	sp,#18
+   0190 7E                  373 	ld	a,(hl)
+   0191 F5                  374 	push	af
+   0192 33                  375 	inc	sp
+   0193 F8 06               376 	ldhl	sp,#6
+   0195 7E                  377 	ld	a,(hl)
+   0196 F5                  378 	push	af
+   0197 33                  379 	inc	sp
+   0198 F8 0D               380 	ldhl	sp,#13
+   019A 7E                  381 	ld	a,(hl)
+   019B F5                  382 	push	af
+   019C 33                  383 	inc	sp
+   019D 7B                  384 	ld	a,e
+   019E F5                  385 	push	af
+   019F 33                  386 	inc	sp
+   01A0 CDr00r00            387 	call	_DrawOAMSprite
+   01A3 E8 04               388 	add	sp, #4
+   01A5 D1                  389 	pop	de
+                            390 ;C:/gbdk/ZGB/common/src/Frame_b.c:21: DrawOAMSprite(y + 16u, x + 32u, idx + 10u, flags);
+   01A6 D5                  391 	push	de
+   01A7 F8 12               392 	ldhl	sp,#18
+   01A9 7E                  393 	ld	a,(hl)
+   01AA F5                  394 	push	af
+   01AB 33                  395 	inc	sp
+   01AC F8 0A               396 	ldhl	sp,#10
+   01AE 7E                  397 	ld	a,(hl)
+   01AF F5                  398 	push	af
+   01B0 33                  399 	inc	sp
+   01B1 2B                  400 	dec	hl
+   01B2 2B                  401 	dec	hl
+   01B3 7E                  402 	ld	a,(hl)
+   01B4 F5                  403 	push	af
+   01B5 33                  404 	inc	sp
+   01B6 7B                  405 	ld	a,e
+   01B7 F5                  406 	push	af
+   01B8 33                  407 	inc	sp
+   01B9 CDr00r00            408 	call	_DrawOAMSprite
+   01BC E8 04               409 	add	sp, #4
+   01BE D1                  410 	pop	de
+                            411 ;C:/gbdk/ZGB/common/src/Frame_b.c:22: DrawOAMSprite(y + 32u, x + 24u, idx + 12u, flags);
+   01BF D5                  412 	push	de
+   01C0 F8 12               413 	ldhl	sp,#18
+   01C2 7E                  414 	ld	a,(hl)
+   01C3 F5                  415 	push	af
+   01C4 33                  416 	inc	sp
+   01C5 F8 03               417 	ldhl	sp,#3
+   01C7 7E                  418 	ld	a,(hl)
+   01C8 F5                  419 	push	af
+   01C9 33                  420 	inc	sp
+   01CA F8 0D               421 	ldhl	sp,#13
+   01CC 7E                  422 	ld	a,(hl)
+   01CD F5                  423 	push	af
+   01CE 33                  424 	inc	sp
+   01CF D5                  425 	push	de
+   01D0 33                  426 	inc	sp
+   01D1 CDr00r00            427 	call	_DrawOAMSprite
+   01D4 E8 04               428 	add	sp, #4
+   01D6 D1                  429 	pop	de
+                            430 ;C:/gbdk/ZGB/common/src/Frame_b.c:23: DrawOAMSprite(y + 32u, x + 32u, idx + 14u, flags);
+   01D7 F8 10               431 	ldhl	sp,#16
+   01D9 7E                  432 	ld	a,(hl)
+   01DA F5                  433 	push	af
+   01DB 33                  434 	inc	sp
+   01DC F8 03               435 	ldhl	sp,#3
+   01DE 7E                  436 	ld	a,(hl)
+   01DF F5                  437 	push	af
+   01E0 33                  438 	inc	sp
+   01E1 F8 07               439 	ldhl	sp,#7
+   01E3 7E                  440 	ld	a,(hl)
+   01E4 F5                  441 	push	af
+   01E5 33                  442 	inc	sp
+   01E6 D5                  443 	push	de
+   01E7 33                  444 	inc	sp
+   01E8 CDr00r00            445 	call	_DrawOAMSprite
+   01EB E8 04               446 	add	sp, #4
+   01ED                     447 00104$:
+   01ED E8 0A               448 	add	sp, #10
+   01EF C9                  449 	ret
+                            450 	.area _CODE_1
+                            451 	.area _CABS (ABS)

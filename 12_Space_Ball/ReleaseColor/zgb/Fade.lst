@@ -1,0 +1,74 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module Fade
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _FadeOut_b
+                             12 	.globl _FadeIn_b
+                             13 	.globl _PopBank
+                             14 	.globl _PushBank
+                             15 	.globl _FadeIn
+                             16 	.globl _FadeOut
+                             17 ;--------------------------------------------------------
+                             18 ; ram data
+                             19 ;--------------------------------------------------------
+                             20 	.area _DATA
+                             21 ;--------------------------------------------------------
+                             22 ; absolute external ram data
+                             23 ;--------------------------------------------------------
+                             24 	.area _DABS (ABS)
+                             25 ;--------------------------------------------------------
+                             26 ; global & static initialisations
+                             27 ;--------------------------------------------------------
+                             28 	.area _HOME
+                             29 	.area _GSINIT
+                             30 	.area _GSFINAL
+                             31 	.area _GSINIT
+                             32 ;--------------------------------------------------------
+                             33 ; Home
+                             34 ;--------------------------------------------------------
+                             35 	.area _HOME
+                             36 	.area _HOME
+                             37 ;--------------------------------------------------------
+                             38 ; code
+                             39 ;--------------------------------------------------------
+                             40 	.area _CODE
+                             41 ;C:/gbdk/ZGB/common/src/Fade.c:5: void FadeIn() {
+                             42 ;	---------------------------------
+                             43 ; Function FadeIn
+                             44 ; ---------------------------------
+   0000                      45 _FadeIn::
+                             46 ;C:/gbdk/ZGB/common/src/Fade.c:6: PUSH_BANK(fade_bank);
+   0000 21r00r00             47 	ld	hl,#_fade_bank
+   0003 7E                   48 	ld	a,(hl)
+   0004 F5                   49 	push	af
+   0005 33                   50 	inc	sp
+   0006 CDr00r00             51 	call	_PushBank
+   0009 33                   52 	inc	sp
+                             53 ;C:/gbdk/ZGB/common/src/Fade.c:7: FadeIn_b();
+   000A CDr00r00             54 	call	_FadeIn_b
+                             55 ;C:/gbdk/ZGB/common/src/Fade.c:8: POP_BANK;
+   000D C3r00r00             56 	jp	_PopBank
+                             57 ;C:/gbdk/ZGB/common/src/Fade.c:12: void FadeOut() {
+                             58 ;	---------------------------------
+                             59 ; Function FadeOut
+                             60 ; ---------------------------------
+   0010                      61 _FadeOut::
+                             62 ;C:/gbdk/ZGB/common/src/Fade.c:13: PUSH_BANK(fade_bank);
+   0010 21r00r00             63 	ld	hl,#_fade_bank
+   0013 7E                   64 	ld	a,(hl)
+   0014 F5                   65 	push	af
+   0015 33                   66 	inc	sp
+   0016 CDr00r00             67 	call	_PushBank
+   0019 33                   68 	inc	sp
+                             69 ;C:/gbdk/ZGB/common/src/Fade.c:14: FadeOut_b();
+   001A CDr00r00             70 	call	_FadeOut_b
+                             71 ;C:/gbdk/ZGB/common/src/Fade.c:15: POP_BANK;
+   001D C3r00r00             72 	jp	_PopBank
+                             73 	.area _CODE
+                             74 	.area _CABS (ABS)

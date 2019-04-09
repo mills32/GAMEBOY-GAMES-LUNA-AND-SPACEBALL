@@ -1,0 +1,31 @@
+XL2
+H 7 areas 8 global symbols
+M Fade
+O -mgbz80
+S _FadeIn_b Ref0000
+S _FadeOut_b Ref0000
+S _PopBank Ref0000
+S .__.ABS. Def0000
+S _fade_bank Ref0000
+S _PushBank Ref0000
+A _CODE size 20 flags 0 addr 0
+S _FadeIn Def0000
+S _FadeOut Def0010
+A _DATA size 0 flags 0 addr 0
+A _DABS size 0 flags 8 addr 0
+A _HOME size 0 flags 0 addr 0
+A _GSINIT size 0 flags 0 addr 0
+A _GSFINAL size 0 flags 0 addr 0
+A _CABS size 0 flags 8 addr 0
+T 00 00
+R 00 00 00 00
+T 00 00 21 00 00 7E F5 33 CD 00 00 33 CD 00 00 C3
+R 00 00 00 00 02 03 04 00 02 09 05 00 02 0D 00 00
+T 0E 00 00 00
+R 00 00 00 00 02 02 02 00
+T 10 00
+R 00 00 00 00
+T 10 00 21 00 00 7E F5 33 CD 00 00 33 CD 00 00 C3
+R 00 00 00 00 02 03 04 00 02 09 05 00 02 0D 01 00
+T 1E 00 00 00
+R 00 00 00 00 02 02 02 00

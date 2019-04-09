@@ -1,0 +1,63 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 1.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+    .__.$$$.                                                    =  2710 L
+    .__.ABS.                                                    =  0000 G
+    .__.CPU.                                                    =  0000 L
+    .__.H$L.                                                    =  0000 L
+    _ClearOAMs                                                     **** GX
+    _DrawSprite                                                    **** GX
+    _InitSprite                                                    **** GX
+    _LoadSprite                                                    **** GX
+    _PopBank                                                       **** GX
+    _PushBank                                                      **** GX
+    _RefreshScroll                                                 **** GX
+  0 _SpriteManagerAdd                                              017D GR
+  0 _SpriteManagerFlushRemove                                      0358 GR
+  0 _SpriteManagerLoad                                             00E7 GR
+  0 _SpriteManagerRemove                                           02CE GR
+  0 _SpriteManagerRemoveSprite                                     02FF GR
+  0 _SpriteManagerReset                                            0000 GR
+  0 _SpriteManagerUpdate                                           0411 GR
+    _StackPop                                                      **** GX
+    _StackPush                                                     **** GX
+    _SwapOAMs                                                      **** GX
+  1 _THIS                                                          00A6 GR
+  1 _THIS_IDX                                                      00A5 GR
+    _VectorAdd                                                     **** GX
+    _VectorRemovePos                                               **** GX
+    ___sdcc_call_hl                                                **** GX
+  1 _cachedSprite                                                  00A3 GR
+    _scroll_target                                                 **** GX
+    _spriteBanks                                                   **** GX
+    _spriteDataBanks                                               **** GX
+    _spriteDatas                                                   **** GX
+    _spriteDestroyFuncs                                            **** GX
+    _spriteFrameSizes                                              **** GX
+    _spriteIdxs                                                    **** GX
+    _spriteNumFrames                                               **** GX
+    _spritePalDatas                                                **** GX
+    _spriteStartFuncs                                              **** GX
+    _spriteUpdateFuncs                                             **** GX
+  1 _sprite_manager_removal_check                                  00A2 GR
+  1 _sprite_manager_sprites                                        0000 GR
+    _sprite_manager_sprites_mem                                 =  CFA1 G
+  1 _sprite_manager_sprites_pool                                   0050 GR
+  1 _sprite_manager_updatables                                     0079 GR
+
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 2.
+Hexadecimal [16-Bits]
+
+Area Table
+
+   0 _CODE                                      size  4D7   flags    0
+   1 _DATA                                      size   A8   flags    0
+   2 _DABS                                      size    0   flags    8
+   3 _HOME                                      size    0   flags    0
+   4 _GSINIT                                    size    A   flags    0
+   5 _GSFINAL                                   size    0   flags    0
+   6 _CABS                                      size    0   flags    8
+

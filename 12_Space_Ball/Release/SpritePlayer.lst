@@ -1,0 +1,664 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (MINGW32)
+                              4 ;--------------------------------------------------------
+                              5 	.module SpritePlayer
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _Destroy_SPRITE_PLAYER
+                             12 	.globl _Update_SPRITE_PLAYER
+                             13 	.globl _Start_SPRITE_PLAYER
+                             14 	.globl _Set_Power_Bar
+                             15 	.globl _WIN_EDIT_TILE
+                             16 	.globl _SpriteManagerAdd
+                             17 	.globl _TranslateSprite
+                             18 	.globl _Ball_State
+                             19 	.globl _HitDir
+                             20 	.globl _BallPos_y
+                             21 	.globl _BallPos_x
+                             22 	.globl _TIMER
+                             23 	.globl _bank_SPRITE_PLAYER
+                             24 	.globl _Dir
+                             25 	.globl _Speed
+                             26 	.globl _anim_idle
+                             27 	.globl _anim_roll
+                             28 ;--------------------------------------------------------
+                             29 ; ram data
+                             30 ;--------------------------------------------------------
+                             31 	.area _DATA
+   0000                      32 _bank_SPRITE_PLAYER::
+   0000                      33 	.ds 1
+   0001                      34 _TIMER::
+   0001                      35 	.ds 1
+   0002                      36 _BallPos_x::
+   0002                      37 	.ds 2
+   0004                      38 _BallPos_y::
+   0004                      39 	.ds 2
+   0006                      40 _HitDir::
+   0006                      41 	.ds 1
+   0007                      42 _Ball_State::
+   0007                      43 	.ds 1
+                             44 ;--------------------------------------------------------
+                             45 ; absolute external ram data
+                             46 ;--------------------------------------------------------
+                             47 	.area _DABS (ABS)
+                             48 ;--------------------------------------------------------
+                             49 ; global & static initialisations
+                             50 ;--------------------------------------------------------
+                             51 	.area _HOME
+                             52 	.area _GSINIT
+                             53 	.area _GSFINAL
+                             54 	.area _GSINIT
+                             55 ;SpritePlayer.c:3: UINT8 bank_SPRITE_PLAYER = 2;
+   0000 21r00r00             56 	ld	hl,#_bank_SPRITE_PLAYER
+   0003 36 02                57 	ld	(hl),#0x02
+                             58 ;--------------------------------------------------------
+                             59 ; Home
+                             60 ;--------------------------------------------------------
+                             61 	.area _HOME
+                             62 	.area _HOME
+                             63 ;--------------------------------------------------------
+                             64 ; code
+                             65 ;--------------------------------------------------------
+                             66 	.area _CODE_2
+                             67 ;SpritePlayer.c:117: void Set_Power_Bar(int p){
+                             68 ;	---------------------------------
+                             69 ; Function Set_Power_Bar
+                             70 ; ---------------------------------
+   0000                      71 _Set_Power_Bar::
+                             72 ;SpritePlayer.c:118: if(p == 0){
+   0000 F8 03                73 	ldhl	sp,#3
+   0002 3A                   74 	ld	a,(hl-)
+   0003 B6                   75 	or	a,(hl)
+   0004 20 34                76 	jr	NZ,00102$
+                             77 ;SpritePlayer.c:120: WIN_EDIT_TILE(3, 0, 47);WIN_EDIT_TILE(4, 0, 51);
+   0006 21 00 2F             78 	ld	hl,#0x2f00
+   0009 E5                   79 	push	hl
+   000A 3E 03                80 	ld	a,#0x03
+   000C F5                   81 	push	af
+   000D 33                   82 	inc	sp
+   000E CDr00r00             83 	call	_WIN_EDIT_TILE
+   0011 E8 03                84 	add	sp, #3
+   0013 21 00 33             85 	ld	hl,#0x3300
+   0016 E5                   86 	push	hl
+   0017 3E 04                87 	ld	a,#0x04
+   0019 F5                   88 	push	af
+   001A 33                   89 	inc	sp
+   001B CDr00r00             90 	call	_WIN_EDIT_TILE
+   001E E8 03                91 	add	sp, #3
+                             92 ;SpritePlayer.c:121: WIN_EDIT_TILE(3, 1, 48);WIN_EDIT_TILE(4, 1, 52);
+   0020 21 01 30             93 	ld	hl,#0x3001
+   0023 E5                   94 	push	hl
+   0024 3E 03                95 	ld	a,#0x03
+   0026 F5                   96 	push	af
+   0027 33                   97 	inc	sp
+   0028 CDr00r00             98 	call	_WIN_EDIT_TILE
+   002B E8 03                99 	add	sp, #3
+   002D 21 01 34            100 	ld	hl,#0x3401
+   0030 E5                  101 	push	hl
+   0031 3E 04               102 	ld	a,#0x04
+   0033 F5                  103 	push	af
+   0034 33                  104 	inc	sp
+   0035 CDr00r00            105 	call	_WIN_EDIT_TILE
+   0038 E8 03               106 	add	sp, #3
+   003A                     107 00102$:
+                            108 ;SpritePlayer.c:123: if(p == 1){
+   003A F8 02               109 	ldhl	sp,#2
+   003C 7E                  110 	ld	a,(hl)
+   003D 3D                  111 	dec	a
+   003E C2r7Ar00            112 	jp	NZ,00104$
+   0041 23                  113 	inc	hl
+   0042 7E                  114 	ld	a,(hl)
+   0043 B7                  115 	or	a, a
+   0044 20 34               116 	jr	NZ,00104$
+                            117 ;SpritePlayer.c:125: WIN_EDIT_TILE(3, 0, 49);WIN_EDIT_TILE(4, 0, 51);
+   0046 21 00 31            118 	ld	hl,#0x3100
+   0049 E5                  119 	push	hl
+   004A 3E 03               120 	ld	a,#0x03
+   004C F5                  121 	push	af
+   004D 33                  122 	inc	sp
+   004E CDr00r00            123 	call	_WIN_EDIT_TILE
+   0051 E8 03               124 	add	sp, #3
+   0053 21 00 33            125 	ld	hl,#0x3300
+   0056 E5                  126 	push	hl
+   0057 3E 04               127 	ld	a,#0x04
+   0059 F5                  128 	push	af
+   005A 33                  129 	inc	sp
+   005B CDr00r00            130 	call	_WIN_EDIT_TILE
+   005E E8 03               131 	add	sp, #3
+                            132 ;SpritePlayer.c:126: WIN_EDIT_TILE(3, 1, 50);WIN_EDIT_TILE(4, 1, 52);
+   0060 21 01 32            133 	ld	hl,#0x3201
+   0063 E5                  134 	push	hl
+   0064 3E 03               135 	ld	a,#0x03
+   0066 F5                  136 	push	af
+   0067 33                  137 	inc	sp
+   0068 CDr00r00            138 	call	_WIN_EDIT_TILE
+   006B E8 03               139 	add	sp, #3
+   006D 21 01 34            140 	ld	hl,#0x3401
+   0070 E5                  141 	push	hl
+   0071 3E 04               142 	ld	a,#0x04
+   0073 F5                  143 	push	af
+   0074 33                  144 	inc	sp
+   0075 CDr00r00            145 	call	_WIN_EDIT_TILE
+   0078 E8 03               146 	add	sp, #3
+   007A                     147 00104$:
+                            148 ;SpritePlayer.c:128: if(p == 2){
+   007A F8 02               149 	ldhl	sp,#2
+   007C 7E                  150 	ld	a,(hl)
+   007D D6 02               151 	sub	a, #0x02
+   007F C0                  152 	ret	NZ
+   0080 23                  153 	inc	hl
+   0081 7E                  154 	ld	a,(hl)
+   0082 B7                  155 	or	a, a
+   0083 C0                  156 	ret	NZ
+                            157 ;SpritePlayer.c:130: WIN_EDIT_TILE(3, 0, 49);WIN_EDIT_TILE(4, 0, 53);
+   0084 21 00 31            158 	ld	hl,#0x3100
+   0087 E5                  159 	push	hl
+   0088 3E 03               160 	ld	a,#0x03
+   008A F5                  161 	push	af
+   008B 33                  162 	inc	sp
+   008C CDr00r00            163 	call	_WIN_EDIT_TILE
+   008F E8 03               164 	add	sp, #3
+   0091 21 00 35            165 	ld	hl,#0x3500
+   0094 E5                  166 	push	hl
+   0095 3E 04               167 	ld	a,#0x04
+   0097 F5                  168 	push	af
+   0098 33                  169 	inc	sp
+   0099 CDr00r00            170 	call	_WIN_EDIT_TILE
+   009C E8 03               171 	add	sp, #3
+                            172 ;SpritePlayer.c:131: WIN_EDIT_TILE(3, 1, 50);WIN_EDIT_TILE(4, 1, 54);
+   009E 21 01 32            173 	ld	hl,#0x3201
+   00A1 E5                  174 	push	hl
+   00A2 3E 03               175 	ld	a,#0x03
+   00A4 F5                  176 	push	af
+   00A5 33                  177 	inc	sp
+   00A6 CDr00r00            178 	call	_WIN_EDIT_TILE
+   00A9 E8 03               179 	add	sp, #3
+   00AB 21 01 36            180 	ld	hl,#0x3601
+   00AE E5                  181 	push	hl
+   00AF 3E 04               182 	ld	a,#0x04
+   00B1 F5                  183 	push	af
+   00B2 33                  184 	inc	sp
+   00B3 CDr00r00            185 	call	_WIN_EDIT_TILE
+   00B6 E8 03               186 	add	sp, #3
+   00B8 C9                  187 	ret
+   00B9                     188 _anim_roll:
+   00B9 03                  189 	.db #0x03	; 3
+   00BA 00                  190 	.db #0x00	; 0
+   00BB 01                  191 	.db #0x01	; 1
+   00BC 02                  192 	.db #0x02	; 2
+   00BD                     193 _anim_idle:
+   00BD 01                  194 	.db #0x01	; 1
+   00BE 00                  195 	.db #0x00	; 0
+   00BF                     196 _Speed:
+   00BF FE                  197 	.db #0xfe	; -2
+   00C0 FE                  198 	.db #0xfe	; -2
+   00C1 FE                  199 	.db #0xfe	; -2
+   00C2 FE                  200 	.db #0xfe	; -2
+   00C3 FE                  201 	.db #0xfe	; -2
+   00C4 FE                  202 	.db #0xfe	; -2
+   00C5 FE                  203 	.db #0xfe	; -2
+   00C6 FF                  204 	.db #0xff	; -1
+   00C7 FF                  205 	.db #0xff	; -1
+   00C8 FE                  206 	.db #0xfe	; -2
+   00C9 FF                  207 	.db #0xff	; -1
+   00CA FE                  208 	.db #0xfe	; -2
+   00CB FF                  209 	.db #0xff	; -1
+   00CC FF                  210 	.db #0xff	; -1
+   00CD FF                  211 	.db #0xff	; -1
+   00CE FE                  212 	.db #0xfe	; -2
+   00CF FF                  213 	.db #0xff	; -1
+   00D0 FF                  214 	.db #0xff	; -1
+   00D1 FF                  215 	.db #0xff	; -1
+   00D2 FF                  216 	.db #0xff	; -1
+   00D3 FF                  217 	.db #0xff	; -1
+   00D4 FF                  218 	.db #0xff	; -1
+   00D5 FF                  219 	.db #0xff	; -1
+   00D6 00                  220 	.db #0x00	;  0
+   00D7 FF                  221 	.db #0xff	; -1
+   00D8 00                  222 	.db #0x00	;  0
+   00D9 FF                  223 	.db #0xff	; -1
+   00DA 00                  224 	.db #0x00	;  0
+   00DB 00                  225 	.db #0x00	;  0
+   00DC 00                  226 	.db #0x00	;  0
+   00DD 00                  227 	.db #0x00	;  0
+   00DE FF                  228 	.db #0xff	; -1
+   00DF 00                  229 	.db #0x00	;  0
+   00E0 00                  230 	.db #0x00	;  0
+   00E1 00                  231 	.db #0x00	;  0
+   00E2 00                  232 	.db #0x00	;  0
+   00E3 00                  233 	.db #0x00	;  0
+   00E4 00                  234 	.db #0x00	;  0
+   00E5 00                  235 	.db #0x00	;  0
+   00E6 01                  236 	.db #0x01	;  1
+   00E7 01                  237 	.db #0x01	;  1
+   00E8 00                  238 	.db #0x00	;  0
+   00E9 01                  239 	.db #0x01	;  1
+   00EA 00                  240 	.db #0x00	;  0
+   00EB 01                  241 	.db #0x01	;  1
+   00EC 01                  242 	.db #0x01	;  1
+   00ED 01                  243 	.db #0x01	;  1
+   00EE 00                  244 	.db #0x00	;  0
+   00EF 01                  245 	.db #0x01	;  1
+   00F0 01                  246 	.db #0x01	;  1
+   00F1 01                  247 	.db #0x01	;  1
+   00F2 01                  248 	.db #0x01	;  1
+   00F3 01                  249 	.db #0x01	;  1
+   00F4 01                  250 	.db #0x01	;  1
+   00F5 01                  251 	.db #0x01	;  1
+   00F6 02                  252 	.db #0x02	;  2
+   00F7 01                  253 	.db #0x01	;  1
+   00F8 02                  254 	.db #0x02	;  2
+   00F9 01                  255 	.db #0x01	;  1
+   00FA 02                  256 	.db #0x02	;  2
+   00FB 02                  257 	.db #0x02	;  2
+   00FC 02                  258 	.db #0x02	;  2
+   00FD 02                  259 	.db #0x02	;  2
+   00FE 01                  260 	.db #0x01	;  1
+   00FF 02                  261 	.db #0x02	;  2
+   0100 02                  262 	.db #0x02	;  2
+   0101 02                  263 	.db #0x02	;  2
+   0102 02                  264 	.db #0x02	;  2
+   0103                     265 _Dir:
+   0103 09                  266 	.db #0x09	; 9
+   0104 0C                  267 	.db #0x0c	; 12
+   0105 0B                  268 	.db #0x0b	; 11
+   0106 0B                  269 	.db #0x0b	; 11
+   0107 0C                  270 	.db #0x0c	; 12
+   0108 09                  271 	.db #0x09	; 9
+   0109 0C                  272 	.db #0x0c	; 12
+   010A 08                  273 	.db #0x08	; 8
+   010B 0C                  274 	.db #0x0c	; 12
+   010C 07                  275 	.db #0x07	; 7
+   010D 0B                  276 	.db #0x0b	; 11
+   010E 05                  277 	.db #0x05	; 5
+   010F 09                  278 	.db #0x09	; 9
+   0110 04                  279 	.db #0x04	; 4
+   0111 08                  280 	.db #0x08	; 8
+   0112 04                  281 	.db #0x04	; 4
+   0113 07                  282 	.db #0x07	; 7
+   0114 04                  283 	.db #0x04	; 4
+   0115 05                  284 	.db #0x05	; 5
+   0116 05                  285 	.db #0x05	; 5
+   0117 04                  286 	.db #0x04	; 4
+   0118 07                  287 	.db #0x07	; 7
+   0119 04                  288 	.db #0x04	; 4
+   011A 08                  289 	.db #0x08	; 8
+   011B 04                  290 	.db #0x04	; 4
+   011C 09                  291 	.db #0x09	; 9
+   011D 05                  292 	.db #0x05	; 5
+   011E 0B                  293 	.db #0x0b	; 11
+   011F 07                  294 	.db #0x07	; 7
+   0120 0C                  295 	.db #0x0c	; 12
+   0121 08                  296 	.db #0x08	; 8
+   0122 0C                  297 	.db #0x0c	; 12
+   0123 0B                  298 	.db #0x0b	; 11
+   0124 0E                  299 	.db #0x0e	; 14
+   0125 0D                  300 	.db #0x0d	; 13
+   0126 0D                  301 	.db #0x0d	; 13
+   0127 0E                  302 	.db #0x0e	; 14
+   0128 0B                  303 	.db #0x0b	; 11
+   0129 0E                  304 	.db #0x0e	; 14
+   012A 08                  305 	.db #0x08	; 8
+   012B 0E                  306 	.db #0x0e	; 14
+   012C 06                  307 	.db #0x06	; 6
+   012D 0D                  308 	.db #0x0d	; 13
+   012E 03                  309 	.db #0x03	; 3
+   012F 0B                  310 	.db #0x0b	; 11
+   0130 02                  311 	.db #0x02	; 2
+   0131 08                  312 	.db #0x08	; 8
+   0132 02                  313 	.db #0x02	; 2
+   0133 05                  314 	.db #0x05	; 5
+   0134 02                  315 	.db #0x02	; 2
+   0135 03                  316 	.db #0x03	; 3
+   0136 03                  317 	.db #0x03	; 3
+   0137 02                  318 	.db #0x02	; 2
+   0138 05                  319 	.db #0x05	; 5
+   0139 02                  320 	.db #0x02	; 2
+   013A 08                  321 	.db #0x08	; 8
+   013B 02                  322 	.db #0x02	; 2
+   013C 0B                  323 	.db #0x0b	; 11
+   013D 03                  324 	.db #0x03	; 3
+   013E 0D                  325 	.db #0x0d	; 13
+   013F 05                  326 	.db #0x05	; 5
+   0140 0E                  327 	.db #0x0e	; 14
+   0141 08                  328 	.db #0x08	; 8
+   0142 0E                  329 	.db #0x0e	; 14
+   0143 0D                  330 	.db #0x0d	; 13
+   0144 10                  331 	.db #0x10	; 16
+   0145 0F                  332 	.db #0x0f	; 15
+   0146 0F                  333 	.db #0x0f	; 15
+   0147 10                  334 	.db #0x10	; 16
+   0148 0C                  335 	.db #0x0c	; 12
+   0149 10                  336 	.db #0x10	; 16
+   014A 08                  337 	.db #0x08	; 8
+   014B 10                  338 	.db #0x10	; 16
+   014C 04                  339 	.db #0x04	; 4
+   014D 0F                  340 	.db #0x0f	; 15
+   014E 01                  341 	.db #0x01	; 1
+   014F 0D                  342 	.db #0x0d	; 13
+   0150 00                  343 	.db #0x00	; 0
+   0151 08                  344 	.db #0x08	; 8
+   0152 00                  345 	.db #0x00	; 0
+   0153 03                  346 	.db #0x03	; 3
+   0154 00                  347 	.db #0x00	; 0
+   0155 01                  348 	.db #0x01	; 1
+   0156 01                  349 	.db #0x01	; 1
+   0157 00                  350 	.db #0x00	; 0
+   0158 04                  351 	.db #0x04	; 4
+   0159 00                  352 	.db #0x00	; 0
+   015A 08                  353 	.db #0x08	; 8
+   015B 00                  354 	.db #0x00	; 0
+   015C 0D                  355 	.db #0x0d	; 13
+   015D 01                  356 	.db #0x01	; 1
+   015E 0F                  357 	.db #0x0f	; 15
+   015F 04                  358 	.db #0x04	; 4
+   0160 10                  359 	.db #0x10	; 16
+   0161 08                  360 	.db #0x08	; 8
+   0162 10                  361 	.db #0x10	; 16
+                            362 ;SpritePlayer.c:135: void Start_SPRITE_PLAYER() {
+                            363 ;	---------------------------------
+                            364 ; Function Start_SPRITE_PLAYER
+                            365 ; ---------------------------------
+   0163                     366 _Start_SPRITE_PLAYER::
+   0163 E8 FC               367 	add	sp, #-4
+                            368 ;SpritePlayer.c:136: struct BallInfo* data = (struct BallInfo*) THIS->custom_data;
+   0165 21r01r00            369 	ld	hl,#_THIS + 1
+   0168 2B                  370 	dec	hl
+   0169 4E                  371 	ld	c,(hl)
+   016A 23                  372 	inc	hl
+   016B 46                  373 	ld	b,(hl)
+   016C 21 18 00            374 	ld	hl,#0x0018
+   016F 09                  375 	add	hl,bc
+   0170 7D                  376 	ld	a,l
+   0171 54                  377 	ld	d,h
+   0172 F8 02               378 	ldhl	sp,#2
+   0174 22                  379 	ld	(hl+),a
+   0175 72                  380 	ld	(hl),d
+   0176 2B                  381 	dec	hl
+   0177 2A                  382 	ld	a,(hl+)
+   0178 5E                  383 	ld	e, (hl)
+   0179 F8 00               384 	ldhl	sp,#0
+   017B 22                  385 	ld	(hl+),a
+   017C 73                  386 	ld	(hl),e
+                            387 ;SpritePlayer.c:137: THIS->coll_x = 4;
+   017D 21 0C 00            388 	ld	hl,#0x000c
+   0180 09                  389 	add	hl,bc
+   0181 4D                  390 	ld	c,l
+   0182 44                  391 	ld	b,h
+   0183 3E 04               392 	ld	a,#0x04
+   0185 02                  393 	ld	(bc),a
+                            394 ;SpritePlayer.c:138: THIS->coll_y = 4;
+   0186 21r01r00            395 	ld	hl,#_THIS + 1
+   0189 2B                  396 	dec	hl
+   018A 4E                  397 	ld	c,(hl)
+   018B 23                  398 	inc	hl
+   018C 46                  399 	ld	b,(hl)
+   018D 21 0D 00            400 	ld	hl,#0x000d
+   0190 09                  401 	add	hl,bc
+   0191 4D                  402 	ld	c,l
+   0192 44                  403 	ld	b,h
+   0193 3E 04               404 	ld	a,#0x04
+   0195 02                  405 	ld	(bc),a
+                            406 ;SpritePlayer.c:139: THIS->coll_w = 8; 
+   0196 21r01r00            407 	ld	hl,#_THIS + 1
+   0199 2B                  408 	dec	hl
+   019A 4E                  409 	ld	c,(hl)
+   019B 23                  410 	inc	hl
+   019C 46                  411 	ld	b,(hl)
+   019D 21 0E 00            412 	ld	hl,#0x000e
+   01A0 09                  413 	add	hl,bc
+   01A1 4D                  414 	ld	c,l
+   01A2 44                  415 	ld	b,h
+   01A3 3E 08               416 	ld	a,#0x08
+   01A5 02                  417 	ld	(bc),a
+                            418 ;SpritePlayer.c:140: THIS->coll_h = 8; //box
+   01A6 21r01r00            419 	ld	hl,#_THIS + 1
+   01A9 2B                  420 	dec	hl
+   01AA 4E                  421 	ld	c,(hl)
+   01AB 23                  422 	inc	hl
+   01AC 46                  423 	ld	b,(hl)
+   01AD 21 0F 00            424 	ld	hl,#0x000f
+   01B0 09                  425 	add	hl,bc
+   01B1 4D                  426 	ld	c,l
+   01B2 44                  427 	ld	b,h
+   01B3 3E 08               428 	ld	a,#0x08
+   01B5 02                  429 	ld	(bc),a
+                            430 ;SpritePlayer.c:142: data->vx = 0;
+   01B6 E1                  431 	pop	hl
+   01B7 E5                  432 	push	hl
+   01B8 36 00               433 	ld	(hl),#0x00
+                            434 ;SpritePlayer.c:143: data->vy = 0;
+   01BA C1                  435 	pop	bc
+   01BB C5                  436 	push	bc
+   01BC 03                  437 	inc	bc
+   01BD AF                  438 	xor	a, a
+   01BE 02                  439 	ld	(bc),a
+                            440 ;SpritePlayer.c:144: data->bx = 0;
+   01BF D1                  441 	pop	de
+   01C0 D5                  442 	push	de
+   01C1 21 09 00            443 	ld	hl,#0x0009
+   01C4 19                  444 	add	hl,de
+   01C5 4D                  445 	ld	c,l
+   01C6 44                  446 	ld	b,h
+   01C7 AF                  447 	xor	a, a
+   01C8 02                  448 	ld	(bc),a
+                            449 ;SpritePlayer.c:145: data->by = 0;
+   01C9 D1                  450 	pop	de
+   01CA D5                  451 	push	de
+   01CB 21 0A 00            452 	ld	hl,#0x000a
+   01CE 19                  453 	add	hl,de
+   01CF 4D                  454 	ld	c,l
+   01D0 44                  455 	ld	b,h
+   01D1 AF                  456 	xor	a, a
+   01D2 02                  457 	ld	(bc),a
+                            458 ;SpritePlayer.c:146: data->state = 2; //INIT
+   01D3 D1                  459 	pop	de
+   01D4 D5                  460 	push	de
+   01D5 21 0C 00            461 	ld	hl,#0x000c
+   01D8 19                  462 	add	hl,de
+   01D9 4D                  463 	ld	c,l
+   01DA 44                  464 	ld	b,h
+   01DB 3E 02               465 	ld	a,#0x02
+   01DD 02                  466 	ld	(bc),a
+                            467 ;SpritePlayer.c:147: data->dir = 14;
+   01DE D1                  468 	pop	de
+   01DF D5                  469 	push	de
+   01E0 21 05 00            470 	ld	hl,#0x0005
+   01E3 19                  471 	add	hl,de
+   01E4 4D                  472 	ld	c,l
+   01E5 44                  473 	ld	b,h
+   01E6 3E 0E               474 	ld	a,#0x0e
+   01E8 02                  475 	ld	(bc),a
+                            476 ;SpritePlayer.c:148: data->force = 32;
+   01E9 D1                  477 	pop	de
+   01EA D5                  478 	push	de
+   01EB 21 08 00            479 	ld	hl,#0x0008
+   01EE 19                  480 	add	hl,de
+   01EF 4D                  481 	ld	c,l
+   01F0 44                  482 	ld	b,h
+   01F1 3E 20               483 	ld	a,#0x20
+   01F3 02                  484 	ld	(bc),a
+                            485 ;SpritePlayer.c:149: HitDir = 14;
+   01F4 21r06r00            486 	ld	hl,#_HitDir
+   01F7 36 0E               487 	ld	(hl),#0x0e
+                            488 ;SpritePlayer.c:136: struct BallInfo* data = (struct BallInfo*) THIS->custom_data;
+   01F9 21r01r00            489 	ld	hl,#_THIS + 1
+   01FC 2B                  490 	dec	hl
+   01FD 4E                  491 	ld	c,(hl)
+   01FE 23                  492 	inc	hl
+   01FF 46                  493 	ld	b,(hl)
+                            494 ;SpritePlayer.c:151: BallPos_x = THIS->x;
+   0200 21 07 00            495 	ld	hl,#0x0007
+   0203 09                  496 	add	hl,bc
+   0204 7D                  497 	ld	a,l
+   0205 54                  498 	ld	d,h
+   0206 F8 02               499 	ldhl	sp,#2
+   0208 22                  500 	ld	(hl+),a
+   0209 72                  501 	ld	(hl),d
+   020A 2B                  502 	dec	hl
+   020B 5E                  503 	ld	e,(hl)
+   020C 23                  504 	inc	hl
+   020D 56                  505 	ld	d,(hl)
+   020E 1A                  506 	ld	a,(de)
+   020F 21r02r00            507 	ld	hl,#_BallPos_x
+   0212 22                  508 	ld	(hl+),a
+   0213 13                  509 	inc	de
+   0214 1A                  510 	ld	a,(de)
+   0215 77                  511 	ld	(hl),a
+                            512 ;SpritePlayer.c:152: BallPos_y = THIS->y;
+   0216 21 09 00            513 	ld	hl,#0x0009
+   0219 09                  514 	add	hl,bc
+   021A 4D                  515 	ld	c,l
+   021B 44                  516 	ld	b,h
+   021C 59                  517 	ld	e, c
+   021D 50                  518 	ld	d, b
+   021E 1A                  519 	ld	a,(de)
+   021F 21r04r00            520 	ld	hl,#_BallPos_y
+   0222 22                  521 	ld	(hl+),a
+   0223 13                  522 	inc	de
+   0224 1A                  523 	ld	a,(de)
+   0225 77                  524 	ld	(hl),a
+                            525 ;SpritePlayer.c:153: SpriteManagerAdd(SPRITE_POINTER, 0, 0);
+   0226 21 00 00            526 	ld	hl,#0x0000
+   0229 E5                  527 	push	hl
+   022A 2E 00               528 	ld	l, #0x00
+   022C E5                  529 	push	hl
+   022D 3E 01               530 	ld	a,#0x01
+   022F F5                  531 	push	af
+   0230 33                  532 	inc	sp
+   0231 CDr00r00            533 	call	_SpriteManagerAdd
+   0234 E8 05               534 	add	sp, #5
+                            535 ;SpritePlayer.c:155: THIS->flags = 0x00;
+   0236 21r01r00            536 	ld	hl,#_THIS + 1
+   0239 2B                  537 	dec	hl
+   023A 4E                  538 	ld	c,(hl)
+   023B 23                  539 	inc	hl
+   023C 46                  540 	ld	b,(hl)
+   023D 21 0B 00            541 	ld	hl,#0x000b
+   0240 09                  542 	add	hl,bc
+   0241 4D                  543 	ld	c,l
+   0242 44                  544 	ld	b,h
+   0243 AF                  545 	xor	a, a
+   0244 02                  546 	ld	(bc),a
+                            547 ;SpritePlayer.c:156: TIMER = 0;
+   0245 21r01r00            548 	ld	hl,#_TIMER
+   0248 36 00               549 	ld	(hl),#0x00
+   024A E8 04               550 	add	sp, #4
+   024C C9                  551 	ret
+                            552 ;SpritePlayer.c:160: void Update_SPRITE_PLAYER(){
+                            553 ;	---------------------------------
+                            554 ; Function Update_SPRITE_PLAYER
+                            555 ; ---------------------------------
+   024D                     556 _Update_SPRITE_PLAYER::
+   024D E8 FE               557 	add	sp, #-2
+                            558 ;SpritePlayer.c:162: BallPos_x = THIS->x;
+   024F 21r01r00            559 	ld	hl,#_THIS + 1
+   0252 2B                  560 	dec	hl
+   0253 4E                  561 	ld	c,(hl)
+   0254 23                  562 	inc	hl
+   0255 46                  563 	ld	b,(hl)
+   0256 21 07 00            564 	ld	hl,#0x0007
+   0259 09                  565 	add	hl,bc
+   025A 33                  566 	inc	sp
+   025B 33                  567 	inc	sp
+   025C E5                  568 	push	hl
+   025D D1                  569 	pop	de
+   025E D5                  570 	push	de
+   025F 1A                  571 	ld	a,(de)
+   0260 21r02r00            572 	ld	hl,#_BallPos_x
+   0263 22                  573 	ld	(hl+),a
+   0264 13                  574 	inc	de
+   0265 1A                  575 	ld	a,(de)
+   0266 77                  576 	ld	(hl),a
+                            577 ;SpritePlayer.c:163: BallPos_y = THIS->y;
+   0267 21 09 00            578 	ld	hl,#0x0009
+   026A 09                  579 	add	hl,bc
+   026B 4D                  580 	ld	c,l
+   026C 44                  581 	ld	b,h
+   026D 59                  582 	ld	e, c
+   026E 50                  583 	ld	d, b
+   026F 1A                  584 	ld	a,(de)
+   0270 21r04r00            585 	ld	hl,#_BallPos_y
+   0273 22                  586 	ld	(hl+),a
+   0274 13                  587 	inc	de
+   0275 1A                  588 	ld	a,(de)
+   0276 77                  589 	ld	(hl),a
+                            590 ;SpritePlayer.c:166: if(KEY_PRESSED(J_RIGHT)) TranslateSprite(THIS,1,0);
+   0277 21r00r00            591 	ld	hl,#_keys
+   027A 4E                  592 	ld	c,(hl)
+   027B 06 00               593 	ld	b,#0x00
+   027D CB 41               594 	bit	0, c
+   027F 28 10               595 	jr	Z,00102$
+   0281 21 01 00            596 	ld	hl,#0x0001
+   0284 E5                  597 	push	hl
+   0285 21r00r00            598 	ld	hl,#_THIS
+   0288 2A                  599 	ld	a,(hl+)
+   0289 66                  600 	ld	h,(hl)
+   028A 6F                  601 	ld	l,a
+   028B E5                  602 	push	hl
+   028C CDr00r00            603 	call	_TranslateSprite
+   028F E8 04               604 	add	sp, #4
+   0291                     605 00102$:
+                            606 ;SpritePlayer.c:167: if(KEY_PRESSED(J_LEFT)) TranslateSprite(THIS,-1,0);
+   0291 21r00r00            607 	ld	hl,#_keys
+   0294 4E                  608 	ld	c,(hl)
+   0295 06 00               609 	ld	b,#0x00
+   0297 CB 49               610 	bit	1, c
+   0299 28 10               611 	jr	Z,00104$
+   029B 21 FF 00            612 	ld	hl,#0x00ff
+   029E E5                  613 	push	hl
+   029F 21r00r00            614 	ld	hl,#_THIS
+   02A2 2A                  615 	ld	a,(hl+)
+   02A3 66                  616 	ld	h,(hl)
+   02A4 6F                  617 	ld	l,a
+   02A5 E5                  618 	push	hl
+   02A6 CDr00r00            619 	call	_TranslateSprite
+   02A9 E8 04               620 	add	sp, #4
+   02AB                     621 00104$:
+                            622 ;SpritePlayer.c:168: if(KEY_PRESSED(J_UP)) TranslateSprite(THIS,0,-1);
+   02AB 21r00r00            623 	ld	hl,#_keys
+   02AE 4E                  624 	ld	c,(hl)
+   02AF 06 00               625 	ld	b,#0x00
+   02B1 CB 51               626 	bit	2, c
+   02B3 28 10               627 	jr	Z,00106$
+   02B5 21 00 FF            628 	ld	hl,#0xff00
+   02B8 E5                  629 	push	hl
+   02B9 21r00r00            630 	ld	hl,#_THIS
+   02BC 2A                  631 	ld	a,(hl+)
+   02BD 66                  632 	ld	h,(hl)
+   02BE 6F                  633 	ld	l,a
+   02BF E5                  634 	push	hl
+   02C0 CDr00r00            635 	call	_TranslateSprite
+   02C3 E8 04               636 	add	sp, #4
+   02C5                     637 00106$:
+                            638 ;SpritePlayer.c:169: if(KEY_PRESSED(J_DOWN)) TranslateSprite(THIS,0,1);
+   02C5 21r00r00            639 	ld	hl,#_keys
+   02C8 4E                  640 	ld	c,(hl)
+   02C9 06 00               641 	ld	b,#0x00
+   02CB CB 59               642 	bit	3, c
+   02CD 28 10               643 	jr	Z,00109$
+   02CF 21 00 01            644 	ld	hl,#0x0100
+   02D2 E5                  645 	push	hl
+   02D3 21r00r00            646 	ld	hl,#_THIS
+   02D6 2A                  647 	ld	a,(hl+)
+   02D7 66                  648 	ld	h,(hl)
+   02D8 6F                  649 	ld	l,a
+   02D9 E5                  650 	push	hl
+   02DA CDr00r00            651 	call	_TranslateSprite
+   02DD E8 04               652 	add	sp, #4
+   02DF                     653 00109$:
+   02DF E8 02               654 	add	sp, #2
+   02E1 C9                  655 	ret
+                            656 ;SpritePlayer.c:326: void Destroy_SPRITE_PLAYER() {
+                            657 ;	---------------------------------
+                            658 ; Function Destroy_SPRITE_PLAYER
+                            659 ; ---------------------------------
+   02E2                     660 _Destroy_SPRITE_PLAYER::
+                            661 ;SpritePlayer.c:328: }
+   02E2 C9                  662 	ret
+                            663 	.area _CODE_2
+                            664 	.area _CABS (ABS)
