@@ -1,14 +1,13 @@
-# GB DEMOS
-Here I stored some games that are using ZGB Engine in GBDK.
+# GB GAMES
 
-They are working in both DMG and GBC, But they work much better in GBC.
+Two games that are using ZGB Engine in GBDK.
 
-LUNA: a fully working platformer, just one level.
+Now updated to work with sdcc compiler, so the roms are working much better and faster (still need lcc linker)
 
-FUZZY: a de-make of fuzzy's world of miniature space golf, one level fully working, I'll add about 12 levels and I'll consider it complete.
+They are working in both DMG and GBC very well.
 
-JUKEBOX: here I'm trying to fit a lot of musics compossed in carillon editor.
+LUNA: a fully working platformer, 12 levels.
 
-RIC DANGEROUS 2: it is not really a port but a "new" version of rick 2 for gameboy with changes in gameplay and sprites. Maps are ripped from the original game and edited to look rounder and less detailed. Its starting to work well, and it only has part of the first level.
+FUZZY: a de-make of fuzzy's world of miniature space golf, 12 levels and I'll consider it complete.
 
 Thanks to ZALO for the amazing ZGB engine.
