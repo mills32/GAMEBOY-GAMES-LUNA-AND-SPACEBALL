@@ -1,0 +1,11 @@
+CARILLON EDITOR TRACK LIST: LUNA
+--------------------------------
+ROM BANK 8
+Menu				- Offset $00
+InGame1 (x2)		- Offset $80
+InGame2 (x2)		- Offset $40
+InGame3 (x2)		- Offset $c0
+InGame4 (x2)		- Offset $20
+Evil Z80(x1)		- Offset $60
+Village/Ending (x2) - Offset $a0
+Credits	(x1)		- Offset $e0
